@@ -71,7 +71,7 @@ export default function CardUserConfig() {
               <div className="w-full lg:w-6/12 px-4">
                 <div className="relative w-full mb-3">
                   <label
-                    className="block uppercase font-bold mb-2"
+                    className="block uppercase font-bold mb-2 text-xs"
                     for="pulse"
                     htmlFor="grid-password"
                   >

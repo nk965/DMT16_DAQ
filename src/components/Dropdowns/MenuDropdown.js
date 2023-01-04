@@ -44,7 +44,7 @@ const MenuDropdown = () => {
           DAQ Dashboard
         </span>
         <Link
-          to="/admin/dashboard"
+          to="/DAQ/dashboard"
           className={
             "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
           }
@@ -52,7 +52,7 @@ const MenuDropdown = () => {
           Configuration
         </Link>
         <Link
-          to="/admin/Console"
+          to="/DAQ/Console"
           className={
             "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
           }
@@ -60,7 +60,7 @@ const MenuDropdown = () => {
           Console
         </Link>
         <Link
-          to="/admin/tables"
+          to="/DAQ/tables"
           className={
             "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
           }

@@ -62,7 +62,7 @@ export default function Landing() {
                     <div className="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 mb-5 shadow-lg rounded-full bg-red-400">
                       <i class="fa fa-terminal" aria-hidden="true"></i>
                     </div>
-                    <a href='/admin/Console'>
+                    <a href='/DAQ/Console'>
                     <h6 className="text-xl font-semibold">Console</h6>
                     </a>
                   </div>
@@ -75,7 +75,7 @@ export default function Landing() {
                     <div className="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 mb-5 shadow-lg rounded-full bg-lightBlue-400">
                       <i class="fa fa-wrench" aria-hidden="true"></i>
                     </div>
-                    <a href='/admin'>
+                    <a href='/DAQ'>
                     <h6 className="text-xl font-semibold">Configuration Dashboard</h6>
                     </a>
                   </div>
@@ -88,7 +88,7 @@ export default function Landing() {
                     <div className="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 mb-5 shadow-lg rounded-full bg-emerald-400">
                       <i class="fa fa-desktop" aria-hidden="true"></i>
                     </div>
-                    <a href='/admin/DataAnalytics'>
+                    <a href='/DAQ/DataAnalytics'>
                     <h6 className="text-xl font-semibold">Data Analytics</h6>
                     </a>
                   </div>
