@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { createPopper } from "@popperjs/core";
 
-const PagesDropdown = () => {
+const MenuDropdown = () => {
   // dropdown props
   const [dropdownPopoverShow, setDropdownPopoverShow] = React.useState(false);
   const btnDropdownRef = React.createRef();
@@ -120,4 +120,4 @@ const PagesDropdown = () => {
   );
 };
 
-export default PagesDropdown;
+export default MenuDropdown;
