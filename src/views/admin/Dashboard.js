@@ -5,7 +5,7 @@ import React from "react";
 import CardLineChart from "components/Cards/CardLineChart.js";
 import CardTransientSettings from "components/Cards/CardTransientSettings.js";
 
-import CardSettings from "components/Cards/CardSettings.js";
+import CardUserConfig from "components/Cards/CardUserConfig.js";
 
 export default function Dashboard() {
   return (
@@ -20,7 +20,7 @@ export default function Dashboard() {
       </div>
       <div className="flex flex-wrap">
         <div className="w-full px-4">
-          <CardSettings />
+          <CardUserConfig />
         </div>
       </div>
     </>

@@ -2,14 +2,14 @@ import React from "react";
 
 // components
 
-import CardSettings from "components/Cards/CardSettings.js";
+import CardUserConfig from "components/Cards/CardUserConfig.js";
 
 export default function Console() {
   return (
     <>
       <div className="flex flex-wrap">
         <div className="w-full px-4">
-          <CardSettings />
+          <CardUserConfig />
         </div>
       </div>
     </>
