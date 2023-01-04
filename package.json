@@ -1,8 +1,8 @@
 {
-  "name": "notus-react",
+  "name": "dmt-16",
   "version": "1.1.0",
-  "description": "Notus React - A free Tailwind CSS and React UI Kit and Admin by Creative Tim.",
-  "repository": "https://github.com/creativetimofficial/notus-react",
+  "description": "Design, Make, Test Group 16 - Nuclear Thermal-Hydraulic Experiments",
+  "repository": "https://github.com/nk965/DMT16_DAQ/",
   "license": "MIT",
   "dependencies": {
     "@fortawesome/fontawesome-free": "5.15.3",

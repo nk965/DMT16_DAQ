@@ -13,32 +13,20 @@ export default function HeaderStats() {
           <div>
             {/* Card stats */}
             <div className="flex flex-wrap">
-              <div className="w-full lg:w-6/12 xl:w-6/12 px-4">
+              <button className="w-full lg:w-6/12 xl:w-6/12 px-4">
                 <CardStats
-                  //statSubtitle="TRAFFIC"
                   statTitle="Master Stop"
                   color="bg-red-500"
-                  //statArrow="up"
-                  // statPercent="3.48"
-                  //statPercentColor="text-emerald-500"
-                  //statDescripiron="Since last month"
-                  //statIconName="far fa-chart-bar"
-                  //statIconColor="bg-red-500"
+                  accent="active:bg-red-600"
                 />
-              </div>
-              <div className="w-full lg:w-6/12 xl:w-6/12 px-4">
+              </button>
+              <button className="w-full lg:w-6/12 xl:w-6/12 px-4">
                 <CardStats
-                  //statSubtitle="PERFORMANCE"
                   statTitle="Start Experiment"
                   color="bg-emerald-500"
-                  //statArrow="up"
-                  //statPercent="12"
-                  //statPercentColor="text-emerald-500"
-                  //statDescripiron="Since last month"
-                  //statIconName="fas fa-percent"
-                  //statIconColor="bg-lightBlue-500"
+                  accent="active:bg-emerald-600"
                 />
-              </div>
+              </button>
             </div>
           </div>
         </div>

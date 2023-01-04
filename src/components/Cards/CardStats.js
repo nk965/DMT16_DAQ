@@ -3,17 +3,18 @@ import PropTypes from "prop-types";
 
 export default function CardStats({
   statTitle,
-  color
+  color,
+  accent
 }) {
   return (
     <>
       <div 
       className={
-        " relative flex flex-col min-w-0 break-words rounded mb-6 xl:mb-0 shadow-lg "
-        + color
+        " relative flex flex-col min-w-0 break-words rounded mb-6 xl:mb-0  shadow-md hover:shadow-lg ease-linear transition-all duration-150 "
+        + color + " " + accent
           }
         >
-        <div className={color + "flex-auto p-4"}>
+        <div className={"flex-auto p-4"}>
           <div className="flex flex-wrap">
             <div className=" w-full pr-4 max-w-full flex-grow flex-1">
               <span className="font-semibold text-xl text-black">
