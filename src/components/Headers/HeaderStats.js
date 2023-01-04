@@ -2,7 +2,7 @@ import React from "react";
 
 // components
 
-import CardStats from "components/Cards/CardStats.js";
+import CardStopStart from "components/Cards/CardStopStart.js";
 
 export default function HeaderStats() {
   return (
@@ -14,14 +14,14 @@ export default function HeaderStats() {
             {/* Card stats */}
             <div className="flex flex-wrap">
               <button className="w-full lg:w-6/12 xl:w-6/12 px-4">
-                <CardStats
+                <CardStopStart
                   statTitle="Master Stop"
                   color="bg-red-500"
                   accent="active:bg-red-600"
                 />
               </button>
               <button className="w-full lg:w-6/12 xl:w-6/12 px-4">
-                <CardStats
+                <CardStopStart
                   statTitle="Start Experiment"
                   color="bg-emerald-500"
                   accent="active:bg-emerald-600"

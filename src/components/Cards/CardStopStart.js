@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-export default function CardStats({
+export default function CardStopStart({
   statTitle,
   color,
   accent
@@ -30,7 +30,7 @@ export default function CardStats({
   );
 }
 
-CardStats.defaultProps = {
+CardStopStart.defaultProps = {
   statSubtitle: "Traffic",
   statTitle: "350,897",
   statArrow: "up",
@@ -41,7 +41,7 @@ CardStats.defaultProps = {
   statIconColor: "bg-red-500",
 };
 
-CardStats.propTypes = {
+CardStopStart.propTypes = {
   statSubtitle: PropTypes.string,
   statTitle: PropTypes.string,
   statArrow: PropTypes.oneOf(["up", "down"]),
