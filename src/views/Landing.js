@@ -62,7 +62,7 @@ export default function Landing() {
                     <div className="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 mb-5 shadow-lg rounded-full bg-red-400">
                       <i class="fa fa-terminal" aria-hidden="true"></i>
                     </div>
-                    <a href='/admin/settings'>
+                    <a href='/admin/Console'>
                     <h6 className="text-xl font-semibold">Console</h6>
                     </a>
                   </div>
@@ -88,8 +88,8 @@ export default function Landing() {
                     <div className="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 mb-5 shadow-lg rounded-full bg-emerald-400">
                       <i class="fa fa-desktop" aria-hidden="true"></i>
                     </div>
-                    <a href='/admin/maps'>
-                    <h6 className="text-xl font-semibold">Data Analysis</h6>
+                    <a href='/admin/DataAnalytics'>
+                    <h6 className="text-xl font-semibold">Data Analytics</h6>
                     </a>
                   </div>
                 </div>

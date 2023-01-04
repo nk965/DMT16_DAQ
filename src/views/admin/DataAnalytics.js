@@ -4,7 +4,7 @@ import React from "react";
 
 import TransientSettings from "components/Cards/TransientSettings.js";
 
-export default function Maps() {
+export default function DataAnalytics() {
   return (
     <>
       <div className="flex flex-wrap">

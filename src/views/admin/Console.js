@@ -4,7 +4,7 @@ import React from "react";
 
 import CardSettings from "components/Cards/CardSettings.js";
 
-export default function Settings() {
+export default function Console() {
   return (
     <>
       <div className="flex flex-wrap">
