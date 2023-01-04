@@ -4,8 +4,6 @@ import React from "react";
 
 import CardLineChart from "components/Cards/CardLineChart.js";
 import TransientSettings from "components/Cards/TransientSettings.js";
-import CardPageVisits from "components/Cards/CardPageVisits.js";
-import CardSocialTraffic from "components/Cards/CardSocialTraffic.js";
 
 import CardSettings from "components/Cards/CardSettings.js";
 
