@@ -4,7 +4,7 @@ import React from "react";
 
 import CardStopStart from "components/Cards/CardStopStart.js";
 
-export default function HeaderStats() {
+export default function HeaderStopStart() {
   return (
     <>
       {/* Header */}
