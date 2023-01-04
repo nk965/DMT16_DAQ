@@ -2,7 +2,7 @@ import React from "react";
 
 // components
 
-import Navbar from "components/Navbars/AuthNavbar.js";
+import Navbar from "components/Navbars/LandingNavbar.js";
 import Footer from "components/Footers/Footer.js";
 
 export default function Landing() {
