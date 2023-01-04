@@ -74,7 +74,7 @@ export default function TransientSettings() {
                     for="pulse"
                     htmlFor="grid-password"
                   >
-                    Preset?
+                    Preset Config
                   </label>
                   <select className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150">
                     <option value="Linear">Linear</option>
@@ -82,11 +82,26 @@ export default function TransientSettings() {
                   </select>
                 </div>
               </div>
+              <div className="w-full lg:w-6/12 px-4">
+                <div className="relative w-full mb-3">
+                  <label
+                    className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                    htmlFor="grid-password"
+                  >
+                    Time
+                  </label>
+                  <input
+                    type="number"
+                    className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                    defaultValue="15"
+                  />
+                </div>
+              </div>
             </div>
             <hr className="mt-6 border-b-1 border-blueGray-300" />
           </form>
           <h6 className="text-blueGray-700 text-sm font-bold">*Notes</h6>
-            <h7 className="text-blueGray-700 text-xs">After transient input has been configured, click the refresh button</h7>
+            <h7 className="text-blueGray-700 text-xs">After input has been configured, click the refresh button. Time refers to the length of transient condition (different to experiment time)</h7>
         </div>
       </div>
     </>
