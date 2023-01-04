@@ -71,7 +71,7 @@ export default function CardSettings() {
               <div className="w-full lg:w-6/12 px-4">
                 <div className="relative w-full mb-3">
                   <label
-                    className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                    className="block uppercase font-bold mb-2"
                     for="pulse"
                     htmlFor="grid-password"
                   >
