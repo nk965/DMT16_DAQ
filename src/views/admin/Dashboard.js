@@ -3,7 +3,7 @@ import React from "react";
 // components
 
 import CardLineChart from "components/Cards/CardLineChart.js";
-import TransientSettings from "components/Cards/TransientSettings.js";
+import CardTransientSettings from "components/Cards/CardTransientSettings.js";
 
 import CardSettings from "components/Cards/CardSettings.js";
 
@@ -15,7 +15,7 @@ export default function Dashboard() {
           <CardLineChart />
         </div>
         <div className="w-full xl:w-4/12 px-4">
-          <TransientSettings />
+          <CardTransientSettings />
         </div>
       </div>
       <div className="flex flex-wrap">
