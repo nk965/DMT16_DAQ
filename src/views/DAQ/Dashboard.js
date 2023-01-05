@@ -3,11 +3,9 @@ import React from "react";
 // components
 
 import CardLineChart from "components/Cards/CardLineChart.js";
-import TransientSettings from "components/Cards/TransientSettings.js";
-import CardPageVisits from "components/Cards/CardPageVisits.js";
-import CardSocialTraffic from "components/Cards/CardSocialTraffic.js";
+import CardTransientSettings from "components/Cards/CardTransientSettings.js";
 
-import CardSettings from "components/Cards/CardSettings.js";
+import CardUserConfig from "components/Cards/CardUserConfig.js";
 
 export default function Dashboard() {
   return (
@@ -17,12 +15,12 @@ export default function Dashboard() {
           <CardLineChart />
         </div>
         <div className="w-full xl:w-4/12 px-4">
-          <TransientSettings />
+          <CardTransientSettings />
         </div>
       </div>
       <div className="flex flex-wrap">
         <div className="w-full px-4">
-          <CardSettings />
+          <CardUserConfig />
         </div>
       </div>
     </>

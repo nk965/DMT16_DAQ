@@ -1,9 +1,8 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 // components
 
-import Navbar from "components/Navbars/AuthNavbar.js";
+import Navbar from "components/Navbars/LandingNavbar.js";
 import Footer from "components/Footers/Footer.js";
 
 export default function Landing() {
@@ -63,7 +62,7 @@ export default function Landing() {
                     <div className="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 mb-5 shadow-lg rounded-full bg-red-400">
                       <i class="fa fa-terminal" aria-hidden="true"></i>
                     </div>
-                    <a href='/admin/settings'>
+                    <a href='/DAQ/Console'>
                     <h6 className="text-xl font-semibold">Console</h6>
                     </a>
                   </div>
@@ -76,7 +75,7 @@ export default function Landing() {
                     <div className="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 mb-5 shadow-lg rounded-full bg-lightBlue-400">
                       <i class="fa fa-wrench" aria-hidden="true"></i>
                     </div>
-                    <a href='/admin'>
+                    <a href='/DAQ'>
                     <h6 className="text-xl font-semibold">Configuration Dashboard</h6>
                     </a>
                   </div>
@@ -89,8 +88,8 @@ export default function Landing() {
                     <div className="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 mb-5 shadow-lg rounded-full bg-emerald-400">
                       <i class="fa fa-desktop" aria-hidden="true"></i>
                     </div>
-                    <a href='/admin/tables'>
-                    <h6 className="text-xl font-semibold">Data Analysis</h6>
+                    <a href='/DAQ/DataAnalytics'>
+                    <h6 className="text-xl font-semibold">Data Analytics</h6>
                     </a>
                   </div>
                 </div>
