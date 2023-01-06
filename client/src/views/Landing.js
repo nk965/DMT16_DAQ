@@ -27,7 +27,7 @@ export default function Landing() {
                     DMT 16 Nuclear Thermal-Hydraulic Experiments
                   </h1>
                   <p className="mt-4 text-3xl text-blueGray-200">
-                    Data Acquisition Team: Nicholas Kwok, Pike Amornchat, Jimmy van der Worp 
+                    Data Acquisition Team: Nicholas Kwok, Pike Amornchat, Jimmy van de Worp 
                   </p>
                 </div>
               </div>
