@@ -26,7 +26,7 @@ export default function CardTransientSettings() {
                 <div className="relative w-full mb-3">
                   <label
                     className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                    htmlFor="grid-password"
+                    
                   >
                     Start
                   </label>
@@ -41,7 +41,7 @@ export default function CardTransientSettings() {
                 <div className="relative w-full mb-3">
                   <label
                     className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                    htmlFor="grid-password"
+                    
                   >
                     End
                   </label>
@@ -56,7 +56,7 @@ export default function CardTransientSettings() {
                 <div className="relative w-full mb-3">
                   <label
                     className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                    htmlFor="grid-password"
+                    
                   >
                     Nodes 
                   </label>
@@ -72,7 +72,7 @@ export default function CardTransientSettings() {
                   <label
                     className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                     for="pulse"
-                    htmlFor="grid-password"
+                    
                   >
                     Preset Config
                   </label>
@@ -86,7 +86,7 @@ export default function CardTransientSettings() {
                 <div className="relative w-full mb-3">
                   <label
                     className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                    htmlFor="grid-password"
+                    
                   >
                     Time
                   </label>
@@ -101,7 +101,7 @@ export default function CardTransientSettings() {
             <hr className="mt-6 border-b-1 border-blueGray-300" />
           </form>
           <h6 className="text-blueGray-700 text-sm font-bold">*Notes</h6>
-            <h7 className="text-blueGray-700 text-xs">After input has been configured, click the refresh button. Time refers to the length of transient condition (different to experiment time)</h7>
+            <h6 className="text-blueGray-700 text-xs">After input has been configured, click the refresh button. Time refers to the length of transient condition (different to experiment time)</h6>
         </div>
       </div>
     </>

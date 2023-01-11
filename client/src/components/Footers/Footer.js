@@ -41,7 +41,7 @@ export default function Footer() {
                     <li>
                       <a
                         className="text-blueGray-600 hover:text-blueGray-800 font-semibold block pb-2 text-sm"
-                        href=""
+                        href="https://www.imperial.ac.uk/people/m.bluck"
                       >
                         Dr Michael Bluck
                       </a>
@@ -49,7 +49,7 @@ export default function Footer() {
                     <li>
                       <a
                         className="text-blueGray-600 hover:text-blueGray-800 font-semibold block pb-2 text-sm"
-                        href=""
+                        href="https://www.imperial.ac.uk/people/y.hardalupas"
                       >
                         Prof Yannis Hardalupas
                       </a>
@@ -57,7 +57,7 @@ export default function Footer() {
                     <li>
                       <a
                         className="text-blueGray-600 hover:text-blueGray-800 font-semibold block pb-2 text-sm"
-                        href="https://www.github.com/creativetimofficial?ref=nr-footer"
+                        href="https://www.imperial.ac.uk/people/a.sergis09"
                       >
                         Dr Antonis Sergis
                       </a>
@@ -65,7 +65,7 @@ export default function Footer() {
                     <li>
                       <a
                         className="text-blueGray-600 hover:text-blueGray-800 font-semibold block pb-2 text-sm"
-                        href="https://www.creative-tim.com/bootstrap-themes/free?ref=nr-footer"
+                        href="https://www.imperial.ac.uk/people/m.eaton"
                       >
                         Dr Matthew Eaton
                       </a>
