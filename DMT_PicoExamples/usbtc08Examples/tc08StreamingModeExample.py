@@ -24,7 +24,7 @@ status["set_mains"] = tc08.usb_tc08_set_mains(chandle,0)
 assert_pico2000_ok(status["set_mains"])
 
 # set up channel
-# therocouples types and int8 equivalent
+# thermocouples types and int8 equivalent
 # B=66 , E=69 , J=74 , K=75 , N=78 , R=82 , S=83 , T=84 , ' '=32 , X=88 
 typeK = ctypes.c_int8(75)
 status["set_channel"] = tc08.usb_tc08_set_channel(chandle, 1, typeK)
@@ -46,6 +46,7 @@ times_ms_buffer = (ctypes.c_int32 * 15)()
 overflow = ctypes.c_int16()
 status["get_temp"] = tc08.usb_tc08_get_temp(chandle, ctypes.byref(temp_buffer), ctypes.byref(times_ms_buffer), 15, ctypes.byref(overflow), 1, 0, 1)
 assert_pico2000_ok(status["get_temp"])
+print("Cold Junction ", temp_buffer[0], " Channel 1", temp_buffer[1])
 
 # stop unit
 status["stop"] = tc08.usb_tc08_stop(chandle)

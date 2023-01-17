@@ -70,7 +70,7 @@ def mV2adcpl1000(millivolts, range, maxADC):
 
 def splitMSOData(dataLength, data):
     """
-    This method converts an array of values for a ditial port into the binary equivalent, splitting the bits by
+    This method converts an array of values for a digital port into the binary equivalent, splitting the bits by
     digital channel.
 
     Returns a set of 8 variables, each of which corresponds to the binary data values over time of the different
