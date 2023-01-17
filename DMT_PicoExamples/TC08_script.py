@@ -54,7 +54,7 @@ def streaming_mode(length):
 
     for channel, index in enumerate(USBTC08_CHANNELS):
         
-        temp_buffer = (ctypes.c_float * (USBTC08_MAX_CHANNELS) * number)()
+        temp_buffer = (ctypes.c_float * (int(USBTC08_MAX_CHANNELS)) * int(number))()
         
         times_ms_buffer = (ctypes.c_int32 * number)()
         
