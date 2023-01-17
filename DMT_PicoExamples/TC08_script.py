@@ -56,7 +56,7 @@ def streaming_mode(length):
         
         temp_buffer = (ctypes.c_float * (int(USBTC08_MAX_CHANNELS)) * int(number))()
         
-        times_ms_buffer = (ctypes.c_int32 * number)()
+        times_ms_buffer = (ctypes.c_int32 * int(number))()
         
         overflow = ctypes.c_int16()
         
