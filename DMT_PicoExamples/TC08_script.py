@@ -14,7 +14,7 @@ Outputs CSV file with dictionary of channels with respective temperature values 
 
 """
 
-def streaming_mode(length = 10):
+def streaming_mode(length):
     # Create chandle and status ready for use
     chandle = ctypes.c_int16()
     status = {}
@@ -46,22 +46,44 @@ def streaming_mode(length = 10):
     status["run"] = tc08.usb_tc08_run(chandle, status["get_minimum_interval_ms"]) 
     assert_pico2000_ok(status["run"])
 
-    time.sleep(2)
+    time_interval = status["get_minimum_interval_ms"]/1000
 
-    '''
+    time.sleep(length)
 
-    temp_buffer = (ctypes.c_float * 2 * 15)()
-    times_ms_buffer = (ctypes.c_int32 * 15)()
-    overflow = ctypes.c_int16()
-    status["get_temp"] = tc08.usb_tc08_get_temp(chandle, ctypes.byref(temp_buffer), ctypes.byref(times_ms_buffer), 15, ctypes.byref(overflow), 1, 0, 1)
-    assert_pico2000_ok(status["get_temp"])
+    number = length/time_interval
 
-    '''
+    for channel, index in enumerate(USBTC08_CHANNELS):
+        
+        temp_buffer = (ctypes.c_float * (USBTC08_MAX_CHANNELS) * number)()
+        
+        times_ms_buffer = (ctypes.c_int32 * number)()
+        
+        overflow = ctypes.c_int16()
+        
+        status["get_temp"] = tc08.usb_tc08_get_temp(
+            chandle, 
+            ctypes.byref(temp_buffer), 
+            ctypes.byref(times_ms_buffer),
+            number, 
+            ctypes.byref(overflow), 
+            USBTC08_CHANNELS[channel]['PORT_NO'], 
+            0, 
+            1
+        )
+
+        assert_pico2000_ok(status["get_temp"])
+
+        print("Channel " + channel + " Temperature: " + temp_buffer[index])
+    
+    # stop unit
+    status["stop"] = tc08.usb_tc08_stop(chandle)
+    assert_pico2000_ok(status["stop"])
 
     # close unit
     status["close_unit"] = tc08.usb_tc08_close_unit(chandle)
     assert_pico2000_ok(status["close_unit"])
+    print(status)
 
 if __name__ == "__main__":
 
-    streaming_mode()
+    streaming_mode(10)
