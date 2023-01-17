@@ -11,10 +11,11 @@ class UART:
     It also deals with connecting to port and provides a method to change port during the execution of the program.
     """
 
-    def __init__(self, port='COM14', baud_rate=115200, buffer_size=10000):
+    def __init__(self, DAQ_port='COM14',TB_port = 'COM10', baud_rate=115200, buffer_size=10000):
 
         # Attributes for PySerial setup
-        self.port = port
+        self.DAQ_port = DAQ_port
+        self.TB_port = TB_port
         self.baud_rate = baud_rate
         self.buffer_size = buffer_size
         self.UART_buffer = bytearray()
@@ -22,14 +23,17 @@ class UART:
         # To store the previous error for comparison so that it doesn't print the same thing too many times.
         self.previous_error = ''
 
-        # Initialize PySerial - specify baud rate
-        self.serial_connection = serial.Serial()
+        # Initialize PySerial for both ports - specify baud rate
+        self.serial_connection_DAQ = serial.Serial()
+        self.serial_connection_TB = serial.Serial()
 
         # Set the recieve and transmit buffer size
-        self.serial_connection.set_buffer_size(rx_size=self.buffer_size, tx_size=self.buffer_size)
+        self.serial_connection_DAQ.set_buffer_size(rx_size=self.buffer_size, tx_size=self.buffer_size)
+        self.serial_connection_TB.set_buffer_size(rx_size=self.buffer_size, tx_size=self.buffer_size)
 
-        # Connect to the COM port
-        self.connect_port()
+        # Connect to the COM port for both
+        self.connect_port(0)
+        self.connect_port(1)
 
     def list_ports(self):
 
@@ -84,7 +88,7 @@ class UART:
         self.UART_buffer = bytearray()
 
     # Connect port - used in initialization
-    def connect_port(self):
+    def connect_port(self,portnum):
 
         """
         Tries to connect to the port which is recorded in the class attribute self.port. If unavailable, prints error.
@@ -93,50 +97,78 @@ class UART:
 
         try:
             # Setup up baud rate and port
-            self.serial_connection.port = self.port
-            self.serial_connection.baudrate = self.baud_rate
 
-            # Close all and then open the connection
-            self.serial_connection.close()
-            self.serial_connection.__del__()
-            self.serial_connection.open()
+            # Choose which port to connect to
+            if portnum == 0:
+                self.serial_connection_DAQ.port = self.DAQ_port
+                self.serial_connection_DAQ.baudrate = self.baud_rate
 
-            print('Successfully connected to %s'%self.serial_connection.port)
-            # Start the QT thread
-            self.start(priority = QThread.TimeCriticalPriority)
+                # Close all and then open the connection
+                self.serial_connection_DAQ.close()
+                self.serial_connection_DAQ.__del__()
+                self.serial_connection_DAQ.open()
+
+                print('Successfully connected to DAQ: %s' % self.serial_connection_DAQ.port)
+
+            else:
+                self.serial_connection_TB.port = self.TB_port
+                self.serial_connection_TB.baudrate = self.baud_rate
+
+                # Close all and then open the connection
+                self.serial_connection_TB.close()
+                self.serial_connection_TB.__del__()
+                self.serial_connection_TB.open()
+
+                print('Successfully connected to Test Bed: %s' % self.serial_connection_TB.port)
 
         except Exception as error:
+
             available_ports = self.list_ports()
-            print('Error in connecting to port : %s' % error)
+
+            if portnum == 0:
+                print('Error in connecting to DAQ port : %s' % error)
+            else:
+                print('Error in connecting to TB port : %s' % error)
+
             print('If your error was the wrong port, try these ports:')
             print(available_ports)
             print('The program is still running but will do nothing until you change the port')
 
     # To emergency close the port (used for debug)
 
-    def close_port(self):
+    def close_port(self,port):
 
         """
         Allows the user to close port and terminate the connection - used for debug and reset
         :return: None
         """
 
-        self.serial_connection.close()
-        self.terminate()
+        if port == 0:
+            self.serial_connection_DAQ.close()
+        else:
+            self.serial_connection_TB.close()
 
     # Run activated by start() method of QThreads
     def run(self):
 
         """
-        One of 2 fully active threads - while the serial port is open it will read data into the buffer and rephrase it
-        into the correct format using decode, then emit to Data Manager. If communication is unavailable, informs the
-        user to change ports, and shows available ports.
+        This module will send out all the configurations to the 2 different ports.
         :return: None
         """
 
+
+
+
         # Check to see if the connection is open before trying to communicate:
-        while self.serial_connection.is_open:
+        while self.serial_connection_DAQ.is_open or self.serial_connection_TB.is_open:
             try:
+
+
+
+
+
+
+
                 # Read all data from bytearray - clears buffer too
                 data = self.serial_connection.read_all()
 
