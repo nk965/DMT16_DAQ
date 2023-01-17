@@ -51,11 +51,17 @@ status["get_temp"] = tc08.usb_tc08_get_temp(chandle, ctypes.byref(temp_buffer), 
 
 assert_pico2000_ok(status["get_temp"])
 
+#if time.sleep(1), 5 readings
+#if time.sleep(3), 15 readings
+#if time.sleep(5), 15 readings, I think overflow is happening
+
+for i in range(15):
+    print(times_ms_buffer[i])
+'''
 for i in range(15):
     for j in range(2):
         print(temp_buffer[i][j])
-
-#print("Cold Junction ", repr(temp_buffer[0]), " Channel 1", repr(temp_buffer[1]))
+'''
 
 # stop unit
 status["stop"] = tc08.usb_tc08_stop(chandle)
