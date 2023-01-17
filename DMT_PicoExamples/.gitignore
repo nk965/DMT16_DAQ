@@ -1,0 +1,19 @@
+# .gitignore file for picosdk-python-wrappers repository
+# Untracked files/folders to ignore.
+
+# python bytecode cache files
+**/*.pyc
+
+# pycharm files
+.idea/
+
+# SDK download warning file
+.sdkwarning
+
+# distutils build directory
+build/
+
+# venv directory
+venv/
+
+.bak/
