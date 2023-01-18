@@ -59,6 +59,10 @@ def streaming_mode(length):
         times_ms_buffer = (ctypes.c_int32 * int(number))()
         
         overflow = ctypes.c_int16()
+
+        status["last_error"] = tc08.usb_tc08_get_last_error(chandle)
+
+        assert_pico2000_ok(status["last_error"])
         
         status["get_temp"] = tc08.usb_tc08_get_temp(
             chandle, 
@@ -73,18 +77,19 @@ def streaming_mode(length):
 
         assert_pico2000_ok(status["get_temp"])
 
-        print("Channel " + channel + " Temperature: " + temp_buffer[index])
+        print(channel) 
+        print(temp_buffer[index]) #this doesn't work 
 
         chandle = ctypes.c_int16()
 
         # stop unit
-        status["stop"] = tc08.usb_tc08_stop(chandle)
-        assert_pico2000_ok(status["stop"])
+    status["stop"] = tc08.usb_tc08_stop(chandle)
+    assert_pico2000_ok(status["stop"])
 
-        # close unit
-        status["close_unit"] = tc08.usb_tc08_close_unit(chandle)
-        assert_pico2000_ok(status["close_unit"])
-        print(status)
+    # close unit
+    status["close_unit"] = tc08.usb_tc08_close_unit(chandle)
+    assert_pico2000_ok(status["close_unit"])
+    print(status)
 
     return status
 
