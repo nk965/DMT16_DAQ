@@ -50,9 +50,5 @@ USBTC08_CHANNELS = {
     "CHANNEL_8": {
         "SENSOR_TYPE": "K", #TODO: add support for pressure
         "PORT_NO": 8
-    },
-    "CHANNEL_9": {
-        "SENSOR_TYPE": "K", #TODO: add support for pressure
-        "PORT_NO": 9
-    },  
+    }, 
 }
