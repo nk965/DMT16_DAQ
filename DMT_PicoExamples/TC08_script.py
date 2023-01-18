@@ -60,7 +60,7 @@ def streaming_mode(length):
         
         overflow = ctypes.c_int16()
         
-        status["get_temp"] = tc08.usb_tc08_get_temp(
+        status["get_temp"] = tc08.usb_tc08_get_temp_deskew(
             chandle, 
             ctypes.byref(temp_buffer), 
             ctypes.byref(times_ms_buffer),
