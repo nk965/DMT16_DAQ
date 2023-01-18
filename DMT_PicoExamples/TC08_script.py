@@ -38,6 +38,8 @@ def streaming_mode(length):
 
         assert_pico2000_ok(status["set_channel"])
 
+    print("end of first for loop")
+
     # get minimum sampling interval in ms
     status["get_minimum_interval_ms"] = tc08.usb_tc08_get_minimum_interval_ms(chandle)
 
@@ -51,6 +53,8 @@ def streaming_mode(length):
     time.sleep(length)
 
     number = length/time_interval
+
+    print("finished running")
 
     for index, (channel, info) in enumerate(USBTC08_CHANNELS.items()):
         
