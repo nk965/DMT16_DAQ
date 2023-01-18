@@ -77,7 +77,7 @@ def streaming_mode(length):
         np_readings = np.asarray(times_ms_buffer)
         np_time_interval = np.asarray(time_interval)
 
-        print(f"Temp_buffer {np_temp_buffer} + np_times_ms_buffer {np_times_ms_buffer} + np_readings {np_readings} + np_time_interval {np_time_interval}" + length {length})
+        print(f"Temp_buffer {np_temp_buffer} + np_times_ms_buffer {np_times_ms_buffer} + np_readings {np_readings} + np_time_interval {np_time_interval} + length {length}")
 
         for i in range(0, len(temp_buffer) - 1): #TODO: temp solution to this
             print(temp_buffer[i][index]) #this doesn't work 
