@@ -13,19 +13,6 @@ Samples data in an unbroken sequence, for a specified duration in seconds
 Outputs CSV file with dictionary of channels with respective temperature values and time stamp. 
 
 """
-def close_unit():
-    
-    chandle = ctypes.c_int16()
-
-    # stop unit
-    status["stop"] = tc08.usb_tc08_stop(chandle)
-    assert_pico2000_ok(status["stop"])
-
-    # close unit
-    status["close_unit"] = tc08.usb_tc08_close_unit(chandle)
-    assert_pico2000_ok(status["close_unit"])
-    print(status)
-
 
 def streaming_mode(length):
     # Create chandle and status ready for use
@@ -90,6 +77,19 @@ def streaming_mode(length):
 
         print("Channel " + channel + " Temperature: " + temp_buffer[index])
 
+        chandle = ctypes.c_int16()
+
+        # stop unit
+        status["stop"] = tc08.usb_tc08_stop(chandle)
+        assert_pico2000_ok(status["stop"])
+
+        # close unit
+        status["close_unit"] = tc08.usb_tc08_close_unit(chandle)
+        assert_pico2000_ok(status["close_unit"])
+        print(status)
+
+    return status
+
 if __name__ == "__main__":
 
     #TODO: need to implement try/except to avoid data logger from running despite error
@@ -99,5 +99,4 @@ if __name__ == "__main__":
     except:
         print("Something went wrong")
     finally:
-        close_unit()
         print("Shutdown complete")
