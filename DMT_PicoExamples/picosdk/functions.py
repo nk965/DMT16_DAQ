@@ -168,11 +168,7 @@ def assert_pico2000_ok(status):
     """
     # checks for PICO_OK status return
     if status > 0:
-        print("Error Check is True")
-        print(status)
         errorCheck = True
     else:
-        print("Error Check is False")
-        print(status)
         errorCheck = False
         raise PicoSDKCtypesError("Unsuccessful API call")

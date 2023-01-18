@@ -38,8 +38,6 @@ def streaming_mode(length):
 
         assert_pico2000_ok(status["set_channel"])
 
-    print("end of first for loop")
-
     # get minimum sampling interval in ms
     status["get_minimum_interval_ms"] = tc08.usb_tc08_get_minimum_interval_ms(chandle)
 
@@ -52,15 +50,13 @@ def streaming_mode(length):
 
     time.sleep(length)
 
-    number = length/time_interval
-
-    print("finished running")
+    readings = length/time_interval
 
     for index, (channel, info) in enumerate(USBTC08_CHANNELS.items()):
         
-        temp_buffer = (ctypes.c_float * (int(USBTC08_MAX_CHANNELS)) * int(number))()
+        temp_buffer = (ctypes.c_float * (int(USBTC08_MAX_CHANNELS)) * int(readings))()
         
-        times_ms_buffer = (ctypes.c_int32 * int(number))()
+        times_ms_buffer = (ctypes.c_int32 * int(readings))()
         
         overflow = ctypes.c_int16()
         
@@ -68,16 +64,12 @@ def streaming_mode(length):
             chandle, 
             ctypes.byref(temp_buffer), 
             ctypes.byref(times_ms_buffer),
-            ctypes.c_int32(int(number)), 
+            ctypes.c_int32(int(readings)), 
             ctypes.byref(overflow), 
             info['PORT_NO'], 
             0, 
             1
         )
-
-        print("Ran usb_tc08_get_temp")
-
-        assert_pico2000_ok(status["get_temp"])
 
         print(channel) 
         print(temp_buffer[index][1]) #this doesn't work 
