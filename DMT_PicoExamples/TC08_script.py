@@ -72,7 +72,7 @@ def streaming_mode(length):
         )
 
         print(channel) 
-        for i in range(0, 7): #TODO: temp solution to this
+        for i in range(0, len(temp_buffer) - 1): #TODO: temp solution to this
             print(temp_buffer[index][i]) #this doesn't work 
 
         # stop unit
@@ -90,4 +90,4 @@ if __name__ == "__main__":
 
     #TODO: need to implement try/except to avoid data logger from running despite error
 
-    streaming_mode(10)
+    streaming_mode(20)
