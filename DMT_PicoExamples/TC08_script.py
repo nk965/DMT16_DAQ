@@ -64,6 +64,8 @@ def streaming_mode(length):
         
         overflow = ctypes.c_int16()
 
+        print("Find error using get_last_error")
+
         status["last_error"] = tc08.usb_tc08_get_last_error(chandle)
 
         assert_pico2000_ok(status["last_error"])
@@ -78,6 +80,8 @@ def streaming_mode(length):
             0, 
             1
         )
+
+        print("Ran usb_tc08_get_temp")
 
         assert_pico2000_ok(status["get_temp"])
 
