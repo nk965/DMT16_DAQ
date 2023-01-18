@@ -82,13 +82,6 @@ def streaming_mode(length):
         print(channel) 
         print(temp_buffer[index]) #this doesn't work 
 
-
-        print("Find error using get_last_error")
-
-        status["last_error"] = tc08.usb_tc08_get_last_error(chandle)
-
-        assert_pico2000_ok(status["last_error"])
-
         # stop unit
     status["stop"] = tc08.usb_tc08_stop(chandle)
     assert_pico2000_ok(status["stop"])
