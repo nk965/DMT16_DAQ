@@ -27,6 +27,17 @@ USBTC08_CHANNELS = {
         "SENSOR_TYPE": "K",
         "PORT_NO": 2
     }, 
+}
+
+USBTC08_CHANNELS_2 = {
+    "CHANNEL_1": {
+        "SENSOR_TYPE": "K",
+        "PORT_NO": 1
+    }, 
+    "CHANNEL_2": {
+        "SENSOR_TYPE": "K",
+        "PORT_NO": 2
+    }, 
     "CHANNEL_3": {
         "SENSOR_TYPE": "K",
         "PORT_NO": 3
@@ -50,5 +61,5 @@ USBTC08_CHANNELS = {
     "CHANNEL_8": {
         "SENSOR_TYPE": "K", #TODO: add support for pressure
         "PORT_NO": 8
-    }, 
+    },
 }
