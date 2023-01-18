@@ -72,7 +72,7 @@ def streaming_mode(length):
         )
 
         print(channel) 
-        for i in range(0, int(readings)): #TODO: temp solution to this
+        for i in range(0, int(readings) - 1): #TODO: temp solution to this
             print(temp_buffer[index][int(readings)]) #this doesn't work 
 
         # stop unit
