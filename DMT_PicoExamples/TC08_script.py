@@ -72,8 +72,15 @@ def streaming_mode(length):
         )
 
         print(channel) 
+        np_temp_buffer = np.asarray(temp_buffer)
+        np_times_ms_buffer = np.asarray(times_ms_buffer)
+        np_readings = np.asarray(times_ms_buffer)
+        np_time_interval = np.asarray(time_interval)
+
+        print(f"Temp_buffer {np_temp_buffer} + np_times_ms_buffer {np_times_ms_buffer} + np_readings {np_readings} + np_time_interval {np_time_interval}" + length {length})
+
         for i in range(0, len(temp_buffer) - 1): #TODO: temp solution to this
-            print(temp_buffer[index][i]) #this doesn't work 
+            print(temp_buffer[i][index]) #this doesn't work 
 
         # stop unit
     status["stop"] = tc08.usb_tc08_stop(chandle)
@@ -90,4 +97,4 @@ if __name__ == "__main__":
 
     #TODO: need to implement try/except to avoid data logger from running despite error
 
-    streaming_mode(20)
+    streaming_mode(5)
