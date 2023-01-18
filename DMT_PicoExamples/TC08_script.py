@@ -13,6 +13,17 @@ Samples data in an unbroken sequence, for a specified duration in seconds
 Outputs CSV file with dictionary of channels with respective temperature values and time stamp. 
 
 """
+def close_unit():
+    
+    # stop unit
+    status["stop"] = tc08.usb_tc08_stop(chandle)
+    assert_pico2000_ok(status["stop"])
+
+    # close unit
+    status["close_unit"] = tc08.usb_tc08_close_unit(chandle)
+    assert_pico2000_ok(status["close_unit"])
+    print(status)
+
 
 def streaming_mode(length):
     # Create chandle and status ready for use
@@ -30,7 +41,9 @@ def streaming_mode(length):
 
     # set all channels from TC08_config file
 
-    for channel in USBTC08_CHANNELS:
+    for channel, index in enumerate(SBTC08_CHANNELS):
+
+        print(channel, index)
 
         input_type = INPUT_TYPES[USBTC08_CHANNELS[channel]['SENSOR_TYPE']]
 
@@ -74,16 +87,15 @@ def streaming_mode(length):
         assert_pico2000_ok(status["get_temp"])
 
         print("Channel " + channel + " Temperature: " + temp_buffer[index])
-    
-    # stop unit
-    status["stop"] = tc08.usb_tc08_stop(chandle)
-    assert_pico2000_ok(status["stop"])
-
-    # close unit
-    status["close_unit"] = tc08.usb_tc08_close_unit(chandle)
-    assert_pico2000_ok(status["close_unit"])
-    print(status)
 
 if __name__ == "__main__":
 
-    streaming_mode(10)
+    #TODO: need to implement try/except to avoid data logger from running despite error
+
+    try:
+        streaming_mode(10)
+    except:
+        print("Something went wrong")
+    finally:
+        close_unit()
+        print("Shutdown complete")
