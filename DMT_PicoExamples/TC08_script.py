@@ -68,7 +68,7 @@ def streaming_mode(length):
             chandle, 
             ctypes.byref(temp_buffer), 
             ctypes.byref(times_ms_buffer),
-            ctypes.c_int32(number), 
+            ctypes.c_int32(int(number)), 
             ctypes.byref(overflow), 
             info['PORT_NO'], 
             0, 
