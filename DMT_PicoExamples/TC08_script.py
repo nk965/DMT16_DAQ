@@ -72,7 +72,7 @@ def streaming_mode(length):
         )
 
         print(channel) 
-        print(temp_buffer[index][1]) #this doesn't work 
+        print(temp_buffer[index][int(readings)]) #this doesn't work 
 
         # stop unit
     status["stop"] = tc08.usb_tc08_stop(chandle)
