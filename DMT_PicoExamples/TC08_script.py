@@ -80,7 +80,7 @@ def streaming_mode(length):
         assert_pico2000_ok(status["get_temp"])
 
         print(channel) 
-        print(temp_buffer[index]) #this doesn't work 
+        print(temp_buffer[index][1]) #this doesn't work 
 
         # stop unit
     status["stop"] = tc08.usb_tc08_stop(chandle)
