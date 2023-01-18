@@ -168,6 +168,7 @@ def assert_pico2000_ok(status):
     """
     # checks for PICO_OK status return
     if status > 0:
+        print("Hello")
         errorCheck = True
     else:
         errorCheck = False
