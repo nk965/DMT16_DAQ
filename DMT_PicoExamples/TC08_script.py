@@ -15,6 +15,8 @@ Outputs CSV file with dictionary of channels with respective temperature values 
 """
 def close_unit():
     
+    chandle = ctypes.c_int16()
+
     # stop unit
     status["stop"] = tc08.usb_tc08_stop(chandle)
     assert_pico2000_ok(status["stop"])
