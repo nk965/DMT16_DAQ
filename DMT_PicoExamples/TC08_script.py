@@ -30,9 +30,7 @@ def streaming_mode(length):
 
     # set all channels from TC08_config file
 
-    for channel, index in enumerate(SBTC08_CHANNELS):
-
-        print(channel, index)
+    for channel in USBTC08_CHANNELS:
 
         input_type = INPUT_TYPES[USBTC08_CHANNELS[channel]['SENSOR_TYPE']]
 
@@ -54,7 +52,7 @@ def streaming_mode(length):
 
     number = length/time_interval
 
-    for channel, index in enumerate(USBTC08_CHANNELS):
+    for index, (channel) in enumerate(USBTC08_CHANNELS.items()):
         
         temp_buffer = (ctypes.c_float * (int(USBTC08_MAX_CHANNELS)) * int(number))()
         
