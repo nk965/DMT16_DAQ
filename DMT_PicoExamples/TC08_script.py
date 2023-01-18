@@ -52,7 +52,7 @@ def streaming_mode(length):
 
     number = length/time_interval
 
-    for index, (channel) in enumerate(USBTC08_CHANNELS.items()):
+    for index, (channel, info) in enumerate(USBTC08_CHANNELS.items()):
         
         temp_buffer = (ctypes.c_float * (int(USBTC08_MAX_CHANNELS)) * int(number))()
         
@@ -66,7 +66,7 @@ def streaming_mode(length):
             ctypes.byref(times_ms_buffer),
             number, 
             ctypes.byref(overflow), 
-            USBTC08_CHANNELS[channel]['PORT_NO'], 
+            info['PORT_NO'], 
             0, 
             1
         )
@@ -92,9 +92,4 @@ if __name__ == "__main__":
 
     #TODO: need to implement try/except to avoid data logger from running despite error
 
-    try:
-        streaming_mode(10)
-    except:
-        print("Something went wrong")
-    finally:
-        print("Shutdown complete")
+    streaming_mode(10)
