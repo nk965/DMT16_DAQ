@@ -14,24 +14,13 @@ temp_info = {
   } 
 }
 
-df = pd.DataFrame()
-
-# iterate over the dictionary, adding the data for each channel to the dataframe
+fig, ax = plt.subplots()
 for channel, data in temp_info.items():
-    channel_df = pd.DataFrame(data)
-    channel_df['Channels'] = channel
-    df = pd.concat([df, channel_df])
-
-# reshape the dataframe, so that the channels are in a single column
-df = pd.melt(df, id_vars=['Channels'], value_vars=['Temperatures', 'Time Intervals'])
-
-print(df)
-
-# use seaborn's lineplot function to plot the data
-sns.lineplot(x='variable', y='value', hue='Channels', data=df)
-
-# add labels and a title
+    df = pd.DataFrame({'Time Intervals':data['Time Intervals'], 'Temperatures':data['Temperatures']})
+    ax.plot(df['Time Intervals'], df['Temperatures'], '-o', label=channel)
+sns.set_theme(style="darkgrid")
 plt.title('Temperature over Time Interval')
 plt.xlabel('Time Interval')
 plt.ylabel('Temperature')
+plt.legend()
 plt.show()
