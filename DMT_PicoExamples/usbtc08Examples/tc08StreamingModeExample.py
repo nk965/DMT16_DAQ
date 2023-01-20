@@ -45,7 +45,7 @@ assert_pico2000_ok(status["run"])
 time.sleep(2)
 
 # collect data 
-temp_buffer = (ctypes.c_float * 2 * 15)()
+temp_buffer = (ctypes.c_float * 1 * 15)()
 
 times_ms_buffer = (ctypes.c_int32 * 15)()
 
@@ -63,7 +63,7 @@ print(np_temp_buffer)
 np_times_ms_buffer = np.asarray(times_ms_buffer)
 print(np_times_ms_buffer)
 
-temp_buffer_CJC = (ctypes.c_float * 2 * 15)()
+""" temp_buffer_CJC = (ctypes.c_float * 2 * 15)()
 
 times_ms_buffer_CJC = (ctypes.c_int32 * 15)()
 
@@ -79,7 +79,7 @@ np_temp_buffer_CJC = np.asarray(temp_buffer_CJC)
 print(np_temp_buffer_CJC)
 
 np_times_ms_buffer_CJC = np.asarray(times_ms_buffer_CJC)
-print(np_times_ms_buffer_CJC)
+print(np_times_ms_buffer_CJC) """
 
 #if time.sleep(1), 5 readings
 #if time.sleep(3), 15 readings
