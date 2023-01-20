@@ -71,6 +71,8 @@ overflow_CJC = ctypes.c_int16()
 
 status["get_temp_2"] = tc08.usb_tc08_get_temp_deskew(chandle, ctypes.byref(temp_buffer_CJC), ctypes.byref(times_ms_buffer_CJC), 15, ctypes.byref(overflow_CJC), 0, 0, 1)
 
+print(tc08.usb_tc08_get_last_error(chandle))
+
 assert_pico2000_ok(status["get_temp_2"])
 
 np_temp_buffer_CJC = np.asarray(temp_buffer_CJC)
