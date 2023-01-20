@@ -29,6 +29,11 @@ USBTC08_CHANNELS_STREAMING = {
         "CHANNEL_NO": 1,
         "NAME": "Depth 4mm",
     }, 
+    "CHANNEL_2": {
+        "SENSOR_TYPE": "K",
+        "CHANNEL_NO": 2,
+        "NAME": "Depth 3mm",
+    },
 }
 
 USBTC08_CHANNELS = {

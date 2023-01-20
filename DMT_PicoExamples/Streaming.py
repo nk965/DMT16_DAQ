@@ -80,8 +80,8 @@ def record_data(recording_period):
         print(tc08.usb_tc08_get_last_error(chandle))
         assert_pico2000_ok(status["get_temp"])
 
-        temp_info[channel]["Temperatures"] = np.array(temp_buffer)
-        temp_info[channel]["Time Intervals"] = np.array(times_ms_buffer)
+        temp_info[channel]["Temperatures"] = np.asarray(temp_buffer)
+        temp_info[channel]["Time Intervals"] = np.asarray(times_ms_buffer)
         temp_info[channel]["Overflow"] = overflow
 
     print(temp_info)
