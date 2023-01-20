@@ -24,7 +24,7 @@ def record_data(recording_period):
 
     # set CJC channel 
 
-    status["set_channel"] = tc08.usb_tc08_set_channel(chandle, 0,'C')
+    status["set_channel"] = tc08.usb_tc08_set_channel(chandle, 0,'K')
     assert_pico2000_ok(status["set_channel"])
 
     # set all channels from TC08_config file
