@@ -2,6 +2,7 @@ import ctypes
 import numpy as np
 import time
 import math
+from datetime import datetime, timedelta
 from picosdk.usbtc08 import usbtc08 as tc08
 from picosdk.functions import assert_pico2000_ok
 from TC08_config import USBTC08_CHANNELS, INPUT_TYPES
@@ -54,6 +55,7 @@ def record_data(recording_period, sampling_interval_ms):
     # run data logger for specified period
     
     time.sleep(recording_period)
+    start_time = datetime.now()
 
     BUFFER_SIZE = math.ceil(recording_period / (status["run"] / 1000)) 
 
@@ -87,6 +89,8 @@ def record_data(recording_period, sampling_interval_ms):
         temp_info[channel]["Temperatures"] = np.asarray(temp_buffer)
         temp_info[channel]["Time Intervals"] = np.asarray(times_ms_buffer)
         temp_info[channel]["Overflow"] = overflow
+
+        temp_info[channel]["Time Stamps"] = [ (start_time + timedelta(milliseconds=temp_info[channel]["Time Intervals"])).strftime("%M:%S:%f") for interval in temp_info[channel]["Time Intervals"] ]
 
     print(temp_info)
 
