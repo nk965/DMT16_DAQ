@@ -100,7 +100,7 @@ def record_data(recording_period, sampling_interval_ms):
     assert_pico2000_ok(status["close_unit"])
     print(status)
 
-    # post processing: adding time stamps
+    # post processing: adding time stamps and converting to pandas dataframe to save to csv format
 
     for channel in temp_info:
 
@@ -115,13 +115,12 @@ def record_data(recording_period, sampling_interval_ms):
         # format the timestamp
         formatted_timestamps = [timestamp.strftime("%M:%S:%f") for timestamp in timestamps ]
         temp_info[channel]["Time Stamps"] = formatted_timestamps
-    
-    print(temp_info)
 
-    # post processing: converting to pandas dataframe and converting to csv format
+        # convert to dataframe and save as csv file
 
-    df = pd.DataFrame.from_dict(temp_info)
-    df.to_csv('TC08_Data.csv')
+        df = pd.Dataframe.from_dict(temp_info[channel])
+
+        df.to_csv(channel + ' Data.csv')
 
     return status
 
