@@ -18,12 +18,7 @@ INPUT_TYPES = {
     "X": ctypes.c_int8(88), # mV readings 
 }
 
-USBTC08_CHANNELS = {
-    "CHANNEL_CJC": {
-        "SENSOR_TYPE": " ",
-        "PORT_NO": 0,
-        "NAME": "Cold Junction Compensation",
-    }, 
+USBTC08_CHANNELS_STREAMING = {
     "CHANNEL_1": {
         "SENSOR_TYPE": "K",
         "PORT_NO": 1,
@@ -41,45 +36,10 @@ USBTC08_CHANNELS = {
     }, 
 }
 
-USBTC08_CHANNELS_2 = {
+USBTC08_CHANNELS = {
     "CHANNEL_1": {
         "SENSOR_TYPE": "K",
         "PORT_NO": 1,
-        "NAME": "NAME_X"
-    }, 
-    "CHANNEL_2": {
-        "SENSOR_TYPE": "K",
-        "PORT_NO": 2,
-        "NAME": "NAME_X"
-    }, 
-    "CHANNEL_3": {
-        "SENSOR_TYPE": "K",
-        "PORT_NO": 3,
-        "NAME": "NAME_X"
-    }, 
-    "CHANNEL_4": {
-        "SENSOR_TYPE": "K",
-        "PORT_NO": 4,
-        "NAME": "NAME_X"
-    }, 
-    "CHANNEL_5": {
-        "SENSOR_TYPE": "K",
-        "PORT_NO": 5,
-        "NAME": "NAME_X"
-    }, 
-    "CHANNEL_6": {
-        "SENSOR_TYPE": "K",
-        "PORT_NO": 6,
-        "NAME": "NAME_X"
-    }, 
-    "CHANNEL_7": {
-        "SENSOR_TYPE": "K", #TODO: add support for pressure
-        "PORT_NO": 7,
-        "NAME": "NAME_X"
-    },
-    "CHANNEL_8": {
-        "SENSOR_TYPE": "K", #TODO: add support for pressure
-        "PORT_NO": 8,
-        "NAME": "NAME_X"
-    },
+        "NAME": "Depth 4mm",
+    },  
 }
