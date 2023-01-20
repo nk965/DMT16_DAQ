@@ -7,7 +7,7 @@ from TC08_config import USBTC08_CHANNELS_STREAMING, INPUT_TYPES
 
 USBTC08_MAX_CHANNELS = 8 #Max number of channels TODO: Check final number of Pico Data loggers available
 
-def record_data(recording_period):
+def record_data(recording_period, sampling_interval_ms):
 
     # Create chandle and status ready for use
     chandle = ctypes.c_int16()
@@ -41,9 +41,15 @@ def record_data(recording_period):
     status["get_minimum_interval_ms"] = tc08.usb_tc08_get_minimum_interval_ms(chandle)
     assert_pico2000_ok(status["get_minimum_interval_ms"])
 
-    # run data logger at fastest possible sample frequency
+    
 
-    status["run"] = tc08.usb_tc08_run(chandle, status["get_minimum_interval_ms"]) 
+    # run data logger at fastest possible sample frequency or specified frequency
+
+    if sampling_interval_ms >= status["get_minimum_interval_ms"]:
+        status["run"] = tc08.usb_tc08_run(chandle, sampling_interval_ms) 
+    else:
+        status["run"] = tc08.usb_tc08_run(chandle, status["get_minimum_interval_ms"])
+        
     assert_pico2000_ok(status["run"])
 
     # run data logger at specified period
@@ -102,6 +108,7 @@ if __name__ == "__main__":
     # set length recording in seconds
 
     recording_period = 5
+    sampling_interval_ms = 400
 
-    record_data(recording_period)
+    record_data(recording_period, sampling_interval_ms)
 
