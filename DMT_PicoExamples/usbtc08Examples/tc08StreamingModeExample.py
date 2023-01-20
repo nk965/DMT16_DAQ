@@ -30,6 +30,10 @@ typeK = ctypes.c_int8(75)
 status["set_channel"] = tc08.usb_tc08_set_channel(chandle, 1, typeK)
 assert_pico2000_ok(status["set_channel"])
 
+status["set_channel"] = tc08.usb_tc08_set_channel(chandle, 0, ctypes.c_int8(32))
+
+assert_pico2000_ok(status["set_channel"])
+
 # get minimum sampling interval in ms
 status["get_minimum_interval_ms"] = tc08.usb_tc08_get_minimum_interval_ms(chandle)
 assert_pico2000_ok(status["get_minimum_interval_ms"])
@@ -58,6 +62,16 @@ print(np_temp_buffer)
 
 np_times_ms_buffer = np.asarray(times_ms_buffer)
 print(np_times_ms_buffer)
+
+status["get_temp_2"] = tc08.usb_tc08_get_temp_deskew(chandle, ctypes.byref(temp_buffer_CJC), ctypes.byref(times_ms_buffer_CJC), 15, ctypes.byref(overflow_CJC), 0, 0, 1)
+
+assert_pico2000_ok(status["get_temp_2"])
+
+np_temp_buffer_CJC = np.asarray(temp_buffer_CJC)
+print(np_temp_buffer_CJC)
+
+np_times_ms_buffer_CJC = np.asarray(times_ms_buffer_CJC)
+print(np_times_ms_buffer_CJC)
 
 #if time.sleep(1), 5 readings
 #if time.sleep(3), 15 readings
