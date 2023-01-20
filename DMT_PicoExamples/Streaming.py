@@ -90,10 +90,6 @@ def record_data(recording_period, sampling_interval_ms):
         temp_info[channel]["Time Intervals"] = np.asarray(times_ms_buffer)
         temp_info[channel]["Overflow"] = overflow
 
-        temp_info[channel]["Time Stamps"] = [ (start_time + timedelta(milliseconds=temp_info[channel]["Time Intervals"])).strftime("%M:%S:%f") for interval in temp_info[channel]["Time Intervals"] ]
-
-    print(temp_info)
-
     # stop unit
     status["stop"] = tc08.usb_tc08_stop(chandle)
     assert_pico2000_ok(status["stop"])
@@ -102,6 +98,27 @@ def record_data(recording_period, sampling_interval_ms):
     status["close_unit"] = tc08.usb_tc08_close_unit(chandle)
     assert_pico2000_ok(status["close_unit"])
     print(status)
+
+    # post processing: adding time stamps
+
+    for channel in temp_info:
+
+        start_timestamp = int(start_time.timestamp() * 1000)
+
+        # add the intervals (in milliseconds) to the start timestamp
+        timestamps_ms = start_timestamp + temp_info[channel]["Time Intervals"]
+
+        # convert the timestamps in ms to datetime
+        timestamps = [datetime.fromtimestamp(ts/1000) for ts in timestamps_ms]
+
+        # format the timestamp
+        formatted_timestamps = [timestamp.strftime("%M:%S:%f") for timestamp in timestamps ]
+        temp_info[channel]["Time Stamps"] = formatted_timestamps
+        temp_info[channel]["Time Stamps MS"] = timestamps_ms
+    
+    print(temp_info)
+
+    # post processing: converting to pandas dataframe and converting to csv format
 
     return status
 
