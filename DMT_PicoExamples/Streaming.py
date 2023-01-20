@@ -126,10 +126,8 @@ def record_data(recording_period, sampling_interval_ms):
         fig, ax = plt.subplots()
         
         for channel, data in temp_info.items():
-            df = pd.DataFrame({'Time Intervals':data['Time Intervals'], 'Temperatures':data['Temperatures']})
-            ax.plot(df['Time Intervals'], df['Temperatures'], '-o', label=channel)
-        
-        sns.set_theme(style="darkgrid")
+            df = pd.DataFrame({'Time Intervals':data['Time Intervals (ms)'], 'Temperatures':data['Temperatures (C)']})
+            sns.scatterplot(x=df['Time Intervals'], y=df['Temperatures'], label=channel, ax=ax)
         
         plt.title('Temperature over Time Interval')
         
@@ -146,6 +144,8 @@ def record_data(recording_period, sampling_interval_ms):
 if __name__ == "__main__":
 
     # set length recording in seconds
+
+    sns.set_theme(style="darkgrid")
 
     recording_period = 20
     sampling_interval_ms = 300
