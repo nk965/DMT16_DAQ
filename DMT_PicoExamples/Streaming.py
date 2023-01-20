@@ -114,7 +114,6 @@ def record_data(recording_period, sampling_interval_ms):
         # format the timestamp
         formatted_timestamps = [timestamp.strftime("%M:%S:%f") for timestamp in timestamps ]
         temp_info[channel]["Time Stamps"] = formatted_timestamps
-        temp_info[channel]["Time Stamps MS"] = timestamps_ms
     
     print(temp_info)
 
