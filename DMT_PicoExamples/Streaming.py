@@ -4,9 +4,15 @@ import time
 import math
 from picosdk.usbtc08 import usbtc08 as tc08
 from picosdk.functions import assert_pico2000_ok
-from TC08_config import USBTC08_CHANNELS_STREAMING, INPUT_TYPES
+from TC08_config import USBTC08_CHANNELS, INPUT_TYPES
 
-USBTC08_MAX_CHANNELS = 8 #Max number of channels TODO: Check final number of Pico Data loggers available
+"""
+Samples data in an unbroken sequence, for a specified duration in seconds
+
+Outputs CSV file with dictionary of channels with respective temperature values and time stamp. 
+
+"""
+
 
 def record_data(recording_period, sampling_interval_ms):
 
@@ -30,11 +36,11 @@ def record_data(recording_period, sampling_interval_ms):
 
     # set all channels from TC08_config file
 
-    for channel in USBTC08_CHANNELS_STREAMING:
+    for channel in USBTC08_CHANNELS:
 
-        input_type = INPUT_TYPES[USBTC08_CHANNELS_STREAMING[channel]['SENSOR_TYPE']]
+        input_type = INPUT_TYPES[USBTC08_CHANNELS[channel]['SENSOR_TYPE']]
 
-        status["set_channel"] = tc08.usb_tc08_set_channel(chandle, USBTC08_CHANNELS_STREAMING[channel]['CHANNEL_NO'], input_type)
+        status["set_channel"] = tc08.usb_tc08_set_channel(chandle, USBTC08_CHANNELS[channel]['CHANNEL_NO'], input_type)
         assert_pico2000_ok(status["set_channel"])
 
     # run data logger at fastest possible sample frequency or specified frequency 
@@ -53,7 +59,7 @@ def record_data(recording_period, sampling_interval_ms):
 
     temp_info = {}
 
-    for index, (channel, info) in enumerate(USBTC08_CHANNELS_STREAMING.items()):
+    for index, (channel, info) in enumerate(USBTC08_CHANNELS.items()):
 
         print(f"Iteration: {index}")
 
@@ -76,7 +82,6 @@ def record_data(recording_period, sampling_interval_ms):
             0
         )
 
-        print(tc08.usb_tc08_get_last_error(chandle))
         assert_pico2000_ok(status["get_temp"])
 
         temp_info[channel]["Temperatures"] = np.asarray(temp_buffer)

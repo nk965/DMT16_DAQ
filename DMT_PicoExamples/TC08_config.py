@@ -18,7 +18,7 @@ INPUT_TYPES = {
     "X": ctypes.c_int8(88), # mV readings 
 }
 
-USBTC08_CHANNELS_STREAMING = {
+USBTC08_CHANNELS = {
     "CHANNEL_CJC": {
         "SENSOR_TYPE": "K",
         "CHANNEL_NO": 0,
@@ -36,15 +36,3 @@ USBTC08_CHANNELS_STREAMING = {
     },
 }
 
-USBTC08_CHANNELS = {
-    "CHANNEL_1": {
-        "SENSOR_TYPE": "K",
-        "PORT_NO": 1,
-        "NAME": "Depth 4mm",
-    },
-    "CHANNEL_2": {
-        "SENSOR_TYPE": "K",
-        "PORT_NO": 2,
-        "NAME": "Depth 4mm",
-    },   
-}
