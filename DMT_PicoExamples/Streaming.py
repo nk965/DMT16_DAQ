@@ -1,6 +1,7 @@
 import ctypes
 import numpy as np
 import time
+import math
 from picosdk.usbtc08 import usbtc08 as tc08
 from picosdk.functions import assert_pico2000_ok
 from TC08_config import USBTC08_CHANNELS_STREAMING, INPUT_TYPES
@@ -36,27 +37,19 @@ def record_data(recording_period, sampling_interval_ms):
         status["set_channel"] = tc08.usb_tc08_set_channel(chandle, USBTC08_CHANNELS_STREAMING[channel]['CHANNEL_NO'], input_type)
         assert_pico2000_ok(status["set_channel"])
 
-    # obtain minimum interval between sample 
+    # run data logger at fastest possible sample frequency or specified frequency 
     
-    status["get_minimum_interval_ms"] = tc08.usb_tc08_get_minimum_interval_ms(chandle)
-    assert_pico2000_ok(status["get_minimum_interval_ms"])
+    status["interval_ms"] = sampling_interval_ms if sampling_interval_ms >= tc08.usb_tc08_get_minimum_interval_ms(chandle) else tc08.usb_tc08_get_minimum_interval_ms(chandle)
+    assert_pico2000_ok(status["interval_ms"])
 
-    
-
-    # run data logger at fastest possible sample frequency or specified frequency
-
-    if sampling_interval_ms >= status["get_minimum_interval_ms"]:
-        status["run"] = tc08.usb_tc08_run(chandle, sampling_interval_ms) 
-    else:
-        status["run"] = tc08.usb_tc08_run(chandle, status["get_minimum_interval_ms"])
-        
+    status["run"] = tc08.usb_tc08_run(chandle, status["interval_ms"]) 
     assert_pico2000_ok(status["run"])
 
-    # run data logger at specified period
+    # run data logger for specified period
     
     time.sleep(recording_period)
 
-    BUFFER_SIZE = 64
+    BUFFER_SIZE = math.ceil(recording_period / (status["run"] / 1000)) 
 
     temp_info = {}
 
