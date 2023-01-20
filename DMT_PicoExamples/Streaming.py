@@ -33,7 +33,7 @@ def record_data(recording_period):
 
         input_type = INPUT_TYPES[USBTC08_CHANNELS_STREAMING[channel]['SENSOR_TYPE']]
 
-        status["set_channel"] = tc08.usb_tc08_set_channel(chandle, USBTC08_CHANNELS_STREAMING[channel]['PORT_NO'], input_type)
+        status["set_channel"] = tc08.usb_tc08_set_channel(chandle, USBTC08_CHANNELS_STREAMING[channel]['CHANNEL_NO'], input_type)
         assert_pico2000_ok(status["set_channel"])
 
     # obtain minimum interval between sample 
