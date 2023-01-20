@@ -126,14 +126,14 @@ def record_data(recording_period, sampling_interval_ms):
         fig, ax = plt.subplots()
         
         for channel, data in temp_info.items():
-            df = pd.DataFrame({'Time Intervals':data['Time Intervals (ms)'], 'Temperatures':data['Temperatures (C)']})
+            df = pd.DataFrame({'Time Intervals':data['Time Intervals'], 'Temperatures':data['Temperatures']})
             sns.scatterplot(x=df['Time Intervals'], y=df['Temperatures'], label=channel, ax=ax)
         
-        plt.title('Temperature over Time Interval')
+        plt.title('TC08 Temperature Data')
         
-        plt.xlabel('Time Interval')
+        plt.xlabel('Time Interval (ms)')
         
-        plt.ylabel('Temperature')
+        plt.ylabel('Temperature (deg)')
         
         plt.legend()
         
