@@ -19,20 +19,15 @@ INPUT_TYPES = {
 }
 
 USBTC08_CHANNELS_STREAMING = {
+    "CHANNEL_CJC": {
+        "SENSOR_TYPE": "K",
+        "CHANNEL_NO": 0,
+        "NAME": "Cold Junction Compensation",
+    }, 
     "CHANNEL_1": {
         "SENSOR_TYPE": "K",
-        "PORT_NO": 1,
+        "CHANNEL_NO": 1,
         "NAME": "Depth 4mm",
-    }, 
-    "CHANNEL_2": {
-        "SENSOR_TYPE": "K",
-        "PORT_NO": 2,
-        "NAME": "Depth 2mm",
-    }, 
-    "CHANNEL_3": {
-        "SENSOR_TYPE": "K",
-        "PORT_NO": 3,
-        "NAME": "Depth 1mm",
     }, 
 }
 
