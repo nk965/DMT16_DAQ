@@ -51,7 +51,7 @@ times_ms_buffer = (ctypes.c_int32 * 15)()
 
 overflow = ctypes.c_int16()
 
-status["get_temp"] = tc08.usb_tc08_get_temp_deskew(chandle, ctypes.byref(temp_buffer), ctypes.byref(times_ms_buffer), 15, ctypes.byref(overflow), 0, 0, 1)
+status["get_temp"] = tc08.usb_tc08_get_temp_deskew(chandle, ctypes.byref(temp_buffer), ctypes.byref(times_ms_buffer), 15, ctypes.byref(overflow), 1, 0, 1)
 
 #status["get_temp"] is the number of temperature samples in the buffer
 
@@ -62,6 +62,12 @@ print(np_temp_buffer)
 
 np_times_ms_buffer = np.asarray(times_ms_buffer)
 print(np_times_ms_buffer)
+
+temp_buffer_CJC = (ctypes.c_float * 2 * 15)()
+
+times_ms_buffer_CJC = (ctypes.c_int32 * 15)()
+
+overflow_CJC = ctypes.c_int16()
 
 status["get_temp_2"] = tc08.usb_tc08_get_temp_deskew(chandle, ctypes.byref(temp_buffer_CJC), ctypes.byref(times_ms_buffer_CJC), 15, ctypes.byref(overflow_CJC), 0, 0, 1)
 
