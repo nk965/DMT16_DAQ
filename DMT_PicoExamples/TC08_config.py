@@ -27,6 +27,10 @@ USBTC08_CHANNELS = {
         "SENSOR_TYPE": "K",
         "PORT_NO": 2
     }, 
+    "CHANNEL_3": {
+        "SENSOR_TYPE": "K",
+        "PORT_NO": 3
+    }, 
 }
 
 USBTC08_CHANNELS_2 = {
