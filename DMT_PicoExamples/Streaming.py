@@ -58,16 +58,10 @@ def record_data(recording_period):
 
         print(f"Iteration: {index}")
 
-        #temp_buffer = (ctypes.c_float * (int(USBTC08_MAX_CHANNELS)) * int(readings))()
+        temp_buffer = (ctypes.c_float * (int(BUFFER_SIZE)) * int(1))()
         
-        #times_ms_buffer = (ctypes.c_int32 * int(readings))()
+        times_ms_buffer = (ctypes.c_int32 * int(1))()
         
-        #overflow = ctypes.c_int16()
-
-
-
-        temp_buffer = (ctypes.c_float * (BUFFER_SIZE) * 1 ) 
-        times_ms_buffer = (ctypes.c_int32 * (BUFFER_SIZE))()
         overflow = ctypes.c_int16()
 
         temp_info[channel] = {}
