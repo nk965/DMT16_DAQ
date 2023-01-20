@@ -118,7 +118,7 @@ def record_data(recording_period, sampling_interval_ms):
 
         # convert to dataframe and save as csv file
 
-        df = pd.Dataframe.from_dict(temp_info[channel])
+        df = pd.DataFrame.from_dict(temp_info[channel])
 
         df.to_csv(channel + ' Data.csv')
 
