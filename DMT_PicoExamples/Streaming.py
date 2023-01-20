@@ -66,7 +66,7 @@ def record_data(recording_period):
 
 
 
-        temp_buffer = (ctypes.c_float * (BUFFER_SIZE)) 
+        temp_buffer = (ctypes.c_float * (BUFFER_SIZE) * 1 ) 
         times_ms_buffer = (ctypes.c_int32 * (BUFFER_SIZE))()
         overflow = ctypes.c_int16()
 
@@ -83,8 +83,8 @@ def record_data(recording_period):
             0
         )
 
-        temp_info[channel]["Temperatures"] = np.asarray(temp_buffer)
-        temp_info[channel]["Time Intervals"] = np.asarray(temp_buffer)
+        temp_info[channel]["Temperatures"] = np.array(temp_buffer)
+        temp_info[channel]["Time Intervals"] = np.array(temp_buffer)
         temp_info[channel]["Overflow"] = overflow
 
     print(temp_info)
