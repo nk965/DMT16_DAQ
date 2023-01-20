@@ -2,6 +2,7 @@ import ctypes
 import numpy as np
 import time
 import math
+import pandas as pd
 from datetime import datetime, timedelta
 from picosdk.usbtc08 import usbtc08 as tc08
 from picosdk.functions import assert_pico2000_ok
@@ -118,6 +119,9 @@ def record_data(recording_period, sampling_interval_ms):
     print(temp_info)
 
     # post processing: converting to pandas dataframe and converting to csv format
+
+    df = pd.DataFrame.from_dict(temp_info)
+    df.to_csv('TC08_Data.csv')
 
     return status
 
