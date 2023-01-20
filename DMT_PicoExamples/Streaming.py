@@ -3,7 +3,9 @@ import numpy as np
 import time
 import math
 import pandas as pd
-from datetime import datetime, timedelta
+import seaborn as sns
+import matplotlib.pyplot as plt
+from datetime import datetime
 from picosdk.usbtc08 import usbtc08 as tc08
 from picosdk.functions import assert_pico2000_ok
 from TC08_config import USBTC08_CHANNELS, INPUT_TYPES
@@ -14,7 +16,6 @@ Samples data in an unbroken sequence, for a specified duration in seconds
 Outputs CSV file with dictionary of channels with respective temperature values and time stamp. 
 
 """
-
 
 def record_data(recording_period, sampling_interval_ms):
 
@@ -98,7 +99,7 @@ def record_data(recording_period, sampling_interval_ms):
     assert_pico2000_ok(status["close_unit"])
     print(status)
 
-    # post processing: adding time stamps and converting to pandas dataframe to save to csv format
+    # post processing: adding time stamps and converting to pandas DataFrame to save to csv format
 
     for channel in temp_info:
 
@@ -119,6 +120,30 @@ def record_data(recording_period, sampling_interval_ms):
         df = pd.DataFrame.from_dict(temp_info[channel])
 
         df.to_csv(channel + ' Data.csv')
+
+        # iterate over the dictionary, adding the data for each channel to the dataframe
+    
+        df = pd.DataFrame()
+
+        # iterate over the dictionary, adding the data for each channel to the dataframe
+        for channel, data in temp_info.items():
+            channel_df = pd.DataFrame(data)
+            channel_df['Channels'] = channel
+            df = pd.concat([df, channel_df])
+
+        # reshape the dataframe, so that the channels are in a single column
+        df = pd.melt(df, id_vars=['Channels'], value_vars=['Temperatures', 'Time Intervals'])
+
+        print(df)
+
+        # use seaborn's lineplot function to plot the data
+        sns.lineplot(x='variable', y='value', hue='Channels', data=df)
+
+        # add labels and a title
+        plt.title('Temperature over Time Interval')
+        plt.xlabel('Time Interval')
+        plt.ylabel('Temperature')
+        plt.show()
 
     return status
 
