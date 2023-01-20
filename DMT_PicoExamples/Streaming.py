@@ -64,8 +64,6 @@ def record_data(recording_period, sampling_interval_ms):
 
     for index, (channel, info) in enumerate(USBTC08_CHANNELS.items()):
 
-        print(f"Iteration: {index}")
-
         temp_buffer = (ctypes.c_float * (int(BUFFER_SIZE)))()
         
         times_ms_buffer = (ctypes.c_int32 * int(BUFFER_SIZE))()
