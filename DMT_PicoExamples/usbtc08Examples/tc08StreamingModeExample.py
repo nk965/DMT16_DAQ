@@ -59,6 +59,22 @@ print(np_temp_buffer)
 np_times_ms_buffer = np.asarray(times_ms_buffer)
 print(np_times_ms_buffer)
 
+time.sleep(2)
+
+temp_buffer_CJC = (ctypes.c_float * 2 * 15)()
+
+times_ms_buffer_CJC = (ctypes.c_int32 * 15)()
+
+overflow_CJC = ctypes.c_int16()
+
+status["get_temp"] = tc08.usb_tc08_get_temp_deskew(chandle, ctypes.byref(temp_buffer_CJC), ctypes.byref(times_ms_buffer_CJC), 15, ctypes.byref(overflow_CJC), 0, 0, 1)
+
+np_temp_buffer_CJC = np.asarray(temp_buffer_CJC)
+print(np_temp_buffer)
+
+np_times_ms_buffer_CJC = np.asarray(times_ms_buffer_CJC)
+print(np_times_ms_buffer)
+
 #if time.sleep(1), 5 readings
 #if time.sleep(3), 15 readings
 #if time.sleep(5), 15 readings, I think overflow is happening
