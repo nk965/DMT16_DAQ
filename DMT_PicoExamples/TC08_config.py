@@ -29,5 +29,40 @@ USBTC08_CHANNELS = {
         "CHANNEL_NO": 1,
         "NAME": "Depth 4mm",
     }, 
+    "CHANNEL_2": {
+        "SENSOR_TYPE": "K",
+        "CHANNEL_NO": 2,
+        "NAME": "Depth 4mm",
+    },
+    "CHANNEL_3": {
+        "SENSOR_TYPE": "K",
+        "CHANNEL_NO": 3,
+        "NAME": "Depth 4mm",
+    }, 
+    "CHANNEL_4": {
+        "SENSOR_TYPE": "K",
+        "CHANNEL_NO": 4,
+        "NAME": "Depth 4mm",
+    }, 
+    "CHANNEL_5": {
+        "SENSOR_TYPE": "K",
+        "CHANNEL_NO": 5,
+        "NAME": "Depth 4mm",
+    }, 
+    "CHANNEL_6": {
+        "SENSOR_TYPE": "K",
+        "CHANNEL_NO": 6,
+        "NAME": "Depth 4mm",
+    }, 
+    "CHANNEL_7": {
+        "SENSOR_TYPE": "K",
+        "CHANNEL_NO": 7,
+        "NAME": "Depth 4mm",
+    }, 
+    "CHANNEL_8": {
+        "SENSOR_TYPE": "K",
+        "CHANNEL_NO": 8,
+        "NAME": "Depth 4mm",
+    }, 
 }
 
