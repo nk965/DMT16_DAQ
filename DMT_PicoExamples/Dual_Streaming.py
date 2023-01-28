@@ -38,10 +38,10 @@ if __name__ == "__main__":
     recording_period = 20
     sampling_interval_ms = 300
 
-    UNIT_1 = LoggingUnit(USBTC08_CONFIG["UNIT_1"], sampling_interval_ms, recording_period)
+    UNIT_1 = LoggingUnit(USBTC08_CONFIG["UNIT 1"], sampling_interval_ms, recording_period)
 
-    UNIT_2 = LoggingUnit(USBTC08_CONFIG["UNIT_2"], sampling_interval_ms, recording_period)
-    
+    UNIT_2 = LoggingUnit(USBTC08_CONFIG["UNIT 2"], sampling_interval_ms, recording_period)
+
     print(UNIT_1.__repr__)
     print(UNIT_2.__repr__)
 
