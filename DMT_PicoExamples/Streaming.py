@@ -56,7 +56,7 @@ def record_data(recording_period, sampling_interval_ms):
 
     # run data logger for specified period
     
-    time.sleep(recording_period)
+    time.sleep(recording_period/2)
     start_time = datetime.now()
 
     BUFFER_SIZE = math.ceil(recording_period / (status["run"] / 1000)) 
@@ -89,6 +89,36 @@ def record_data(recording_period, sampling_interval_ms):
         temp_info[channel]["Temperatures"] = np.asarray(temp_buffer)
         temp_info[channel]["Time Intervals"] = np.asarray(times_ms_buffer)
         temp_info[channel]["Overflow"] = overflow
+
+    time.sleep(recording_period/2)
+
+    for index, (channel, info) in enumerate(USBTC08_CHANNELS.items()):
+
+        temp_buffer = (ctypes.c_float * (int(BUFFER_SIZE)))()
+        
+        times_ms_buffer = (ctypes.c_int32 * int(BUFFER_SIZE))()
+        
+        overflow = ctypes.c_int16()
+
+        temp_info[channel] = {}
+
+        status["get_temp"] = tc08.usb_tc08_get_temp_deskew(
+            chandle, 
+            ctypes.byref(temp_buffer), 
+            ctypes.byref(times_ms_buffer),
+            ctypes.c_int32(BUFFER_SIZE), 
+            ctypes.byref(overflow), 
+            info['CHANNEL_NO'], 
+            0, 
+            0
+        )
+
+        assert_pico2000_ok(status["get_temp"])
+
+        temp_info[channel]["Temperatures"] = np.asarray(temp_buffer)
+        temp_info[channel]["Time Intervals"] = np.asarray(times_ms_buffer)
+        temp_info[channel]["Overflow"] = overflow
+
 
     # stop unit
     status["stop"] = tc08.usb_tc08_stop(chandle)
