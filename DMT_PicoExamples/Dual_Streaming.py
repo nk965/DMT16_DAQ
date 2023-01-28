@@ -20,6 +20,12 @@ class LoggingUnit:
         self.status = {}
         self.results = {}
 
+        # logging unit initialisation procedure
+
+        self.status["set_mains"] = tc08.usb_tc08_set_mains(self.chandle, 0)
+
+        self.status["handle"] = self.chandle
+
     def __repr__(self) -> str:
         return f'{self.status}'
 
