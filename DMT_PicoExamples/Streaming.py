@@ -135,14 +135,14 @@ def record_data(recording_period, sampling_interval_ms):
         start_timestamp = int(start_time.timestamp() * 1000)
 
         # add the intervals (in milliseconds) to the start timestamp
-        timestamps_ms = start_timestamp + temp_info[channel]["Time Intervals"]
+        #timestamps_ms = start_timestamp + temp_info[channel]["Time Intervals"]
 
         # convert the timestamps in ms to datetime
-        timestamps = [datetime.fromtimestamp(ts/1000) for ts in timestamps_ms]
+        #timestamps = [datetime.fromtimestamp(ts/1000) for ts in timestamps_ms]
 
         # format the timestamp
-        formatted_timestamps = [timestamp.strftime("%M:%S:%f") for timestamp in timestamps ]
-        temp_info[channel]["Time Stamps"] = formatted_timestamps
+        #formatted_timestamps = [timestamp.strftime("%M:%S:%f") for timestamp in timestamps ]
+        #temp_info[channel]["Time Stamps"] = formatted_timestamps
 
         # convert to dataframe and save as csv file
 
@@ -152,21 +152,21 @@ def record_data(recording_period, sampling_interval_ms):
 
         # iterate over the dictionary, adding the data for each channel to the dataframe
         
-        fig, ax = plt.subplots()
+        #fig, ax = plt.subplots()
         
-        for channel, data in temp_info.items():
-            df = pd.DataFrame({'Time Intervals':data['Time Intervals'], 'Temperatures':data['Temperatures']})
-            sns.scatterplot(x=df['Time Intervals'], y=df['Temperatures'], label=channel, ax=ax)
+        #for channel, data in temp_info.items():
+            #df = pd.DataFrame({'Time Intervals':data['Time Intervals'], 'Temperatures':data['Temperatures']})
+           #sns.scatterplot(x=df['Time Intervals'], y=df['Temperatures'], label=channel, ax=ax)
         
-    plt.title('TC08 Temperature Data')
+    #plt.title('TC08 Temperature Data')
     
-    plt.xlabel('Time Interval (ms)')
+    #plt.xlabel('Time Interval (ms)')
     
-    plt.ylabel('Temperature (deg)')
+    #plt.ylabel('Temperature (deg)')
     
-    plt.legend()
+    #plt.legend()
     
-    plt.show()
+    #plt.show()
 
     return status
 
