@@ -18,7 +18,7 @@ INPUT_TYPES = {
     "X": ctypes.c_int8(88), # mV readings 
 }
 
-USBCTC08_CONFIG = {
+USBTC08_CONFIG = {
     "UNIT 1": {
         "CHANNEL_CJC": {
             "SENSOR_TYPE": "K",
