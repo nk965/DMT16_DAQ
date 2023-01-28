@@ -90,6 +90,15 @@ def record_data(recording_period, sampling_interval_ms):
         temp_info[channel]["Time Intervals"] = np.asarray(times_ms_buffer)
         temp_info[channel]["Overflow"] = overflow
 
+    for channel in temp_info:
+
+        df = pd.DataFrame.from_dict(temp_info[channel])
+
+        df.to_csv(channel + ' 1 Data.csv')
+
+
+    
+    
     time.sleep(recording_period/2)
 
     for index, (channel, info) in enumerate(USBTC08_CHANNELS.items()):
@@ -148,7 +157,7 @@ def record_data(recording_period, sampling_interval_ms):
 
         df = pd.DataFrame.from_dict(temp_info[channel])
 
-        df.to_csv(channel + ' Data.csv')
+        df.to_csv(channel + ' 2 Data.csv')
 
         # iterate over the dictionary, adding the data for each channel to the dataframe
         
