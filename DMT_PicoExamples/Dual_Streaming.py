@@ -21,7 +21,7 @@ class LoggingUnit:
         self.recording_period = recording_period
 
     def __repr__(self) -> str:
-        return f'{self.config.keys()}: {self.status}'
+        return f'{self.status}'
             
     def openUnit(self):
         self.status["open_unit"] = tc08.usb_tc08_open_unit()
