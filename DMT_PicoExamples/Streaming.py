@@ -94,20 +94,20 @@ def record_data(recording_period, sampling_interval_ms):
 
     for index, (channel, info) in enumerate(USBTC08_CHANNELS.items()):
 
-        temp_buffer = (ctypes.c_float * (int(BUFFER_SIZE)))()
+        temp_buffer_2 = (ctypes.c_float * (int(BUFFER_SIZE)))()
         
-        times_ms_buffer = (ctypes.c_int32 * int(BUFFER_SIZE))()
+        times_ms_buffer_2 = (ctypes.c_int32 * int(BUFFER_SIZE))()
         
-        overflow = ctypes.c_int16()
+        overflow_2 = ctypes.c_int16()
 
         temp_info[channel] = {}
 
         status["get_temp"] = tc08.usb_tc08_get_temp_deskew(
             chandle, 
-            ctypes.byref(temp_buffer), 
-            ctypes.byref(times_ms_buffer),
+            ctypes.byref(temp_buffer_2), 
+            ctypes.byref(times_ms_buffer_2),
             ctypes.c_int32(BUFFER_SIZE), 
-            ctypes.byref(overflow), 
+            ctypes.byref(overflow_2), 
             info['CHANNEL_NO'], 
             0, 
             0
@@ -115,9 +115,9 @@ def record_data(recording_period, sampling_interval_ms):
 
         assert_pico2000_ok(status["get_temp"])
 
-        temp_info[channel]["Temperatures_2"] = np.asarray(temp_buffer)
-        temp_info[channel]["Time Intervals_2"] = np.asarray(times_ms_buffer)
-        temp_info[channel]["Overflow_2"] = overflow
+        temp_info[channel]["Temperatures_2"] = np.asarray(temp_buffer_2)
+        temp_info[channel]["Time Intervals_2"] = np.asarray(times_ms_buffer_2)
+        temp_info[channel]["Overflow_2"] = overflow_2
 
     # stop unit
     status["stop"] = tc08.usb_tc08_stop(chandle)
