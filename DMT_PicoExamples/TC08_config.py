@@ -19,38 +19,44 @@ INPUT_TYPES = {
 }
 
 USBTC08_CONFIG = {
-    "UNIT 1": {
+    "UNIT_1": {
         "CHANNEL_CJC": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 0,
             "NAME": "Cold Junction Compensation",
+            "ENABLE": True
         }, 
         "CHANNEL_1": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 1,
             "NAME": "Depth 4mm",
+            "ENABLE": True
         }, 
         "CHANNEL_2": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 2,
             "NAME": "Depth 2mm",
+            "ENABLE": False
         }    
     }, 
-    "UNIT 2": {
+    "UNIT_2": {
         "CHANNEL_CJC": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 0,
             "NAME": "Cold Junction Compensation",
+            "ENABLE": True
         }, 
         "CHANNEL_1": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 1,
             "NAME": "Depth 4mm",
+            "ENABLE": True
         }, 
         "CHANNEL_2": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 2,
             "NAME": "Depth 4mm",
+            "ENABLE": False
         }    
     }
 }
@@ -64,41 +70,6 @@ USBTC08_CHANNELS = {
     "CHANNEL_1": {
         "SENSOR_TYPE": "K",
         "CHANNEL_NO": 1,
-        "NAME": "Depth 4mm",
-    }, 
-    "CHANNEL_2": {
-        "SENSOR_TYPE": "K",
-        "CHANNEL_NO": 2,
-        "NAME": "Depth 4mm",
-    },
-    "CHANNEL_3": {
-        "SENSOR_TYPE": "K",
-        "CHANNEL_NO": 3,
-        "NAME": "Depth 4mm",
-    }, 
-    "CHANNEL_4": {
-        "SENSOR_TYPE": "K",
-        "CHANNEL_NO": 4,
-        "NAME": "Depth 4mm",
-    }, 
-    "CHANNEL_5": {
-        "SENSOR_TYPE": "K",
-        "CHANNEL_NO": 5,
-        "NAME": "Depth 4mm",
-    }, 
-    "CHANNEL_6": {
-        "SENSOR_TYPE": "K",
-        "CHANNEL_NO": 6,
-        "NAME": "Depth 4mm",
-    }, 
-    "CHANNEL_7": {
-        "SENSOR_TYPE": "K",
-        "CHANNEL_NO": 7,
-        "NAME": "Depth 4mm",
-    }, 
-    "CHANNEL_8": {
-        "SENSOR_TYPE": "K",
-        "CHANNEL_NO": 8,
         "NAME": "Depth 4mm",
     }, 
 }

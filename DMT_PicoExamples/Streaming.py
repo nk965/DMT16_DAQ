@@ -147,8 +147,8 @@ if __name__ == "__main__":
 
     sns.set_theme(style="darkgrid")
 
-    recording_period = 20
-    sampling_interval_ms = 300
+    recording_period = 180
+    sampling_interval_ms = 1
 
     record_data(recording_period, sampling_interval_ms)
 
