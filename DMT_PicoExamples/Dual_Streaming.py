@@ -25,7 +25,7 @@ class LoggingUnit:
 
     def closeUnit(self) -> None:
         self.status["close_unit"] = tc08.usb_tc08_close_unit(self.chandle)
-        assert_pico2000_ok(status["close_unit"])
+        assert_pico2000_ok(self.status["close_unit"])
 
 
 if __name__ == "__main__":
