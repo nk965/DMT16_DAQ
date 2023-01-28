@@ -13,20 +13,19 @@ from TC08_config import USBTC08_CONFIG, INPUT_TYPES
 class LoggingUnit:
     
     def __init__(self, config, sampling_interval_input, recording_period) -> None:
-        self.chandle = ctypes.c_int16()
-        self.status = {}
+        self.chandle = ctypes.c_int16(tc08.usb_tc08_open_unit())
         self.config = config
-        self.results = {}
         self.sampling_interval_input = sampling_interval_input
         self.recording_period = recording_period
+        self.status = {}
+        self.results = {}
 
     def __repr__(self) -> str:
         return f'{self.status}'
-            
-    def openUnit(self):
-        self.status["open_unit"] = tc08.usb_tc08_open_unit()
-        assert_pico2000_ok(self.status["open_unit"])
-        chandle = self.status["open_unit"]
+
+    def closeUnit(self) -> None:
+        self.status["close_unit"] = tc08.usb_tc08_close_unit(self.chandle)
+        assert_pico2000_ok(status["close_unit"])
 
 
 if __name__ == "__main__":
@@ -42,8 +41,8 @@ if __name__ == "__main__":
 
     UNIT_2 = LoggingUnit(USBTC08_CONFIG["UNIT 2"], sampling_interval_ms, recording_period)
 
+    UNIT_1.closeUnit()
+    UNIT_2.closeUnit()
+
     print(UNIT_1.__repr__)
     print(UNIT_2.__repr__)
-
-    UNIT_1.openUnit()
-    UNIT_2.openUnit()
