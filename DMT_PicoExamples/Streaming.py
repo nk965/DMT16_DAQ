@@ -115,10 +115,9 @@ def record_data(recording_period, sampling_interval_ms):
 
         assert_pico2000_ok(status["get_temp"])
 
-        temp_info[channel]["Temperatures"] = np.asarray(temp_buffer)
-        temp_info[channel]["Time Intervals"] = np.asarray(times_ms_buffer)
-        temp_info[channel]["Overflow"] = overflow
-
+        np.append(temp_info[channel]["Temperatures"], np.asarray(temp_buffer))
+        np.append(temp_info[channel]["Time Intervals"], np.asarray(times_ms_buffer))
+        np.append(temp_info[channel]["Overflow"], np.asarray(overflow))
 
     # stop unit
     status["stop"] = tc08.usb_tc08_stop(chandle)
