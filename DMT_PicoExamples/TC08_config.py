@@ -18,6 +18,43 @@ INPUT_TYPES = {
     "X": ctypes.c_int8(88), # mV readings 
 }
 
+USBCTC08_CONFIG = {
+    "UNIT 1": {
+        "CHANNEL_CJC": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 0,
+            "NAME": "Cold Junction Compensation",
+        }, 
+        "CHANNEL_1": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 1,
+            "NAME": "Depth 4mm",
+        }, 
+        "CHANNEL_2": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 2,
+            "NAME": "Depth 2mm",
+        }    
+    }, 
+    "UNIT 2": {
+        "CHANNEL_CJC": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 0,
+            "NAME": "Cold Junction Compensation",
+        }, 
+        "CHANNEL_1": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 1,
+            "NAME": "Depth 4mm",
+        }, 
+        "CHANNEL_2": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 2,
+            "NAME": "Depth 4mm",
+        }    
+    }
+}
+
 USBTC08_CHANNELS = {
     "CHANNEL_CJC": {
         "SENSOR_TYPE": "K",
