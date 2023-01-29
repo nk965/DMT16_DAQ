@@ -53,7 +53,7 @@ class LoggingUnit:
 
         ''' debugging function '''
 
-        return f'{self.status}'
+        return f'{self.status}, {self.buffers}'
 
     def closeUnit(self) -> None:
 
@@ -156,3 +156,4 @@ if __name__ == "__main__":
         logger.stopUnit()
         logger.closeUnit()
         print(logger.__repr__)
+
