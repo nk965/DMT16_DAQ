@@ -134,8 +134,6 @@ def record_data(recording_period, sampling_interval_ms):
         temp_info[channel]["Time Intervals_2"] = np.asarray(times_ms_buffer_2)
         temp_info[channel]["Overflow_2"] = overflow_2
 
-    print(temp_info)
-
     # stop unit
     status["stop"] = tc08.usb_tc08_stop(chandle)
     assert_pico2000_ok(status["stop"])
@@ -144,6 +142,9 @@ def record_data(recording_period, sampling_interval_ms):
     status["close_unit"] = tc08.usb_tc08_close_unit(chandle)
     assert_pico2000_ok(status["close_unit"])
     print(status)
+
+    print(temp_info["CHANNEL_1"]["Temperatures_2"])
+    print(temp_info["CHANNEL_1"]["Temperatures"])
 
     # post processing: adding time stamps and converting to pandas DataFrame to save to csv format
 
