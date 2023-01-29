@@ -63,10 +63,10 @@ def record_data(recording_period, sampling_interval_ms):
 
     temp_info = {}
 
+    temp_buffer = (ctypes.c_float * (int(BUFFER_SIZE)) * 2)() # 2 corresponds to number of channels
+
     for index, (channel, info) in enumerate(USBTC08_CHANNELS.items()):
 
-        temp_buffer = (ctypes.c_float * (int(BUFFER_SIZE)) * 2)()
-        
         times_ms_buffer = (ctypes.c_int32 * int(BUFFER_SIZE))()
         
         overflow = ctypes.c_int16()
@@ -75,7 +75,7 @@ def record_data(recording_period, sampling_interval_ms):
 
         status["get_temp"] = tc08.usb_tc08_get_temp_deskew(
             chandle, 
-            ctypes.byref(temp_buffer), 
+            ctypes.byref(temp_buffer[index]), 
             ctypes.byref(times_ms_buffer),
             ctypes.c_int32(BUFFER_SIZE), 
             ctypes.byref(overflow), 
