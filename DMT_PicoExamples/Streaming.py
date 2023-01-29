@@ -86,7 +86,7 @@ def record_data(recording_period, sampling_interval_ms):
 
         assert_pico2000_ok(status["get_temp"])
 
-        print(f'{channel}: {np.asarray(temp_buffer)}')
+        print(f'{channel}: {np.asarray(temp_buffer[index])}')
 
         temp_info[channel]["Temperatures"] = np.asarray(temp_buffer)
         temp_info[channel]["Time Intervals"] = np.asarray(times_ms_buffer)
