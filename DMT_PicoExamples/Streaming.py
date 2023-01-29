@@ -65,7 +65,7 @@ def record_data(recording_period, sampling_interval_ms):
 
     for index, (channel, info) in enumerate(USBTC08_CHANNELS.items()):
 
-        temp_buffer = (ctypes.c_float * (int(BUFFER_SIZE)) * 2)()
+        temp_buffer = (ctypes.c_float * (int(BUFFER_SIZE)))()
         
         times_ms_buffer = (ctypes.c_int32 * int(BUFFER_SIZE))()
         
@@ -75,7 +75,7 @@ def record_data(recording_period, sampling_interval_ms):
 
         status["get_temp"] = tc08.usb_tc08_get_temp_deskew(
             chandle, 
-            ctypes.byref(temp_buffer[0]), 
+            ctypes.byref(temp_buffer), 
             ctypes.byref(times_ms_buffer),
             ctypes.c_int32(BUFFER_SIZE), 
             ctypes.byref(overflow), 
@@ -103,7 +103,7 @@ def record_data(recording_period, sampling_interval_ms):
 
     for index, (channel, info) in enumerate(USBTC08_CHANNELS.items()):
 
-        temp_buffer_2 = (ctypes.c_float * (int(BUFFER_SIZE)) * 2)()
+        temp_buffer_2 = (ctypes.c_float * (int(BUFFER_SIZE)))()
         
         times_ms_buffer_2 = (ctypes.c_int32 * int(BUFFER_SIZE))()
         
@@ -113,7 +113,7 @@ def record_data(recording_period, sampling_interval_ms):
 
         status["get_temp"] = tc08.usb_tc08_get_temp_deskew(
             chandle, 
-            ctypes.byref(temp_buffer_2[1]), 
+            ctypes.byref(temp_buffer_2), 
             ctypes.byref(times_ms_buffer_2),
             ctypes.c_int32(BUFFER_SIZE), 
             ctypes.byref(overflow_2), 
@@ -185,8 +185,8 @@ if __name__ == "__main__":
 
     sns.set_theme(style="darkgrid")
 
-    recording_period = 30
-    sampling_interval_ms = 1
+    recording_period = 10
+    sampling_interval_ms = 1000
 
     record_data(recording_period, sampling_interval_ms)
 
