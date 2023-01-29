@@ -126,7 +126,7 @@ def record_data(recording_period, sampling_interval_ms):
             0
         )
 
-        print(f'{channel}: {np.asarray(temp_buffer_2)}')
+        print(f'{channel}: {np.asarray(temp_buffer_2)[index]}')
 
         assert_pico2000_ok(status["get_temp"])
 
