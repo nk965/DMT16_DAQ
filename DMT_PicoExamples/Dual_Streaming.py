@@ -171,8 +171,8 @@ if __name__ == "__main__":
     for logger in loggers:
         results[logger.name] = {}
 
-        temp_buffers = np.array(logger.buffers["temp_buffers"])
-        times_ms_buffers = np.array(logger.buffers["times_ms_buffers"])
+        temp_buffers = np.matrix(logger.buffers["temp_buffers"])
+        times_ms_buffers = np.matrix(logger.buffers["times_ms_buffers"])
 
         for index, channel in enumerate(loggers.config.keys()):
 
