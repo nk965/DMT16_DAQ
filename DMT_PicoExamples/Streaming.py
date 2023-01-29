@@ -86,15 +86,19 @@ def record_data(recording_period, sampling_interval_ms):
 
         assert_pico2000_ok(status["get_temp"])
 
+        print(f'{channel}: {temp_buffer}')
+
         temp_info[channel]["Temperatures"] = np.asarray(temp_buffer)
         temp_info[channel]["Time Intervals"] = np.asarray(times_ms_buffer)
         temp_info[channel]["Overflow"] = overflow
 
-    for channel in temp_info:
+    
 
-        df = pd.DataFrame.from_dict(temp_info[channel])
+    #for channel in temp_info:
 
-        df.to_csv(channel + ' 1 Data.csv')
+        #df = pd.DataFrame.from_dict(temp_info[channel])
+
+        #df.to_csv(channel + ' 1 Data.csv')
 
 
     
@@ -122,11 +126,15 @@ def record_data(recording_period, sampling_interval_ms):
             0
         )
 
+        print(f'{channel}: {temp_buffer_2}')
+
         assert_pico2000_ok(status["get_temp"])
 
         temp_info[channel]["Temperatures_2"] = np.asarray(temp_buffer_2)
         temp_info[channel]["Time Intervals_2"] = np.asarray(times_ms_buffer_2)
         temp_info[channel]["Overflow_2"] = overflow_2
+
+    print(temp_info)
 
     # stop unit
     status["stop"] = tc08.usb_tc08_stop(chandle)
@@ -155,9 +163,9 @@ def record_data(recording_period, sampling_interval_ms):
 
         # convert to dataframe and save as csv file
 
-        df = pd.DataFrame.from_dict(temp_info[channel])
+        #df = pd.DataFrame.from_dict(temp_info[channel])
 
-        df.to_csv(channel + ' 2 Data.csv')
+        #df.to_csv(channel + ' 2 Data.csv')
 
         # iterate over the dictionary, adding the data for each channel to the dataframe
         
