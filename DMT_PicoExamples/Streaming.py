@@ -56,14 +56,17 @@ def record_data(recording_period, sampling_interval_ms):
 
     # run data logger for specified period
     
-    time.sleep(recording_period/2)
+    polling_time = recording_period/2
+
+    time.sleep(polling_time)
     start_time = datetime.now()
 
-    BUFFER_SIZE = math.ceil(recording_period / (status["run"] / 1000)) 
+    BUFFER_SIZE = math.ceil(polling_time / (status["run"] / 1000)) 
 
     temp_info = {}
 
     temp_buffer = (ctypes.c_float * (int(BUFFER_SIZE)) * 2)() # 2 corresponds to number of channels
+    times_ms_buffer = (ctypes.c_int32 * int(BUFFER_SIZE) * 2)()
 
     for index, (channel, info) in enumerate(USBTC08_CHANNELS.items()):
 
@@ -76,7 +79,7 @@ def record_data(recording_period, sampling_interval_ms):
         status["get_temp"] = tc08.usb_tc08_get_temp_deskew(
             chandle, 
             ctypes.byref(temp_buffer[index]), 
-            ctypes.byref(times_ms_buffer),
+            ctypes.byref(times_ms_buffer[index]),
             ctypes.c_int32(BUFFER_SIZE), 
             ctypes.byref(overflow), 
             info['CHANNEL_NO'], 
@@ -103,7 +106,7 @@ def record_data(recording_period, sampling_interval_ms):
 
     
     
-    time.sleep(recording_period/2)
+    time.sleep(polling_time)
 
     temp_buffer_2 = (ctypes.c_float * (int(BUFFER_SIZE)) * 2)()
 
@@ -144,7 +147,6 @@ def record_data(recording_period, sampling_interval_ms):
     print(status)
 
     print(temp_info["CHANNEL_1"]["Temperatures_2"])
-    print(temp_info["CHANNEL_1"]["Temperatures"]) # TODO: this gets overwritten
 
     # post processing: adding time stamps and converting to pandas DataFrame to save to csv format
 

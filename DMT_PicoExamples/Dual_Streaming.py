@@ -19,7 +19,9 @@ class LoggingUnit:
         self.sampling_interval_input = sampling_interval_input
         self.recording_period = recording_period
         self.status = {}
-
+        self.temp_buffers = []
+        self.times_ms_buffers = []
+        
         ''' 
         logging unit initialisation procedure, non time sensitive
         '''
@@ -31,9 +33,6 @@ class LoggingUnit:
         self.status["set_mains"] = tc08.usb_tc08_set_mains(self.chandle, 0)
 
         # setting channels 
-
-        self.status["set_channels"] = tc08.usb_tc08_set_channels(self.chandle, 0, INPUT_TYPES['K'])
-        assert_pico2000_ok(status["set_channels"])
 
         for channel in self.config:
 
@@ -66,7 +65,7 @@ class LoggingUnit:
 
     def stopUnit(self) -> None:
 
-        ''' stopping unit from running'''
+        ''' stopping unit from running '''
 
         self.status["stop"] = tc08.usb_tc08_stop(self.chandle)
         assert_pico2000_ok(self.status["stop"])
@@ -79,10 +78,6 @@ class LoggingUnit:
         assert_pico2000_ok(self.status["run"])
         
         self.status["start_run_time"] = datetime.now()
-
-    def setBuffers(self): 
-
-        pass
 
     def pollData(self, temp_buffer, times_ms_buffer, BUFFER_SIZE, overflow, channel, info, results):
 
@@ -105,8 +100,6 @@ class LoggingUnit:
         # results[channel]["Time Intervals"] = np.asarray(times_ms_buffer)
         # results[channel]["Overflow"] = overflow
 
-        pass 
-
 
 if __name__ == "__main__":
 
@@ -120,14 +113,24 @@ if __name__ == "__main__":
 
     results = {}
 
-    UNIT_1 = LoggingUnit(USBTC08_CONFIG["UNIT_1"], sampling_interval_ms, recording_period)
+    loggers = []
 
-    UNIT_2 = LoggingUnit(USBTC08_CONFIG["UNIT_2"], sampling_interval_ms, recording_period)
+    for logger in USBTC08_CONFIG:
+        loggers.append(LoggingUnit(logger), sampling_interval_ms, recording_period)
 
-    UNIT_1.runUnit()
-    UNIT_2.runUnit()
+    for logger in loggers: 
+        logger.runUnit()
 
-    ''' regularly poll for data (every 50 seconds) and add to dictionary temp_info '''
+    for logger in loggers: 
+        logger.stopUnit()
+        logger.closeUnit()
+        print(logger.__repr__)
+
+'''
+
+
+
+    regularly poll for data (every 50 seconds) and add to dictionary temp_info
 
     current_time = 0
 
@@ -166,12 +169,6 @@ if __name__ == "__main__":
             # do same process as above
 
             current_time = recording_period
-    
-    UNIT_1.stopUnit()
-    UNIT_2.stopUnit()
 
-    UNIT_1.closeUnit()
-    UNIT_2.closeUnit()
 
-    print(UNIT_1.__repr__)
-    print(UNIT_2.__repr__)
+'''
