@@ -105,11 +105,11 @@ def record_data(recording_period, sampling_interval_ms):
     
     time.sleep(recording_period/2)
 
-    for index, (channel, info) in enumerate(USBTC08_CHANNELS.items()):
+    temp_buffer_2 = (ctypes.c_float * (int(BUFFER_SIZE)) * 2)()
 
-        temp_buffer_2 = (ctypes.c_float * (int(BUFFER_SIZE)))()
-        
-        times_ms_buffer_2 = (ctypes.c_int32 * int(BUFFER_SIZE))()
+    times_ms_buffer_2 = (ctypes.c_int32 * int(BUFFER_SIZE) * 2)()
+
+    for index, (channel, info) in enumerate(USBTC08_CHANNELS.items()):
         
         overflow_2 = ctypes.c_int16()
 
@@ -117,8 +117,8 @@ def record_data(recording_period, sampling_interval_ms):
 
         status["get_temp"] = tc08.usb_tc08_get_temp_deskew(
             chandle, 
-            ctypes.byref(temp_buffer_2), 
-            ctypes.byref(times_ms_buffer_2),
+            ctypes.byref(temp_buffer_2[index]), 
+            ctypes.byref(times_ms_buffer_2[index]),
             ctypes.c_int32(BUFFER_SIZE), 
             ctypes.byref(overflow_2), 
             info['CHANNEL_NO'], 
@@ -144,7 +144,7 @@ def record_data(recording_period, sampling_interval_ms):
     print(status)
 
     print(temp_info["CHANNEL_1"]["Temperatures_2"])
-    print(temp_info["CHANNEL_1"]["Temperatures"])
+    print(temp_info["CHANNEL_1"]["Temperatures"]) # TODO: this gets overwritten
 
     # post processing: adding time stamps and converting to pandas DataFrame to save to csv format
 

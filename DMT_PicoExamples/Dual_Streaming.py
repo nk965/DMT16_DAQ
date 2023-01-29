@@ -47,7 +47,7 @@ class LoggingUnit:
 
         # set sampling interval 
 
-        self.status["interval_ms"] = self.sampling_interval_input if self.sampling_interval_input >= tc08.usb_tc08_get_minimum_interval_ms(self.chandle) else tc08.usb_tc08_get_minimum_interval_ms(self.chandle) #review this logic
+        self.status["interval_ms"] = self.sampling_interval_input if self.sampling_interval_input >= tc08.usb_tc08_get_minimum_interval_ms(self.chandle) else tc08.usb_tc08_get_minimum_interval_ms(self.chandle)
 
         assert_pico2000_ok(self.status["interval_ms"])
 
