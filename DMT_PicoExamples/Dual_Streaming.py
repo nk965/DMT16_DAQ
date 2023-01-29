@@ -107,7 +107,7 @@ class LoggingUnit:
             self.chandle, 
             ctypes.byref(self.buffers["temp_buffers"][polling_index][index]), 
             ctypes.byref(self.buffers["times_ms_buffers"][polling_index][index]),
-            ctypes.c_int32(self.buffers["buffer_sizes"][polling_index][index]), 
+            ctypes.c_int32(self.buffers["buffer_sizes"][polling_index]), 
             ctypes.byref(self.buffers["overflows"][polling_index]), 
             info['CHANNEL_NO'], 
             0, 
