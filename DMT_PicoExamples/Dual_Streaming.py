@@ -12,9 +12,10 @@ from TC08_config import USBTC08_CONFIG, INPUT_TYPES, EXPERIMENT_CONFIG
 
 class LoggingUnit:
     
-    def __init__(self, config, sampling_interval_input, recording_period) -> None:
+    def __init__(self, config, name, sampling_interval_input, recording_period) -> None:
         
         self.chandle = ctypes.c_int16(tc08.usb_tc08_open_unit())
+        self.name = name
         self.config = config
         self.sampling_interval_input = sampling_interval_input
         self.recording_period = recording_period
@@ -53,7 +54,7 @@ class LoggingUnit:
 
         ''' debugging function '''
 
-        return f'{self.status}, {self.buffers}'
+        return f'{self.status}'
 
     def closeUnit(self) -> None:
 
@@ -89,14 +90,14 @@ class LoggingUnit:
 
             BUFFER_SIZE = math.ceil(poll / (self.status["interval_ms"] / 1000))
 
-            self.buffers["temp_buffers"].append((ctypes.c_float * (int(BUFFER_SIZE)) * int(len(self.config)))()) # len(self.config) is no of channels
+            self.buffers["temp_buffers"].append((ctypes.c_float * (int(BUFFER_SIZE)) * int(len(self.config)))()) 
+
             self.buffers["times_ms_buffers"].append((ctypes.c_int32 * int(BUFFER_SIZE) * int(len(self.config)))())
 
             self.buffers["buffer_sizes"].append(BUFFER_SIZE)
 
             self.buffers["overflows"].append(ctypes.c_int16())
  
-
     def pollData(self, polling_index):
 
         ''' polls data for all channels for this unit '''
@@ -115,6 +116,12 @@ class LoggingUnit:
         )
 
         assert_pico2000_ok(self.status["get_temp"])
+
+    def grabData(self):
+
+        
+
+        return {}
 
 
 if __name__ == "__main__":
@@ -136,8 +143,8 @@ if __name__ == "__main__":
 
     loggers = []
 
-    for logger_info in USBTC08_CONFIG.values():
-        loggers.append(LoggingUnit(logger_info, sampling_interval_ms, recording_period))
+    for name, logger_info in USBTC08_CONFIG.items():
+        loggers.append(LoggingUnit(logger_info, name, sampling_interval_ms, recording_period))
     
     for logger in loggers:
         logger.setBuffers(polling_period)
@@ -156,4 +163,27 @@ if __name__ == "__main__":
         logger.stopUnit()
         logger.closeUnit()
         print(logger.__repr__)
+
+    # post processing
+
+    results = {}
+
+    for logger in loggers:
+        results[logger.name] = {}
+
+        temp_buffers = np.array(logger.buffers["temp_buffers"])
+        times_ms_buffers = np.array(logger.buffers["times_ms_buffers"])
+
+        for index, channel in enumerate(loggers.config.keys()):
+
+            results[logger.name][channel] = {"Temperatures": temp_buffers[:, index].flatten()}
+            results[logger.name][channel] = {"Time Intervals": times_ms_buffers[:, index].flatten()}
+
+    print(results)
+
+
+
+
+
+
 
