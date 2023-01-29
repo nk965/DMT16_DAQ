@@ -115,8 +115,8 @@ if __name__ == "__main__":
 
     loggers = []
 
-    for logger in USBTC08_CONFIG:
-        loggers.append(LoggingUnit(logger, sampling_interval_ms, recording_period))
+    for logger_info in USBTC08_CONFIG.values():
+        loggers.append(LoggingUnit(logger_info, sampling_interval_ms, recording_period))
 
     for logger in loggers: 
         logger.runUnit()
@@ -127,8 +127,6 @@ if __name__ == "__main__":
         print(logger.__repr__)
 
 '''
-
-
 
     regularly poll for data (every 50 seconds) and add to dictionary temp_info
 
