@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from picosdk.usbtc08 import usbtc08 as tc08
 from picosdk.functions import assert_pico2000_ok
-from TC08_config import USBTC08_CONFIG, INPUT_TYPES
+from TC08_config import USBTC08_CONFIG, INPUT_TYPES, EXPERIMENT_CONFIG
 
 class LoggingUnit:
     
@@ -19,9 +19,8 @@ class LoggingUnit:
         self.sampling_interval_input = sampling_interval_input
         self.recording_period = recording_period
         self.status = {}
-        self.temp_buffers = []
-        self.times_ms_buffers = []
-        
+        self.buffers = {}
+
         ''' 
         logging unit initialisation procedure, non time sensitive
         '''
@@ -78,27 +77,44 @@ class LoggingUnit:
         assert_pico2000_ok(self.status["run"])
         
         self.status["start_run_time"] = datetime.now()
+    
+    def setBuffers(self, polling_period) -> None:
 
-    def pollData(self, temp_buffer, times_ms_buffer, BUFFER_SIZE, overflow, channel, info, results):
+        self.buffers["temp_buffers"] = []
+        self.buffers["times_ms_buffers"] = []
+        self.buffers["buffer_sizes"] = []
+        self.buffers["overflows"] = []
 
-        self.status["get_temp"] = tc08.usb_tc08_get_temp_deskew(
+        for poll in polling_period:
+
+            BUFFER_SIZE = math.ceil(poll / (self.status["interval_ms"] / 1000))
+
+            self.buffers["temp_buffers"].append((ctypes.c_float * (int(BUFFER_SIZE)) * int(len(self.config)))()) # len(self.config) is no of channels
+            self.buffers["times_ms_buffers"].append((ctypes.c_int32 * int(BUFFER_SIZE) * int(len(self.config)))())
+
+            self.buffers["buffer_sizes"].append(BUFFER_SIZE)
+
+            self.buffers["overflows"].append(ctypes.c_int16())
+ 
+
+    def pollData(self, polling_index):
+
+        ''' polls data for all channels for this unit '''
+
+        for index, info in enumerate(self.config.values()):
+
+            self.status["get_temp"] = tc08.usb_tc08_get_temp_deskew(
             self.chandle, 
-            ctypes.byref(temp_buffer), 
-            ctypes.byref(times_ms_buffer),
-            ctypes.c_int32(BUFFER_SIZE), 
-            ctypes.byref(overflow), 
+            ctypes.byref(self.buffers["temp_buffers"][polling_index][index]), 
+            ctypes.byref(self.buffers["times_ms_buffers"][polling_index][index]),
+            ctypes.c_int32(self.buffers["buffer_sizes"][polling_index][index]), 
+            ctypes.byref(self.buffers["overflows"][polling_index]), 
             info['CHANNEL_NO'], 
             0, 
             0
         )
 
         assert_pico2000_ok(self.status["get_temp"])
-
-        return {}
-
-        # results[channel]["Temperatures"] = np.asarray(temp_buffer)
-        # results[channel]["Time Intervals"] = np.asarray(times_ms_buffer)
-        # results[channel]["Overflow"] = overflow
 
 
 if __name__ == "__main__":
@@ -107,66 +123,36 @@ if __name__ == "__main__":
 
     sns.set_theme(style="darkgrid")
 
-    recording_period = 180
-    polling_interval = 30
-    sampling_interval_ms = 300
+    recording_period, polling_interval, sampling_interval_ms = EXPERIMENT_CONFIG['recording_period'], EXPERIMENT_CONFIG['polling_interval'], EXPERIMENT_CONFIG['sampling_interval_ms']
 
-    results = {}
+    current_time = 0
+
+    polling_period = []
+
+    while current_time < recording_period: 
+        interval = min(polling_interval, recording_period - current_time)
+        polling_period.append(interval)
+        current_time += interval
 
     loggers = []
 
     for logger_info in USBTC08_CONFIG.values():
         loggers.append(LoggingUnit(logger_info, sampling_interval_ms, recording_period))
+    
+    for logger in loggers:
+        logger.setBuffers(polling_period)
 
     for logger in loggers: 
         logger.runUnit()
+
+    for index, poll in enumerate(polling_period):
+
+        time.sleep(poll) 
+
+        for logger in loggers:
+            logger.pollData(index)
 
     for logger in loggers: 
         logger.stopUnit()
         logger.closeUnit()
         print(logger.__repr__)
-
-'''
-
-    regularly poll for data (every 50 seconds) and add to dictionary temp_info
-
-    current_time = 0
-
-    while current_time < recording_period:
-        
-        if current_time + polling_interval <= recording_period:
-        
-            time.sleep(polling_interval)
-
-            for logger in USBTC08_CONFIG:
-
-                # collect data from each logger 
-
-                results[logger] = {}
-
-                for channel in USBTC08_CONFIG[logger]:
-
-                        temp_buffer = (ctypes.c_float * (int(BUFFER_SIZE)))()
-        
-                        times_ms_buffer = (ctypes.c_int32 * int(BUFFER_SIZE))()
-        
-                        overflow = ctypes.c_int16()
-
-                        results[logger][channel] = {}
-
-                        # call poll data
-
-                # append data to results
-
-            current_time += polling_interval
-        
-        else:
-            
-            time.sleep(recording_period - current_time)
-
-            # do same process as above
-
-            current_time = recording_period
-
-
-'''

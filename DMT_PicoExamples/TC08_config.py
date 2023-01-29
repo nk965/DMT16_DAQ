@@ -36,7 +36,7 @@ USBTC08_CONFIG = {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 2,
             "NAME": "Depth 2mm",
-            "ENABLE": False
+            "ENABLE": True
         }    
     }, 
     "UNIT_2": {
@@ -56,9 +56,15 @@ USBTC08_CONFIG = {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 2,
             "NAME": "Depth 4mm",
-            "ENABLE": False
+            "ENABLE": True
         }    
     }
+}
+
+EXPERIMENT_CONFIG = {
+    "recording_period": 10,
+    "polling_interval": 3,
+    "sampling_interval_ms": 1000
 }
 
 USBTC08_CHANNELS = {
