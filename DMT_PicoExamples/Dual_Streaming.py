@@ -119,9 +119,10 @@ class LoggingUnit:
 
     def grabData(self):
 
-        
+        temp_poll1 = np.asarray(self.buffers["temp_buffers"][0][0])
+        temp_poll2 = np.asarray(self.buffers["temp_buffers"][1][0])
 
-        return {}
+        return {"temp_poll1": temp_poll1, "temp_poll2": temp_poll2}
 
 
 if __name__ == "__main__":
@@ -162,24 +163,25 @@ if __name__ == "__main__":
     for logger in loggers: 
         logger.stopUnit()
         logger.closeUnit()
+        print(logger.grabData())
         print(logger.__repr__)
 
     # post processing
 
-    results = {}
+    #results = {}
 
-    for logger in loggers:
-        results[logger.name] = {}
+    #for logger in loggers:
+        #results[logger.name] = {}
 
-        temp_buffers = np.matrix(logger.buffers["temp_buffers"])
-        times_ms_buffers = np.matrix(logger.buffers["times_ms_buffers"])
+        #temp_buffers = np.matrix(logger.buffers["temp_buffers"]) # FIXME: problem here 
+        #times_ms_buffers = np.matrix(logger.buffers["times_ms_buffers"]) # FIXME: problem here
 
-        for index, channel in enumerate(loggers.config.keys()):
+        #for index, channel in enumerate(loggers.config.keys()):
 
-            results[logger.name][channel] = {"Temperatures": temp_buffers[:, index].flatten()}
-            results[logger.name][channel] = {"Time Intervals": times_ms_buffers[:, index].flatten()}
+            #results[logger.name][channel] = {"Temperatures": temp_buffers[:, index].flatten()}
+            #results[logger.name][channel] = {"Time Intervals": times_ms_buffers[:, index].flatten()}
 
-    print(results)
+    #print(results)
 
 
 
