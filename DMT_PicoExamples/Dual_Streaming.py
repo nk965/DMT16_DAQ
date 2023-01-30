@@ -139,11 +139,11 @@ class LoggingUnit:
 
             for data in output_data:
 
-                polled_data = []
+                polled_data = np.asarray(self.buffers[data][0][index])
 
-                for i in range(len(self.buffers[data])):
+                for i in range(1, len(self.buffers[data])):
 
-                    polled_data.append(np.asarray(self.buffers[data][i][index]))
+                    polled_data = np.concatenate((polled_data, np.asarray(self.buffers[data][i][index])))
 
                 info[channel] = {data: polled_data}
 
