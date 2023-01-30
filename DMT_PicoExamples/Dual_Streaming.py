@@ -125,7 +125,7 @@ class LoggingUnit:
 
         info = {}
 
-        for index, channel in enumerate(self.config.values()):
+        for index, channel in enumerate(self.config.keys()):
             
             info[channel] = {}
 
