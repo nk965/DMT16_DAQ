@@ -172,13 +172,27 @@ class LoggingUnit:
 
             df.to_csv(filename)
 
+            fig, ax = plt.subplots()
+
+            for channel, data in raw_data.items():
+                df = pd.DataFrame({'times_ms_buffers':data['times_ms_buffers'], 'temp_buffers':data['temp_buffers']})
+                sns.scatterplot(x=df['times_ms_buffers'], y=df['times_ms_buffers'], label=channel, ax=ax)
+        
+        plt.title('TC08 Temperature Data')
+    
+        plt.xlabel('Time Interval (ms)')
+    
+        plt.ylabel('Temperature (deg)')
+    
+        plt.legend()
+    
+        plt.show()
+
         info["Raw Data"] = raw_data
 
-        return raw_data
+        return info
 
 if __name__ == "__main__":
-
-    # set length recording in seconds
 
     sns.set_theme(style="darkgrid")
 
