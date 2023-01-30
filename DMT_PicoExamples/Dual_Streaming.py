@@ -129,7 +129,7 @@ class LoggingUnit:
     
     def grabData(self):
 
-        info = {"Name": self.buffers["name"], "Start": self.status["start_run_time"]}
+        info = {"Name": self.name, "Start": self.status["start_run_time"]}
 
         raw_data = {}
 
