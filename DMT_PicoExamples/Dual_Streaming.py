@@ -176,7 +176,7 @@ class LoggingUnit:
 
             for channel, data in raw_data.items():
                 df = pd.DataFrame({'times_ms_buffers':data['times_ms_buffers'], 'temp_buffers':data['temp_buffers']})
-                sns.scatterplot(x=df['times_ms_buffers'], y=df['times_ms_buffers'], label=channel, ax=ax)
+                sns.scatterplot(x=df['times_ms_buffers'], y=df['temp_buffers'], label=channel, ax=ax)
         
         plt.title('TC08 Temperature Data')
     
