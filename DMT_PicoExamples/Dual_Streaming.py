@@ -104,7 +104,7 @@ class LoggingUnit:
 
             self.buffers["overflows"].append(ctypes.c_int16())
  
-    def pollData(self, polling_index):
+    def pollData(self, polling_index) -> None:
 
         ''' polls data for all channels for this unit '''
 
@@ -123,11 +123,11 @@ class LoggingUnit:
 
         assert_pico2000_ok(self.status["get_temp"])
 
-    def overflowCheck(self):
+    def overflowCheck(self) -> dict:
 
         return {f'{self.buffers["overflows"]}'}
     
-    def grabData(self):
+    def grabData(self) -> dict:
 
         info = {"Name": self.name, "Start": self.status["start_run_time"]}
 
@@ -166,16 +166,15 @@ class LoggingUnit:
             
             raw_data[channel]["Time Stamps"] = formatted_timestamps
 
-        # convert to dataframe and save as csv file
+            df = pd.DataFrame.from_dict(raw_data[channel])
 
-        #df = pd.DataFrame.from_dict(temp_info[channel])
+            filename = f"{self.name}_{channel} Data.csv"
+
+            df.to_csv(filename)
 
         info["Raw Data"] = raw_data
 
         return raw_data
-
-
-
 
 if __name__ == "__main__":
 
