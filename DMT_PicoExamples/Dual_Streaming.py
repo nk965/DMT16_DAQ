@@ -121,15 +121,23 @@ class LoggingUnit:
 
         assert_pico2000_ok(self.status["get_temp"])
 
+    def overflowCheck(self):
+
+        return {f'{self.buffers["overflows"]}'}
+    
     def grabData(self):
 
         info = {}
 
+        output_data = ["temp_buffers", "times_ms_buffers"]
+
         for index, channel in enumerate(self.config.keys()):
+
+            # Iterates through the channels
             
             info[channel] = {}
 
-            for data in self.buffers.keys():
+            for data in output_data:
 
                 polled_data = []
 
@@ -140,6 +148,8 @@ class LoggingUnit:
                 info[channel] = {data: polled_data}
 
         return info
+
+
 
 
 if __name__ == "__main__":
