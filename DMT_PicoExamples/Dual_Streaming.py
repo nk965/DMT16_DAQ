@@ -85,6 +85,8 @@ class LoggingUnit:
     
     def setBuffers(self, polling_period) -> None:
 
+        ''' initialise buffers for polling '''
+
         self.buffers["temp_buffers"] = []
         self.buffers["times_ms_buffers"] = []
         self.buffers["buffer_sizes"] = []
@@ -127,19 +129,19 @@ class LoggingUnit:
     
     def grabData(self):
 
-        info = {}
+        info = {"Name": self.buffers["name"], "Start": self.status["start_run_time"]}
+
+        raw_data = {}
 
         output_data = ["temp_buffers", "times_ms_buffers"]
 
         for index, channel in enumerate(self.config.keys()):
-
-            # Iterates through the channels
             
-            info[channel] = {}
+            raw_data[channel] = {}
 
             for data in output_data:
 
-                info[channel][data] = {}
+                raw_data[channel][data] = {}
 
                 polled_data = np.asarray(self.buffers[data][0][index])
 
@@ -147,9 +149,30 @@ class LoggingUnit:
 
                     polled_data = np.concatenate((polled_data, np.asarray(self.buffers[data][i][index])))
 
-                info[channel][data] = polled_data
+                raw_data[channel][data] = polled_data
 
-        return info
+            start_timestamp = int(info["Start"].timestamp() * 1000)
+
+            # add the intervals (in milliseconds) to the start timestamp
+            
+            timestamps_ms = start_timestamp + raw_data[channel]["Time Intervals"]
+
+            # convert the timestamps in ms to datetime
+            
+            timestamps = [datetime.fromtimestamp(ts/1000) for ts in timestamps_ms]
+
+            # format the timestamp
+            formatted_timestamps = [timestamp.strftime("%M:%S:%f") for timestamp in timestamps ]
+            
+            raw_data[channel]["Time Stamps"] = formatted_timestamps
+
+        # convert to dataframe and save as csv file
+
+        #df = pd.DataFrame.from_dict(temp_info[channel])
+
+        info["Raw Data"] = raw_data
+
+        return raw_data
 
 
 
