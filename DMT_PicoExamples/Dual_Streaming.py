@@ -133,7 +133,7 @@ class LoggingUnit:
 
                 polled_data = []
 
-                for i in range(self.buffers[data]):
+                for i in range(len(self.buffers[data])):
 
                     polled_data.append(np.asarray(self.buffers[data][i][index]))
 
