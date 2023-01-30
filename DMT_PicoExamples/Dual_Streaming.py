@@ -162,7 +162,7 @@ class LoggingUnit:
             timestamps = [datetime.fromtimestamp(ts/1000) for ts in timestamps_ms]
 
             # format the timestamp
-            formatted_timestamps = [timestamp.strftime("%M:%S:%f") for timestamp in timestamps ]
+            formatted_timestamps = [timestamp.strftime("%H:%M:%S:%f") for timestamp in timestamps ]
             
             raw_data[channel]["Time Stamps"] = formatted_timestamps
 
@@ -218,22 +218,6 @@ if __name__ == "__main__":
         print(logger.grabData())
         print(logger.__repr__)
 
-    # post processing
-
-    #results = {}
-
-    #for logger in loggers:
-        #results[logger.name] = {}
-
-        #temp_buffers = np.matrix(logger.buffers["temp_buffers"]) # FIXME: problem here 
-        #times_ms_buffers = np.matrix(logger.buffers["times_ms_buffers"]) # FIXME: problem here
-
-        #for index, channel in enumerate(loggers.config.keys()):
-
-            #results[logger.name][channel] = {"Temperatures": temp_buffers[:, index].flatten()}
-            #results[logger.name][channel] = {"Time Intervals": times_ms_buffers[:, index].flatten()}
-
-    #print(results)
 
 
 

@@ -64,7 +64,7 @@ USBTC08_CONFIG = {
 EXPERIMENT_CONFIG = {
     "recording_period": 10,
     "polling_interval": 3,
-    "sampling_interval_ms": 1000
+    "sampling_interval_ms": 100
 }
 
 USBTC08_CHANNELS = {
