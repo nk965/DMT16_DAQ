@@ -122,7 +122,10 @@ class LoggingUnit:
         temp_poll1 = np.asarray(self.buffers["temp_buffers"][0][0])
         temp_poll2 = np.asarray(self.buffers["temp_buffers"][1][0])
 
-        return {"temp_poll1": temp_poll1, "temp_poll2": temp_poll2}
+        time_poll1 = np.asarray(self.buffers["times_ms_buffers"][0][0])
+        time_poll2 = np.asarray(self.buffers["times_ms_buffers"][1][0])
+
+        return {"temp_poll1": temp_poll1, "temp_poll2": temp_poll2, "time_poll1": time_poll1, "time_poll2": time_poll2}
 
 
 if __name__ == "__main__":
