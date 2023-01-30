@@ -43,6 +43,10 @@ class LoggingUnit:
                 self.status["set_channel"] = tc08.usb_tc08_set_channel(self.chandle, self.config[channel]['CHANNEL_NO'], input_type)
                 
                 assert_pico2000_ok(self.status["set_channel"])
+            
+            else: 
+                
+                del self.config[channel]
 
         # set sampling interval 
 
@@ -119,13 +123,23 @@ class LoggingUnit:
 
     def grabData(self):
 
-        temp_poll1 = np.asarray(self.buffers["temp_buffers"][0][0])
-        temp_poll2 = np.asarray(self.buffers["temp_buffers"][1][0])
+        info = {}
 
-        time_poll1 = np.asarray(self.buffers["times_ms_buffers"][0][0])
-        time_poll2 = np.asarray(self.buffers["times_ms_buffers"][1][0])
+        for index, channel in enumerate(self.config.values()):
+            
+            info[channel] = {}
 
-        return {"temp_poll1": temp_poll1, "temp_poll2": temp_poll2, "time_poll1": time_poll1, "time_poll2": time_poll2}
+            for data in self.buffers.keys():
+
+                polled_data = []
+
+                for i in range(self.buffers[data]):
+
+                    polled_data.append(np.asarray(self.buffers[data][i][index]))
+
+                info[channel] = {data: polled_data}
+
+        return info
 
 
 if __name__ == "__main__":
