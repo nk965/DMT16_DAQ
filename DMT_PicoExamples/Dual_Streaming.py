@@ -155,7 +155,7 @@ class LoggingUnit:
 
             # add the intervals (in milliseconds) to the start timestamp
             
-            timestamps_ms = start_timestamp + raw_data[channel]["Time Intervals"]
+            timestamps_ms = start_timestamp + raw_data[channel]["times_ms_buffers"]
 
             # convert the timestamps in ms to datetime
             
