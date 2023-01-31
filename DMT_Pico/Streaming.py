@@ -9,6 +9,12 @@ It initialises the LoggingUnit object per logger used.
 
 def getPolling_Period(recording_period, polling_interval):
 
+    """obtains an array of polling intervals
+
+    Returns:
+        array: array of duration of time.sleep
+    """    
+
     current_time = 0
 
     polling_period = []
@@ -28,19 +34,31 @@ if __name__ == "__main__":
     recording_period, polling_interval, sampling_interval_ms = EXPERIMENT_CONFIG[
         'recording_period'], EXPERIMENT_CONFIG['polling_interval'], EXPERIMENT_CONFIG['sampling_interval_ms']
 
+    # defining array to be populated with LoggingUnit objects
+
     loggers = []
+
+    # initialises and starts the TC08 loggers (LED to blink green)
 
     for name, logger_info in USBTC08_CONFIG.items():
         loggers.append(LoggingUnit(logger_info, name,
                        sampling_interval_ms, recording_period))
+    
+    # creates array of polling intervals to loop through 
 
     polling_period = getPolling_Period(recording_period, polling_interval)
 
+    # non time sensitive setting of buffers 
+
     for logger in loggers:
         logger.setBuffers(polling_period)
+    
+    # runs unit and time stamps are marked in method
 
     for logger in loggers:
         logger.runUnit()
+
+    # regularly polls for data and saves it in buffer attribute
 
     for index, poll in enumerate(polling_period):
 
@@ -48,6 +66,8 @@ if __name__ == "__main__":
 
         for logger in loggers:
             logger.pollData(index)
+
+    # stops logger and print final status for debugging
 
     for logger in loggers:
         logger.stopUnit()

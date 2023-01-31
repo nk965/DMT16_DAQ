@@ -18,6 +18,8 @@ INPUT_TYPES = {
     "X": ctypes.c_int8(88), # mV readings 
 }
 
+# default configuration 
+
 USBTC08_CONFIG = {
     "UNIT_1": {
         "CHANNEL_CJC": {
