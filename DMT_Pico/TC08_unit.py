@@ -2,8 +2,6 @@ import ctypes
 import numpy as np
 import math
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 from datetime import datetime
 from picosdk.usbtc08 import usbtc08 as tc08
 from picosdk.functions import assert_pico2000_ok
@@ -254,26 +252,5 @@ class LoggingUnit:
             filename = f"{self.name}_{channel} Data.csv"
 
             df.to_csv(filename)
-
-            # plot using seaborn 
-
-            for channel, data in raw_data.items():
-                df = pd.DataFrame(
-                    {'times_ms_buffers': data['times_ms_buffers'], 'temp_buffers': data['temp_buffers']})
-
-                sns.scatterplot(x=df['times_ms_buffers'],
-                                y=df['temp_buffers'], label=channel)
-
-        plt.title('TC08 Temperature Data')
-
-        plt.xlabel('Time Interval (ms)')
-
-        plt.ylabel('Temperature (deg)')
-
-        plt.legend()
-
-        plt.show()
-
-        info["Raw Data"] = raw_data
 
         return info

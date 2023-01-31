@@ -1,4 +1,7 @@
 import time
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 from TC08_config import USBTC08_CONFIG, EXPERIMENT_CONFIG
 from TC08_unit import LoggingUnit
 
@@ -69,8 +72,29 @@ if __name__ == "__main__":
 
     # stops logger and print final status for debugging
 
+    logger_data = []
+
     for logger in loggers:
         logger.stopUnit()
         logger.closeUnit()
-        print(logger.grabData())
-        print(logger.__repr__)
+        logger_data.append(logger.grabData())
+
+
+    for logger in logger_data:
+
+        for channel, data in logger["raw_data"].items():
+            df = pd.DataFrame(
+                {'times_ms_buffers': data['times_ms_buffers'], 'temp_buffers': data['temp_buffers']})
+
+            sns.scatterplot(x=df['times_ms_buffers'],
+                y=df['temp_buffers'], label=channel)
+
+        plt.title(f'TC08 Temperature Data {logger["Name"]}')
+
+        plt.xlabel('Time Interval (ms)')
+
+        plt.ylabel('Temperature (deg)')
+
+        plt.legend()
+
+        plt.show()
