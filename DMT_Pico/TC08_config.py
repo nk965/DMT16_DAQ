@@ -67,16 +67,3 @@ EXPERIMENT_CONFIG = {
     "sampling_interval_ms": 100
 }
 
-USBTC08_CHANNELS = {
-    "CHANNEL_CJC": {
-        "SENSOR_TYPE": "K",
-        "CHANNEL_NO": 0,
-        "NAME": "Cold Junction Compensation",
-    }, 
-    "CHANNEL_1": {
-        "SENSOR_TYPE": "K",
-        "CHANNEL_NO": 1,
-        "NAME": "Depth 4mm",
-    }, 
-}
-
