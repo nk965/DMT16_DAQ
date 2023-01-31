@@ -29,6 +29,33 @@ def getPolling_Period(recording_period, polling_interval):
 
     return polling_period
 
+def plot_data(logger_data):
+
+    """plots data for all loggers """  
+
+    # iterates through all loggers
+
+    for logger in logger_data:
+
+        # extracts and plots channel as individual series
+
+        for channel, data in logger["raw_data"].items():
+            df = pd.DataFrame(
+                {'times_ms_buffers': data['times_ms_buffers'], 'temp_buffers': data['temp_buffers']})
+
+            sns.scatterplot(x=df['times_ms_buffers'],
+                y=df['temp_buffers'], label=channel)
+
+        plt.title(f'TC08 Temperature Data {logger["Name"]}')
+
+        plt.xlabel('Time Interval (ms)')
+
+        plt.ylabel('Temperature (deg)')
+
+        plt.legend()
+
+        plt.show()
+
 
 if __name__ == "__main__":
 
@@ -79,22 +106,5 @@ if __name__ == "__main__":
         logger.closeUnit()
         logger_data.append(logger.grabData())
 
+    plot_data(logger_data)
 
-    for logger in logger_data:
-
-        for channel, data in logger["raw_data"].items():
-            df = pd.DataFrame(
-                {'times_ms_buffers': data['times_ms_buffers'], 'temp_buffers': data['temp_buffers']})
-
-            sns.scatterplot(x=df['times_ms_buffers'],
-                y=df['temp_buffers'], label=channel)
-
-        plt.title(f'TC08 Temperature Data {logger["Name"]}')
-
-        plt.xlabel('Time Interval (ms)')
-
-        plt.ylabel('Temperature (deg)')
-
-        plt.legend()
-
-        plt.show()
