@@ -252,5 +252,7 @@ class LoggingUnit:
             filename = f"{self.name}_{channel} Data.csv"
 
             df.to_csv(filename)
+        
+        info["raw_data"] = raw_data 
 
         return info
