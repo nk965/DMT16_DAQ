@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from picosdk.usbtc08 import usbtc08 as tc08
 from picosdk.functions import assert_pico2000_ok
-
+from TC08_config import INPUT_TYPES
 class LoggingUnit:
 
     def __init__(self, config, name, sampling_interval_input, recording_period) -> None:
