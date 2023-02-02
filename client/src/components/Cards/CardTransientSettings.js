@@ -33,7 +33,7 @@ export default function CardTransientSettings() {
                   <input
                     type="number"
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    defaultValue="1"
+                    defaultValue="25"
                   />
                 </div>
               </div>
@@ -48,7 +48,7 @@ export default function CardTransientSettings() {
                   <input
                     type="number"
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    defaultValue="15"
+                    defaultValue="55"
                   />
                 </div>
               </div>
@@ -63,7 +63,7 @@ export default function CardTransientSettings() {
                   <input
                     type="number"
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    defaultValue="4"
+                    defaultValue="7"
                   />
                 </div>
               </div>

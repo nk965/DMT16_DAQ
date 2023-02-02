@@ -6,40 +6,20 @@ export default function CardLineChart() {
     var config = {
       type: "line",
       data: {
-        labels: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-        ],
+        labels: [1, 2, 3, 4, 5, 6, 7],
         datasets: [
           {
-            label: new Date().getFullYear(),
+            label: "Branch Pipe Valve",
             backgroundColor: "#4c51bf",
             borderColor: "#4c51bf",
-            data: [65, 78, 66, 44, 56, 67, 75],
+            data: [25, 30, 35, 40, 45, 50, 55],
             fill: false,
-          },
-          {
-            label: new Date().getFullYear() - 1,
-            fill: false,
-            backgroundColor: "#fff",
-            borderColor: "#fff",
-            data: [40, 68, 86, 74, 56, 60, 87],
           },
         ],
       },
       options: {
         maintainAspectRatio: false,
         responsive: true,
-        title: {
-          display: false,
-          text: "Sales Charts",
-          fontColor: "white",
-        },
         legend: {
           labels: {
             fontColor: "white",
