@@ -1,6 +1,7 @@
 import ctypes
 
 """
+@author: Nicholas Kwok
 Hardcoded channel configuration, TODO: this configuration should be determined by the JavaScript/Python UI
 Check tc08StreamingModeExample line 27 for thermocouple types and int8 equivalent
 """

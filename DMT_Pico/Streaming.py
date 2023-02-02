@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 from TC08_config import USBTC08_CONFIG, EXPERIMENT_CONFIG
 from TC08_unit import LoggingUnit
 
-"""This script performs streaming mode for a specified recording period, polling interval and sampling interval (ms).
+"""
+@author: Nicholas Kwok
+This script performs streaming mode for a specified recording period, polling interval and sampling interval (ms).
 It initialises the LoggingUnit object per logger used. 
 
 """

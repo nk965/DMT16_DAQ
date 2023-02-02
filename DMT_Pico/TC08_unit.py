@@ -7,7 +7,9 @@ from picosdk.usbtc08 import usbtc08 as tc08
 from picosdk.functions import assert_pico2000_ok
 from TC08_config import INPUT_TYPES
 
-"""This contains the LoggingUnit class which is used in Streaming.py
+"""
+@author: Nicholas Kwok
+This contains the LoggingUnit class which is used in Streaming.py
 It is an object which contains unit specific information as well as methods to collect data
 
 """

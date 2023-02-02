@@ -14,6 +14,10 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QThread
 from PySide6.QtCore import Signal
 
+'''
+@author: Pike Amornchat
+'''
+
 # # User files
 # from Config import *
 # from Dynamic_RingBuff import *

@@ -4,6 +4,7 @@ from Modules import *
 class UART:
 
     """
+    @author: Pike Amornchat
     This thread takes care of all the UART inputs - whether by bluetooth or serial, it will go into a COM port.
     The thread reads and decodes the data coming from the MCU into a fully readable string of length 86 (for G
     identifiers).
