@@ -22,7 +22,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stdio.h"
+#include "string.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,6 +47,8 @@ I2S_HandleTypeDef hi2s3;
 
 SPI_HandleTypeDef hspi1;
 
+TIM_HandleTypeDef htim6;
+
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
@@ -59,10 +62,11 @@ static void MX_I2C1_Init(void);
 static void MX_I2S3_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_TIM6_Init(void);
 void MX_USB_HOST_Process(void);
 
 /* USER CODE BEGIN PFP */
-
+void PrintString(char * strbuf);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -103,7 +107,45 @@ int main(void)
   MX_SPI1_Init();
   MX_USB_HOST_Init();
   MX_USART2_UART_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
+
+  // For testing (so that the LED blinks and is visible):
+
+  __HAL_TIM_SET_PRESCALER(&htim6,8400-1); // Use this function to set it - it doesn't work otherwise.
+  __HAL_TIM_SET_AUTORELOAD(&htim6,1000-1);
+
+
+  HAL_TIM_Base_Start_IT(&htim6); // Start the timer in interrupt mode
+
+  // To show that changing the counter works
+
+  HAL_Delay(3000);
+  __HAL_TIM_SET_AUTORELOAD(&htim6,5000-1);
+
+
+  // To show that the stop works
+
+  HAL_Delay(3000);
+  HAL_TIM_Base_Stop_IT(&htim6);
+
+  // To show that starting it back up works
+
+  HAL_Delay(3000);
+  HAL_TIM_Base_Start_IT(&htim6);
+
+  // To show that starting 2 times is valid - it should do nothing.
+
+  HAL_Delay(3000);
+  HAL_TIM_Base_Start_IT(&htim6); // Start the timer in interrupt mode
+
+
+  // Used intermediate variables
+
+  uint8_t UART_buf[3]; // Buffer for UART
+  uint16_t PIV_freq; // Frequency of the PIV in 0.1 kHz
+  uint16_t counter_val;
+
 
   /* USER CODE END 2 */
 
@@ -111,7 +153,25 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  //ligma
+
+	HAL_UART_Receive(&huart2,UART_buf,3,1); //3 bits max:
+	// Start: 1st bit hex ID, bits 2-3 are the sampling frequency in 0.1 kHz in hex (so 20 kHz = 200)
+	// End: just stop the timer
+	if (UART_buf[0] == 'S'){
+
+		PIV_freq = ((uint16_t)UART_buf[1] << 8) | ((uint16_t)UART_buf[2]); // Read the PIV frequency in units of 0.1 kHz
+		counter_val = (uint16_t)((10^5/PIV_freq) - 1); // Convert this to the period - for reference 1 kHz requires 10000-1 steps
+		__HAL_TIM_SET_AUTORELOAD(&htim6,counter_val);
+
+		HAL_TIM_Base_Start_IT(&htim6); // Start the timer in interrupt mode (can start multiple times with no error)
+
+	}
+	else if (UART_buf[0] == 'E'){
+
+		HAL_TIM_Base_Stop_IT(&htim6); // Stop the current timer
+
+	}
+
 
     /* USER CODE END WHILE */
     MX_USB_HOST_Process();
@@ -273,6 +333,44 @@ static void MX_SPI1_Init(void)
 }
 
 /**
+  * @brief TIM6 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM6_Init(void)
+{
+
+  /* USER CODE BEGIN TIM6_Init 0 */
+
+  /* USER CODE END TIM6_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM6_Init 1 */
+
+  /* USER CODE END TIM6_Init 1 */
+  htim6.Instance = TIM6;
+  htim6.Init.Prescaler = 84-1;
+  htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim6.Init.Period = 100-1;
+  htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM6_Init 2 */
+
+  /* USER CODE END TIM6_Init 2 */
+
+}
+
+/**
   * @brief USART2 Initialization Function
   * @param None
   * @retval None
@@ -329,6 +427,9 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(OTG_FS_PowerSwitchOn_GPIO_Port, OTG_FS_PowerSwitchOn_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, LD4_Pin|LD3_Pin|LD5_Pin|LD6_Pin
                           |Audio_RST_Pin, GPIO_PIN_RESET);
 
@@ -359,6 +460,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : BOOT1_Pin */
   GPIO_InitStruct.Pin = BOOT1_Pin;
@@ -398,6 +506,21 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void PrintString(char * strbuf)
+{
+	int len = strlen(strbuf);
+	HAL_UART_Transmit(&huart2,(uint8_t*)strbuf,len,HAL_MAX_DELAY);
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+//	HAL_UART_Transmit(&hlpuart1,"check",5,HAL_MAX_DELAY);
+	if (htim == &htim6)
+	{
+		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_1); // Toggle digital high/low on pin to Raspberry Pi
+		HAL_GPIO_TogglePin(GPIOD,LD4_Pin); // Debugging pin
+	}
+}
 
 /* USER CODE END 4 */
 
