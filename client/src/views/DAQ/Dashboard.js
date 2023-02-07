@@ -15,7 +15,9 @@ export default function Dashboard() {
     testDelay: 60,
     lenExperiment: 250,
     PIVfreq: 300,
-    Datafreq: 5,
+    Datafreq: 100,
+    dutyCycle: 0.4,
+    cyclePeriod: 1.2
   });
 
   const postResult = (result) => {
@@ -148,9 +150,42 @@ export default function Dashboard() {
                       </select>
                     </div>
                   </div>
+                  <div className="w-full lg:w-6/12 px-4">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="grid-password"
+                      >
+                        Duty Cycle (%)
+                      </label>
+                      <input
+                        type="number"
+                        name="dyeSpeed"
+                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                        value={userInput.dutyCycle}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="w-full lg:w-6/12 px-4">
+                    <div className="relative w-full mb-3">
+                      <label
+                        className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                        htmlFor="grid-password"
+                      >
+                        Period of Duty Cycle (s)
+                      </label>
+                      <input
+                        type="number"
+                        name="dyeSpeed"
+                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                        value={userInput.cyclePeriod}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
                 </div>
                 <hr className="mt-6 border-b-1 border-blueGray-300" />
-
                 <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
                   Timings
                 </h6>
@@ -201,15 +236,32 @@ export default function Dashboard() {
                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         htmlFor="grid-password"
                       >
-                        Datalogger Frequency (Hz)
+                        Datalogger Time Interval (ms)
                       </label>
-                      <input
+                      <select
                         type="number"
                         name="Datafreq"
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                         value={userInput.Datafreq}
                         onChange={handleChange}
-                      />
+                      >
+                      <option type="number" value={100}>100</option>
+                      <option type="number" value={200}>200</option>
+                      <option type="number" value={300}>300</option>
+                      <option type="number" value={400}>400</option>
+                      <option type="number" value={500}>500</option>
+                      <option type="number" value={600}>600</option>
+                      <option type="number" value={700}>700</option>
+                      <option type="number" value={800}>800</option>
+                      <option type="number" value={900}>900</option>
+                      <option type="number" value={1000}>1000</option>
+                      <option type="number" value={1100}>1100</option>
+                      <option type="number" value={1200}>1200</option>
+                      <option type="number" value={1300}>1300</option>
+                      <option type="number" value={1400}>1400</option>
+                      <option type="number" value={1500}>1500</option>
+                      <option type="number" value={1600}>1600</option>
+                      </select>
                     </div>
                   </div>
                   <div className="w-full lg:w-6/12 px-4">
