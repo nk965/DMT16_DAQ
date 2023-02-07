@@ -12,7 +12,7 @@ import FooterDAQ from "components/Footers/FooterDAQ.js";
 
 import Dashboard from "views/DAQ/Dashboard.js";
 import DataAnalytics from "views/DAQ/DataAnalytics.js";
-import Console from "views/DAQ/Console.js";
+import Transient from "views/DAQ/Transient.js";
 
 export default function DAQ() {
   return (
@@ -26,7 +26,7 @@ export default function DAQ() {
           <Switch>
             <Route path="/DAQ/dashboard" exact component={Dashboard} />
             <Route path="/DAQ/DataAnalytics" exact component={DataAnalytics} />
-            <Route path="/DAQ/Console" exact component={Console} />
+            <Route path="/DAQ/Transient" exact component={Transient} />
             <Redirect from="/DAQ" to="/DAQ/dashboard" />
           </Switch>
           <FooterDAQ />

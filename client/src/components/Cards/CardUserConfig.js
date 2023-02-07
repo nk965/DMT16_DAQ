@@ -28,7 +28,7 @@ export default function CardUserConfig({ postResult }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    postResult(userInput); // TODO: instead of console logging, change func to POST
+    postResult(userInput); // TODO: instead of Transient logging, change func to POST
   };
 
   return (
