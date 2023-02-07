@@ -7,7 +7,7 @@ export default function CardUserConfig({postResult}) {
     syrLen: "150",
     syrDia: "30",
     dyeSpeed: "8",
-    enPulse: "",
+    enPulse: "True",
     testDelay: "60",
     lenExperiment: "250",
     PIVfreq: "300",
@@ -103,9 +103,14 @@ export default function CardUserConfig({postResult}) {
                   >
                     Enable Pulse Mode?
                   </label>
-                  <select className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150">
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
+                  <select 
+                  className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150" 
+                  name="enPulse" 
+                  value={userInput.enPulse}
+                  onChange={handleChange}
+                  >
+                    <option value={"True"}>Yes</option>
+                    <option value={"False"}>No</option>
                   </select>
                 </div>
               </div>
