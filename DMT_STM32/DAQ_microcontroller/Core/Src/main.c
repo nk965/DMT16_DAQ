@@ -18,8 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
 #include "usb_host.h"
+#include "string.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -55,10 +55,10 @@ TIM_HandleTypeDef htim1;
 
 UART_HandleTypeDef huart5;
 UART_HandleTypeDef huart1;
+UART_HandleTypeDef huart2;
 
 SDRAM_HandleTypeDef hsdram1;
 
-osThreadId defaultTaskHandle;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -75,10 +75,11 @@ static void MX_SPI5_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_UART5_Init(void);
-void StartDefaultTask(void const * argument);
+static void MX_USART2_UART_Init(void);
+void MX_USB_HOST_Process(void);
 
 /* USER CODE BEGIN PFP */
-
+void Send_UART_String(UART_HandleTypeDef * htim, char * strbuf);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -122,45 +123,58 @@ int main(void)
   MX_SPI5_Init();
   MX_TIM1_Init();
   MX_USART1_UART_Init();
+  MX_USB_HOST_Init();
   MX_UART5_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  uint8_t Central_PC_UART_buf[3]; // uint8_t receive buffer
+  char PIV_send_UART_buf[3]; // PIV command string send buffer
+  char RPi_send_UART_buf[1]; // RPi command string send buffer
+  char End_command_buf[1]; // For all shutdown commands, e.g. E or master stop with 1 byte
   /* USER CODE END 2 */
 
-  /* USER CODE BEGIN RTOS_MUTEX */
-  /* add mutexes, ... */
-  /* USER CODE END RTOS_MUTEX */
-
-  /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
-  /* USER CODE END RTOS_SEMAPHORES */
-
-  /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
-  /* USER CODE END RTOS_TIMERS */
-
-  /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
-  /* USER CODE END RTOS_QUEUES */
-
-  /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 4096);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
-
-  /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
-  /* USER CODE END RTOS_THREADS */
-
-  /* Start scheduler */
-  osKernelStart();
-
-  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
+	  HAL_UART_Receive(&huart1,Central_PC_UART_buf,4,1); // Constantly poll for receiving the command from central PC
+	  	  if (Central_PC_UART_buf[0] == '2'){ // SDAQ command - 1st bit hex identifier, 2-3 is PIV frequency in 0.1 kHz, 4 is Pico sampling time in 100 ms
+
+	  		  // Re-format the PIV sending buffer
+
+	  		  PIV_send_UART_buf[0] = '3'; // Bit 1 is the identifier for SPIV
+	  		  PIV_send_UART_buf[1] = Central_PC_UART_buf[1]; // Second bit is MSB of PIV frequency (0.1 kHz)
+	  		  PIV_send_UART_buf[2] = Central_PC_UART_buf[2]; // Third bit is MSB of PIV frequency (0.1 kHz)
+
+	  		  // Package the Raspberry Pi array
+
+	  		  RPi_send_UART_buf[0] = '4'; // Bit 1 is the identifier for SRPI
+	  		  RPi_send_UART_buf[1] = Central_PC_UART_buf[3]; // Bit 2 is the Pico time period in 100 ms
+
+	  		  // Send off the configured buffers
+
+	  		  Send_UART_String(&huart5,PIV_send_UART_buf); // Send to PIV via USART5 - Duplex Async
+	  		  Send_UART_String(&huart2,RPi_send_UART_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
+	  	  }
+	  	  else if (Central_PC_UART_buf[0] == 'a'){ // EDAQ Command - only bit is this
+
+	  		  End_command_buf[1] = 'b'; // Set buffer to hex ID of PIV
+	  		  Send_UART_String(&huart5,End_command_buf); // Send to PIV via USART5 - Duplex Async
+
+	  		  End_command_buf[1] = 'c'; // Set buffer to hex ID of RPi
+	          Send_UART_String(&huart2,End_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
+	  	  }
+	  	  else if (Central_PC_UART_buf[0] == 'd'){ // Master stop command - send to everyone then terminate
+
+	  		  End_command_buf[1] = 'd'; // Set buffer to hex ID of RPi
+
+	  		  Send_UART_String(&huart5,End_command_buf); // Send to PIV via USART5 - Duplex Async
+	  		  Send_UART_String(&huart2,End_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
+  	  	  }
+
     /* USER CODE END WHILE */
+    MX_USB_HOST_Process();
 
     /* USER CODE BEGIN 3 */
   }
@@ -535,6 +549,39 @@ static void MX_USART1_UART_Init(void)
 
 }
 
+/**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 230400;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_HalfDuplex_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
 /* FMC initialization function */
 static void MX_FMC_Init(void)
 {
@@ -668,28 +715,11 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
-
-/* USER CODE BEGIN Header_StartDefaultTask */
-/**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+void Send_UART_String(UART_HandleTypeDef * htim, char * strbuf)
 {
-  /* init code for USB_HOST */
-  MX_USB_HOST_Init();
-  /* USER CODE BEGIN 5 */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END 5 */
+	HAL_UART_Transmit(htim,(uint8_t*)strbuf,strlen(strbuf),HAL_MAX_DELAY);
 }
+/* USER CODE END 4 */
 
 /**
   * @brief  Period elapsed callback in non blocking mode

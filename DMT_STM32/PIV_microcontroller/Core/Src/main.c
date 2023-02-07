@@ -142,7 +142,7 @@ int main(void)
 
   // Used intermediate variables
 
-  uint8_t UART_buf[3]; // Buffer for UART
+  uint8_t UART_buf[3]; // Buffer for UART - auto typecast from char to uint8_t
   uint16_t PIV_freq; // Frequency of the PIV in 0.1 kHz
   uint16_t counter_val;
 
@@ -155,9 +155,11 @@ int main(void)
   {
 
 	HAL_UART_Receive(&huart2,UART_buf,3,1); //3 bits max:
-	// Start: 1st bit hex ID, bits 2-3 are the sampling frequency in 0.1 kHz in hex (so 20 kHz = 200)
-	// End: just stop the timer
-	if (UART_buf[0] == 'S'){
+
+	// Start (SPIV (3)): 1st bit hex ID, bits 2-3 are the sampling frequency in 0.1 kHz in hex (so 20 kHz = 200)
+	// End (EPIV (b)): just stop the timer
+
+	if (UART_buf[0] == '3'){ // SPIV command - tell PIV what frequency to pulse
 
 		PIV_freq = ((uint16_t)UART_buf[1] << 8) | ((uint16_t)UART_buf[2]); // Read the PIV frequency in units of 0.1 kHz
 		counter_val = (uint16_t)((10^5/PIV_freq) - 1); // Convert this to the period - for reference 1 kHz requires 10000-1 steps
@@ -166,10 +168,9 @@ int main(void)
 		HAL_TIM_Base_Start_IT(&htim6); // Start the timer in interrupt mode (can start multiple times with no error)
 
 	}
-	else if (UART_buf[0] == 'E'){
+	else if ((UART_buf[0] == 'b') || (UART_buf[0] == 'd')){ // EPIV command - tell PIV to stop running OR master stop
 
 		HAL_TIM_Base_Stop_IT(&htim6); // Stop the current timer
-
 	}
 
 
@@ -512,10 +513,9 @@ void PrintString(char * strbuf)
 	HAL_UART_Transmit(&huart2,(uint8_t*)strbuf,len,HAL_MAX_DELAY);
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) // Timer interrupt ISR
 {
-//	HAL_UART_Transmit(&hlpuart1,"check",5,HAL_MAX_DELAY);
-	if (htim == &htim6)
+	if (htim == &htim6) // If the handler matches our configured timer:
 	{
 		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_1); // Toggle digital high/low on pin to Raspberry Pi
 		HAL_GPIO_TogglePin(GPIOD,LD4_Pin); // Debugging pin
