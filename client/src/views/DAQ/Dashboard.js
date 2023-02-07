@@ -1,4 +1,5 @@
 import React from "react";
+//import { useState } from 'react';
 
 // components
 
@@ -10,6 +11,13 @@ import CardStopStart from "components/Cards/CardStopStart.js";
 import CardUserConfig from "components/Cards/CardUserConfig.js";
 
 export default function Dashboard() {
+
+  //const [userConfig] = useState([]);
+
+  const postResult = (result) => {
+    console.log(result);
+  }
+
   return (
     <>
         <button className="w-full lg:w-6/12 xl:w-6/12 px-4 py-4">
@@ -36,7 +44,7 @@ export default function Dashboard() {
       </div>
       <div className="flex flex-wrap">
         <div className="w-full px-4">
-          <CardUserConfig />
+          <CardUserConfig postResult = {postResult}/>
         </div>
       </div>
     </>

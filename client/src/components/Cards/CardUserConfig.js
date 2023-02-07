@@ -1,8 +1,28 @@
 import React from "react";
+import { useState } from 'react';
 
-// components
+export default function CardUserConfig({postResult}) {
 
-export default function CardUserConfig() {
+  const [userInput, setUserInput] = useState({
+    syrLen: "150",
+    syrDia: "30",
+    dyeSpeed: "8",
+    enPulse: "",
+    testDelay: "60",
+    lenExperiment: "250",
+    PIVfreq: "300",
+    Datafreq: "5",
+  });
+
+  const handleChange = (event) => {
+    setUserInput({ ...userInput, [event.target.name]: event.target.value });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    postResult(userInput);
+  };
+
   return (
     <>
       <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0">
@@ -18,7 +38,7 @@ export default function CardUserConfig() {
           </div>
         </div>
         <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
-          <form>
+          <form onSubmit={handleSubmit}>
             <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
               Dye Injection Characteristics
             </h6>
@@ -33,8 +53,10 @@ export default function CardUserConfig() {
                   </label>
                   <input
                     type="number"
+                    name="syrLen"
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    defaultValue="150"
+                    value={userInput.syrLen}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -48,8 +70,10 @@ export default function CardUserConfig() {
                   </label>
                   <input
                     type="number"
+                    name="syrDia"
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    defaultValue="30"
+                    value = {userInput.syrDia}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -63,8 +87,10 @@ export default function CardUserConfig() {
                   </label>
                   <input
                     type="number"
+                    name="dyeSpeed"
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    defaultValue="8"
+                    value={userInput.dyeSpeed}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -100,8 +126,10 @@ export default function CardUserConfig() {
                   </label>
                   <input
                     type="number"
+                    name="testDelay"
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    defaultValue="60"
+                    value={userInput.testDelay}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -115,8 +143,10 @@ export default function CardUserConfig() {
                   </label>
                   <input
                     type="text"
+                    name="lenExperiment"
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    defaultValue="250"
+                    value={userInput.lenExperiment}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -136,8 +166,10 @@ export default function CardUserConfig() {
                   </label>
                   <input
                     type="number"
+                    name="Datafreq"
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    defaultValue="5"
+                    value={userInput.Datafreq}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -151,13 +183,18 @@ export default function CardUserConfig() {
                   </label>
                   <input
                     type="text"
+                    name="PIVfreq"
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    defaultValue="300"
+                    value={userInput.PIVfreq}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
             </div>
             <hr className="mt-6 border-b-1 border-blueGray-300" />
+            <div>
+              <button>Submit Contact</button>
+            </div>
           </form>
         </div>
       </div>
