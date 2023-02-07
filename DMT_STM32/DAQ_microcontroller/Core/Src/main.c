@@ -19,11 +19,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "usb_host.h"
-#include "string.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "string.h"
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -127,10 +127,14 @@ int main(void)
   MX_UART5_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  uint8_t Central_PC_UART_buf[3]; // uint8_t receive buffer
-  char PIV_send_UART_buf[3]; // PIV command string send buffer
-  char RPi_send_UART_buf[1]; // RPi command string send buffer
-  char End_command_buf[1]; // For all shutdown commands, e.g. E or master stop with 1 byte
+
+  // Apparently, it does not like small buffers - it just refused to work.
+
+  uint8_t Central_PC_UART_buf[4]; // uint8_t receive buffer
+  char RPi_send_UART_buf[5]; // RPi command string send buffer
+  char PIV_send_UART_buf[5]; // PIV command string send buffer
+  char End_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -138,40 +142,46 @@ int main(void)
 
   while (1)
   {
-	  HAL_UART_Receive(&huart1,Central_PC_UART_buf,4,1); // Constantly poll for receiving the command from central PC
-	  	  if (Central_PC_UART_buf[0] == '2'){ // SDAQ command - 1st bit hex identifier, 2-3 is PIV frequency in 0.1 kHz, 4 is Pico sampling time in 100 ms
+	  HAL_UART_Receive(&huart1,Central_PC_UART_buf,4,HAL_MAX_DELAY); // Constantly poll for receiving the command from central PC
 
-	  		  // Re-format the PIV sending buffer
+	  if (Central_PC_UART_buf[0] == '2'){ // SDAQ command - 1st bit hex identifier, 2-3 is PIV frequency in 0.1 kHz, 4 is Pico sampling time in 100 ms
 
-	  		  PIV_send_UART_buf[0] = '3'; // Bit 1 is the identifier for SPIV
-	  		  PIV_send_UART_buf[1] = Central_PC_UART_buf[1]; // Second bit is MSB of PIV frequency (0.1 kHz)
-	  		  PIV_send_UART_buf[2] = Central_PC_UART_buf[2]; // Third bit is MSB of PIV frequency (0.1 kHz)
+		  // Re-format the PIV sending buffer
 
-	  		  // Package the Raspberry Pi array
+		  PIV_send_UART_buf[0] = '3'; // Bit 1 is the identifier for SPIV
+		  PIV_send_UART_buf[1] = Central_PC_UART_buf[1]; // Second bit is MSB of PIV frequency (0.1 kHz)
+		  PIV_send_UART_buf[2] = Central_PC_UART_buf[2]; // Third bit is MSB of PIV frequency (0.1 kHz)
 
-	  		  RPi_send_UART_buf[0] = '4'; // Bit 1 is the identifier for SRPI
-	  		  RPi_send_UART_buf[1] = Central_PC_UART_buf[3]; // Bit 2 is the Pico time period in 100 ms
+		  // Package the Raspberry Pi array
 
-	  		  // Send off the configured buffers
+		  RPi_send_UART_buf[0] = '4'; // Bit 1 is the identifier for SRPI
+		  RPi_send_UART_buf[1] = Central_PC_UART_buf[3]; // Bit 2 is the Pico time period in 100 ms
 
-	  		  Send_UART_String(&huart5,PIV_send_UART_buf); // Send to PIV via USART5 - Duplex Async
-	  		  Send_UART_String(&huart2,RPi_send_UART_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
-	  	  }
-	  	  else if (Central_PC_UART_buf[0] == 'a'){ // EDAQ Command - only bit is this
+		  // Send off the configured buffers
 
-	  		  End_command_buf[1] = 'b'; // Set buffer to hex ID of PIV
-	  		  Send_UART_String(&huart5,End_command_buf); // Send to PIV via USART5 - Duplex Async
+		  Send_UART_String(&huart5,PIV_send_UART_buf); // Send to PIV via USART5 - Duplex Async
+		  Send_UART_String(&huart2,RPi_send_UART_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 
-	  		  End_command_buf[1] = 'c'; // Set buffer to hex ID of RPi
-	          Send_UART_String(&huart2,End_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
-	  	  }
-	  	  else if (Central_PC_UART_buf[0] == 'd'){ // Master stop command - send to everyone then terminate
+	  }
+	  else if (Central_PC_UART_buf[0] == 'a'){ // EDAQ Command - only bit is this, rest don't matter
 
-	  		  End_command_buf[1] = 'd'; // Set buffer to hex ID of RPi
+		  End_command_buf[0] = 'b'; // Set buffer to hex ID of PIV
+		  Send_UART_String(&huart5,End_command_buf); // Send to PIV via USART5 - Duplex Async
 
-	  		  Send_UART_String(&huart5,End_command_buf); // Send to PIV via USART5 - Duplex Async
-	  		  Send_UART_String(&huart2,End_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
-  	  	  }
+		  End_command_buf[0] = 'c'; // Set buffer to hex ID of RPi
+		  Send_UART_String(&huart2,End_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
+	  }
+	  else if (Central_PC_UART_buf[0] == 'd'){ // Master stop command - send to everyone then terminate
+
+		  End_command_buf[0] = 'd'; // Set buffer to hex ID of RPi
+
+		  Send_UART_String(&huart5,End_command_buf); // Send to PIV via USART5 - Duplex Async
+		  Send_UART_String(&huart2,End_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
+	  }
+	  // Clear UART Receive Buffer
+
+	  memset(Central_PC_UART_buf, 0, sizeof Central_PC_UART_buf);
+
 
     /* USER CODE END WHILE */
     MX_USB_HOST_Process();
@@ -532,7 +542,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 230400;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -658,7 +668,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOD, RDX_Pin|WRX_DCX_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOG, LD3_Pin|LD4_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : NCS_MEMS_SPI_Pin CSX_Pin OTG_FS_PSO_Pin */
   GPIO_InitStruct.Pin = NCS_MEMS_SPI_Pin|CSX_Pin|OTG_FS_PSO_Pin;
@@ -705,12 +718,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LD3_Pin LD4_Pin */
-  GPIO_InitStruct.Pin = LD3_Pin|LD4_Pin;
+  /*Configure GPIO pin : LD3_Pin */
+  GPIO_InitStruct.Pin = LD3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LD3_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : LD4_Pin */
+  GPIO_InitStruct.Pin = LD4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+  HAL_GPIO_Init(LD4_GPIO_Port, &GPIO_InitStruct);
 
 }
 
