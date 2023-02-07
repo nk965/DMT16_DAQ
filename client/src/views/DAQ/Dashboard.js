@@ -5,11 +5,27 @@ import React from "react";
 import CardLineChart from "components/Cards/CardLineChart.js";
 import CardTransientSettings from "components/Cards/CardTransientSettings.js";
 
+import CardStopStart from "components/Cards/CardStopStart.js";
+
 import CardUserConfig from "components/Cards/CardUserConfig.js";
 
 export default function Dashboard() {
   return (
     <>
+        <button className="w-full lg:w-6/12 xl:w-6/12 px-4 py-4">
+          <CardStopStart
+            statTitle="Master Stop"
+            color="bg-red-500"
+            accent="active:bg-red-600"
+          />
+        </button>
+        <button className="w-full lg:w-6/12 xl:w-6/12 px-4 py-4">
+          <CardStopStart
+            statTitle="Start Experiment"
+            color="bg-emerald-500"
+            accent="active:bg-emerald-600"
+          />
+        </button>
       <div className="flex flex-wrap">
         <div className="w-full xl:w-8/12 mb-12 xl:mb-0 px-4">
           <CardLineChart />

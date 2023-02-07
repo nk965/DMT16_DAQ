@@ -5,7 +5,7 @@ import { Switch, Route, Redirect } from "react-router-dom";
 
 import DAQNavbar from "components/Navbars/DAQNavbar.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-import HeaderStopStart from "components/Headers/HeaderStopStart.js";
+import Header from "components/Headers/Header.js";
 import FooterDAQ from "components/Footers/FooterDAQ.js";
 
 // views
@@ -21,7 +21,7 @@ export default function DAQ() {
       <div className="relative md:ml-64 bg-blueGray-100">
         <DAQNavbar />
         {/* Header */}
-        <HeaderStopStart />
+        <Header />
         <div className="px-4 md:px-10 mx-auto w-full -m-24">
           <Switch>
             <Route path="/DAQ/dashboard" exact component={Dashboard} />
