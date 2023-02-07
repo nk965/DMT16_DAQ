@@ -4,23 +4,34 @@ import { useState } from 'react';
 export default function CardUserConfig({postResult}) {
 
   const [userInput, setUserInput] = useState({
-    syrLen: "150",
-    syrDia: "30",
-    dyeSpeed: "8",
+    // default values 
+    syrLen: 150,
+    syrDia: 30,
+    dyeSpeed: 8,
     enPulse: "True",
-    testDelay: "60",
-    lenExperiment: "250",
-    PIVfreq: "300",
-    Datafreq: "5",
+    testDelay: 60,
+    lenExperiment: 250,
+    PIVfreq: 300,
+    Datafreq: 5,
+
   });
 
   const handleChange = (event) => {
-    setUserInput({ ...userInput, [event.target.name]: event.target.value });
+    const { name, type, value } = event.target
+
+    switch (type) {
+      case 'Number': 
+        setUserInput({ ...userInput, [name]: Number(value) });
+        break;
+      default:
+        setUserInput({ ...userInput, [name]: value });
+    }
+  
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    postResult(userInput);
+    postResult(userInput); // TODO: instead of console logging, change func to POST 
   };
 
   return (
