@@ -133,7 +133,8 @@ int main(void)
   uint8_t Central_PC_UART_buf[4]; // uint8_t receive buffer
   char RPi_send_UART_buf[5]; // RPi command string send buffer
   char PIV_send_UART_buf[5]; // PIV command string send buffer
-  char End_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
+  char RPi_end_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
+  char PIV_end_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
 
   /* USER CODE END 2 */
 
@@ -165,22 +166,33 @@ int main(void)
 	  }
 	  else if (Central_PC_UART_buf[0] == 'a'){ // EDAQ Command - only bit is this, rest don't matter
 
-		  End_command_buf[0] = 'b'; // Set buffer to hex ID of PIV
-		  Send_UART_String(&huart5,End_command_buf); // Send to PIV via USART5 - Duplex Async
+		  PIV_end_command_buf[0] = 'b'; // Set buffer to hex ID of PIV
+		  PIV_end_command_buf[1] = 'b'; // Extra padding for PIV (total 3 bytes always from DAQ)
+		  PIV_end_command_buf[2] = 'b'; // Extra padding for PIV (total 3 bytes always from DAQ)
+		  Send_UART_String(&huart5,PIV_end_command_buf); // Send to PIV via USART5 - Duplex Async
 
-		  End_command_buf[0] = 'c'; // Set buffer to hex ID of RPi
-		  Send_UART_String(&huart2,End_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
+		  RPi_end_command_buf[0] = 'c'; // Set buffer to hex ID of RPi
+		  RPi_end_command_buf[1] = 'c'; // Extra padding for RPi (total 2 bytes always from DAQ)
+		  Send_UART_String(&huart2,RPi_end_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 	  }
 	  else if (Central_PC_UART_buf[0] == 'd'){ // Master stop command - send to everyone then terminate
 
-		  End_command_buf[0] = 'd'; // Set buffer to hex ID of RPi
+		  PIV_end_command_buf[0] = 'd'; // Master stop hex ID
+		  PIV_end_command_buf[1] = 'd'; // Extra padding for PIV (total 3 bytes always from DAQ)
+		  PIV_end_command_buf[2] = 'd'; // Extra padding for PIV (total 3 bytes always from DAQ)
+		  Send_UART_String(&huart5,PIV_end_command_buf); // Send to PIV via USART5 - Duplex Async
 
-		  Send_UART_String(&huart5,End_command_buf); // Send to PIV via USART5 - Duplex Async
-		  Send_UART_String(&huart2,End_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
+		  RPi_end_command_buf[0] = 'd'; // Master stop hex ID
+		  RPi_end_command_buf[1] = 'd'; // Extra padding for RPi (total 2 bytes always from DAQ)
+		  Send_UART_String(&huart2,RPi_end_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 	  }
 	  // Clear UART Receive Buffer
 
 	  memset(Central_PC_UART_buf, 0, sizeof Central_PC_UART_buf);
+	  memset(RPi_send_UART_buf, 0, sizeof RPi_send_UART_buf);
+	  memset(PIV_send_UART_buf, 0, sizeof PIV_send_UART_buf);
+	  memset(RPi_end_command_buf, 0, sizeof RPi_end_command_buf);
+	  memset(PIV_end_command_buf, 0, sizeof PIV_end_command_buf);
 
 
     /* USER CODE END WHILE */

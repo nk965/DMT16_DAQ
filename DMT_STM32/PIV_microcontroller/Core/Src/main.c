@@ -154,7 +154,7 @@ int main(void)
   while (1)
   {
 
-	HAL_UART_Receive(&huart2,UART_buf,3,1); //3 bits max:
+	HAL_UART_Receive(&huart2,UART_buf,3,HAL_MAX_DELAY); //3 bits max:
 
 	// Start (SPIV (3)): 1st bit hex ID, bits 2-3 are the sampling frequency in 0.1 kHz in hex (so 20 kHz = 200)
 	// End (EPIV (b)): just stop the timer
