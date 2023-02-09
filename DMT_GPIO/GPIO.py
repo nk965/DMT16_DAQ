@@ -10,7 +10,7 @@ cb = [] # Initialising array for data
 def cbf(GPIO, level, tick):
    if last[GPIO] is not None:
       diff = pigpio.tickDiff(last[GPIO], tick) # Time difference (in us) between the current event change and the last change
-      print("G={} l={} d={}".format(GPIO, level, tick))
+      print("G={} l={} t={} d={}".format(GPIO, level, tick, diff))
    last[GPIO] = tick # Resetting the new previous GPIO state and tick time
 
 pi = pigpio.pi() # Connects to Local Pi
