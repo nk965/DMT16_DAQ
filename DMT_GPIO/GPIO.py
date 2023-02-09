@@ -1,13 +1,40 @@
-import RPi.GPIO as GPIO # Import Raspberry Pi GPIO library
+# Importing Libraries
+import sys
+import time
+import pigpio # Library for high speed gpio
 
-def button_callback(channel):
-    print("Button was pushed!")
+last = [None]*32
+cb = [] # Initialising array for data
 
-GPIO.setwarnings(False) # Ignore warning for now
-GPIO.setmode(GPIO.BOARD) # Use physical pin numbering
+# Defining Callback Function, GPIO = Pin No., level = state (1=HIGH, 0=LOW), tick = time (in us) since RPi bootup
+def cbf(GPIO, level, tick):
+   if last[GPIO] is not None:
+      diff = pigpio.tickDiff(last[GPIO], tick) # Time difference (in us) between the current event change and the last change
+      print("G={} l={} d={}".format(GPIO, level, tick))
+   last[GPIO] = tick # Resetting the new previous GPIO state and tick time
 
-GPIO.setup(10, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 10 to be an input pin and set initial value to be pulled low (off)
-GPIO.add_event_detect(10,GPIO.RISING,callback=button_callback) # Setup event on pin 10 rising edge
+pi = pigpio.pi() # Connects to Local Pi
 
-message = input("Press enter to quit\n\n") # Run until someone presses enter
-GPIO.cleanup() # Clean up
+if not pi.connected: # Exits code if no connection
+   exit()
+
+if len(sys.argv) == 1:
+   G = range(0, 32) # Total of 32 Pins
+else:
+   G = []
+   for a in sys.argv[1:]:
+      G.append(int(a)) # For multiple systems - ignore
+   
+for g in G:
+   cb.append(pi.callback(g, pigpio.EITHER_EDGE, cbf)) # Calls function once event change is detected on pin g
+
+# Closing Procedure
+try:
+   while True:
+      time.sleep(60)
+except KeyboardInterrupt:
+   print("\nTidying up")
+   for c in cb:
+      c.cancel()
+
+pi.stop()
