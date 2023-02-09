@@ -113,32 +113,29 @@ int main(void)
   // For testing (so that the LED blinks and is visible):
 
   __HAL_TIM_SET_PRESCALER(&htim6,8400-1); // Use this function to set it - it doesn't work otherwise.
-  __HAL_TIM_SET_AUTORELOAD(&htim6,1000-1);
+  __HAL_TIM_SET_AUTORELOAD(&htim6,10000-1); // Restart the timer in a special way
 
-
-  HAL_TIM_Base_Start_IT(&htim6); // Start the timer in interrupt mode
-
-  // To show that changing the counter works
-
-  HAL_Delay(3000);
-  __HAL_TIM_SET_AUTORELOAD(&htim6,5000-1);
-
-
-  // To show that the stop works
-
-  HAL_Delay(3000);
-  HAL_TIM_Base_Stop_IT(&htim6);
-
-  // To show that starting it back up works
-
-  HAL_Delay(3000);
-  HAL_TIM_Base_Start_IT(&htim6);
-
-  // To show that starting 2 times is valid - it should do nothing.
-
-  HAL_Delay(3000);
-  HAL_TIM_Base_Start_IT(&htim6); // Start the timer in interrupt mode
-
+//  // To show that changing the counter works
+//
+//  HAL_Delay(3000);
+//  __HAL_TIM_SET_AUTORELOAD(&htim6,5000-1);
+//
+//
+//  // To show that the stop works
+//
+//  HAL_Delay(3000);
+//  HAL_TIM_Base_Stop_IT(&htim6);
+//
+//  // To show that starting it back up works
+//
+//  HAL_Delay(3000);
+//  HAL_TIM_Base_Start_IT(&htim6);
+//
+//  // To show that starting 2 times is valid - it should do nothing.
+//
+//  HAL_Delay(3000);
+//  HAL_TIM_Base_Start_IT(&htim6); // Start the timer in interrupt mode
+//
 
   // Used intermediate variables
 
@@ -146,6 +143,9 @@ int main(void)
   uint16_t PIV_freq; // Frequency of the PIV in 0.1 kHz
   uint16_t counter_val;
 
+  // Testing code to see if we can keep adjusting the timer or not
+
+  uint32_t counter_timer = 10000;
 
   /* USER CODE END 2 */
 
@@ -156,19 +156,28 @@ int main(void)
 
 	HAL_UART_Receive(&huart2,UART_buf,3,HAL_MAX_DELAY); //3 bits max:
 
-	// Start (SPIV (3)): 1st bit hex ID, bits 2-3 are the sampling frequency in 0.1 kHz in hex (so 20 kHz = 200)
-	// End (EPIV (b)): just stop the timer
 
 	if (UART_buf[0] == '3'){ // SPIV command - tell PIV what frequency to pulse
 
+		HAL_TIM_Base_Stop_IT(&htim6); // Stop the current timer
+
 		PIV_freq = ((uint16_t)UART_buf[1] << 8) | ((uint16_t)UART_buf[2]); // Read the PIV frequency in units of 0.1 kHz
-		counter_val = (uint16_t)((10^5/PIV_freq) - 1); // Convert this to the period - for reference 1 kHz requires 10000-1 steps
-		__HAL_TIM_SET_AUTORELOAD(&htim6,counter_val);
+		counter_val = (uint32_t)((10^5/PIV_freq) - 1); // Convert this to the period - for reference 1 kHz requires 10000-1 steps
+		__HAL_TIM_SET_AUTORELOAD(&htim6,counter_val); // Restart the timer
+
+		// Testing code - every time it gets a signal it will double the blinking frequency
+
+		counter_timer = counter_timer/2;
+
+		__HAL_TIM_SET_AUTORELOAD(&htim6,counter_timer-1); // Restart the timer in a special way
+
+		HAL_GPIO_TogglePin(GPIOD,LD6_Pin); // Debugging pin - Blue for detecting UART transmission
 
 		HAL_TIM_Base_Start_IT(&htim6); // Start the timer in interrupt mode (can start multiple times with no error)
 
 	}
 	else if ((UART_buf[0] == 'b') || (UART_buf[0] == 'd')){ // EPIV command - tell PIV to stop running OR master stop
+
 
 		HAL_TIM_Base_Stop_IT(&htim6); // Stop the current timer
 	}
@@ -518,7 +527,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) // Timer interrupt I
 	if (htim == &htim6) // If the handler matches our configured timer:
 	{
 		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_1); // Toggle digital high/low on pin to Raspberry Pi
-		HAL_GPIO_TogglePin(GPIOD,LD4_Pin); // Debugging pin
+		HAL_GPIO_TogglePin(GPIOD,LD3_Pin); // Debugging pin - Yellow for timer
 	}
 }
 
