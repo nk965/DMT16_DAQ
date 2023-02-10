@@ -157,7 +157,7 @@ int main(void)
 	HAL_UART_Receive(&huart2,UART_buf,3,HAL_MAX_DELAY); //3 bits max:
 
 
-	if (UART_buf[0] == '3'){ // SPIV command - tell PIV what frequency to pulse
+	if (UART_buf[0] == 0b00000100){ // SPIV command - tell PIV what frequency to pulse
 
 		HAL_TIM_Base_Stop_IT(&htim6); // Stop the current timer
 
@@ -176,7 +176,7 @@ int main(void)
 		HAL_TIM_Base_Start_IT(&htim6); // Start the timer in interrupt mode (can start multiple times with no error)
 
 	}
-	else if ((UART_buf[0] == 'b') || (UART_buf[0] == 'd')){ // EPIV command - tell PIV to stop running OR master stop
+	else if ((UART_buf[0] == 0b00001100) || (UART_buf[0] == 0b00001110)){ // EPIV command - tell PIV to stop running OR master stop
 
 
 		HAL_TIM_Base_Stop_IT(&htim6); // Stop the current timer

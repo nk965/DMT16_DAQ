@@ -145,17 +145,17 @@ int main(void)
   {
 	  HAL_UART_Receive(&huart1,Central_PC_UART_buf,4,HAL_MAX_DELAY); // Constantly poll for receiving the command from central PC
 
-	  if (Central_PC_UART_buf[0] == '2'){ // SDAQ command - 1st bit hex identifier, 2-3 is PIV frequency in 0.1 kHz, 4 is Pico sampling time in 100 ms
+	  if (Central_PC_UART_buf[0] == 0b00000011){ // SDAQ command - 1st bit hex identifier, 2-3 is PIV frequency in 0.1 kHz, 4 is Pico sampling time in 100 ms
 
 		  // Re-format the PIV sending buffer
 
-		  PIV_send_UART_buf[0] = '3'; // Bit 1 is the identifier for SPIV
+		  PIV_send_UART_buf[0] = 0b00000100; // Bit 1 is the identifier for SPIV
 		  PIV_send_UART_buf[1] = Central_PC_UART_buf[1]; // Second bit is MSB of PIV frequency (0.1 kHz)
 		  PIV_send_UART_buf[2] = Central_PC_UART_buf[2]; // Third bit is MSB of PIV frequency (0.1 kHz)
 
 		  // Package the Raspberry Pi array
 
-		  RPi_send_UART_buf[0] = '4'; // Bit 1 is the identifier for SRPI
+		  RPi_send_UART_buf[0] = 0b00000101; // Bit 1 is the identifier for SRPI
 		  RPi_send_UART_buf[1] = Central_PC_UART_buf[3]; // Bit 2 is the Pico time period in 100 ms
 
 		  // Send off the configured buffers
@@ -164,26 +164,26 @@ int main(void)
 		  Send_UART_String(&huart2,RPi_send_UART_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 
 	  }
-	  else if (Central_PC_UART_buf[0] == 'a'){ // EDAQ Command - only bit is this, rest don't matter
+	  else if (Central_PC_UART_buf[0] == 0b00001011){ // EDAQ Command - only bit is this, rest don't matter
 
-		  PIV_end_command_buf[0] = 'b'; // Set buffer to hex ID of PIV
-		  PIV_end_command_buf[1] = 'b'; // Extra padding for PIV (total 3 bytes always from DAQ)
-		  PIV_end_command_buf[2] = 'b'; // Extra padding for PIV (total 3 bytes always from DAQ)
+		  PIV_end_command_buf[0] = 0b00001100;// Set buffer to hex ID of EPIV
+		  PIV_end_command_buf[1] = 0b00001100; // Extra padding for PIV (total 3 bytes always from DAQ)
+		  PIV_end_command_buf[2] = 0b00001100; // Extra padding for PIV (total 3 bytes always from DAQ)
 		  Send_UART_String(&huart5,PIV_end_command_buf); // Send to PIV via USART5 - Duplex Async
 
-		  RPi_end_command_buf[0] = 'c'; // Set buffer to hex ID of RPi
-		  RPi_end_command_buf[1] = 'c'; // Extra padding for RPi (total 2 bytes always from DAQ)
+		  RPi_end_command_buf[0] = 0b00001101; // Set buffer to hex ID of ERPi
+		  RPi_end_command_buf[1] = 0b00001101; // Extra padding for RPi (total 2 bytes always from DAQ)
 		  Send_UART_String(&huart2,RPi_end_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 	  }
-	  else if (Central_PC_UART_buf[0] == 'd'){ // Master stop command - send to everyone then terminate
+	  else if (Central_PC_UART_buf[0] == 0b00001110){ // Master stop command - send to everyone then terminate
 
-		  PIV_end_command_buf[0] = 'd'; // Master stop hex ID
-		  PIV_end_command_buf[1] = 'd'; // Extra padding for PIV (total 3 bytes always from DAQ)
-		  PIV_end_command_buf[2] = 'd'; // Extra padding for PIV (total 3 bytes always from DAQ)
+		  PIV_end_command_buf[0] = 0b00001110; // Master stop hex ID
+		  PIV_end_command_buf[1] = 0b00001110; // Extra padding for PIV (total 3 bytes always from DAQ)
+		  PIV_end_command_buf[2] = 0b00001110; // Extra padding for PIV (total 3 bytes always from DAQ)
 		  Send_UART_String(&huart5,PIV_end_command_buf); // Send to PIV via USART5 - Duplex Async
 
-		  RPi_end_command_buf[0] = 'd'; // Master stop hex ID
-		  RPi_end_command_buf[1] = 'd'; // Extra padding for RPi (total 2 bytes always from DAQ)
+		  RPi_end_command_buf[0] = 0b00001110; // Master stop hex ID
+		  RPi_end_command_buf[1] = 0b00001110; // Extra padding for RPi (total 2 bytes always from DAQ)
 		  Send_UART_String(&huart2,RPi_end_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 	  }
 	  // Clear UART Receive Buffer
