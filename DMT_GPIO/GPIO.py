@@ -15,8 +15,7 @@ def storage(datalist):
 def cbf(GPIO, level, tick):
    if last[GPIO] is not None:
       diff = pigpio.tickDiff(last[GPIO], tick) # Time difference (in us) between the current event change and the last change
-      datalist = []
-      datalist.append(GPIO, level, tick, diff)
+      datalist = [GPIO, level, tick, diff]
       storage(datalist)
       #print("G={} l={} t={} d={}".format(GPIO, level, tick, diff))
    last[GPIO] = tick # Resetting the new previous GPIO state and tick time
