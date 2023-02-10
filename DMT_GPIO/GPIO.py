@@ -34,6 +34,7 @@ else:
    
 for g in G:
    cb.append(pi.callback(g, pigpio.EITHER_EDGE, cbf)) # Calls function once event change is detected on pin g
+   print(len(cb))
    py_data.append(cb)
 
 # Closing Procedure
