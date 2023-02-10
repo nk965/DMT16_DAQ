@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // components
 
@@ -22,6 +22,13 @@ export default function Dashboard() {
 
   const postResult = (result) => {
     console.log(result);
+    fetch('inputs/userConfig', {
+      credentials: 'include',
+      method: "POST",
+      body: JSON.stringify({
+        content: result
+      })
+    })
   };
 
   const handleChange = (event) => {

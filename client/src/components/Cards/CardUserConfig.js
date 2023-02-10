@@ -1,7 +1,8 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function CardUserConfig({ postResult }) {
+
   const [userInput, setUserInput] = useState({
     // default values
     syrLen: 150,
@@ -210,7 +211,7 @@ export default function CardUserConfig({ postResult }) {
             <hr className="mt-6 border-b-1 border-blueGray-300" />
           </form>
           <div>
-              <button type="submit">Submit Contact</button>
+            <button type="submit">Submit Contact</button>
           </div>
         </div>
       </div>
