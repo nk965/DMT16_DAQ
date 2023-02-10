@@ -1,16 +1,24 @@
 # Importing Libraries
 import sys
 import time
+import numpy as np
 import pigpio # Library for high speed gpio
 
 last = [None]*32
-cb = [] # Initialising array for data
+cb = [] # Initialising list for data
+
+# Defining Storage Function to append each generated list
+def storage(datalist):
+   print(datalist)
 
 # Defining Callback Function, GPIO = Pin No., level = state (1=HIGH, 0=LOW), tick = time (in us) since RPi bootup
 def cbf(GPIO, level, tick):
    if last[GPIO] is not None:
       diff = pigpio.tickDiff(last[GPIO], tick) # Time difference (in us) between the current event change and the last change
-      print("G={} l={} t={} d={}".format(GPIO, level, tick, diff))
+      datalist = []
+      datalist.append(GPIO, level, tick, diff)
+      storage(datalist)
+      #print("G={} l={} t={} d={}".format(GPIO, level, tick, diff))
    last[GPIO] = tick # Resetting the new previous GPIO state and tick time
 
 pi = pigpio.pi() # Connects to Local Pi
