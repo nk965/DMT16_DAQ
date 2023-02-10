@@ -16,7 +16,7 @@ py_data = [['GPIO','State','Tick','Diff']]
 def cbf(GPIO, level, tick):
    if last[GPIO] is not None:
       diff = pigpio.tickDiff(last[GPIO], tick) # Time difference (in us) between the current event change and the last change
-      datalist = [GPIO, level, tick, diff]
+      py_data.append([GPIO, level, tick, diff])
       #print("G={} l={} t={} d={}".format(GPIO, level, tick, diff))
    last[GPIO] = tick # Resetting the new previous GPIO state and tick time
 
@@ -34,8 +34,6 @@ else:
    
 for g in G:
    cb.append(pi.callback(g, pigpio.EITHER_EDGE, cbf)) # Calls function once event change is detected on pin g
-   print(len(cb))
-   py_data.append(cb)
 
 # Closing Procedure
 try:
@@ -43,8 +41,8 @@ try:
       time.sleep(60)
 except KeyboardInterrupt:
    print("\nTidying up")
-   np_data = np.array(py_data)
-   print(np_data)
+   for i in py_data:
+      print(i)
    for c in cb:
       c.cancel()
 
