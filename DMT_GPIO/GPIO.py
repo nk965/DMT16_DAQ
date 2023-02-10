@@ -49,7 +49,7 @@ except KeyboardInterrupt:
         writer = csv.writer(csvfile)
         for i in py_data:
             row = [i]
-            writer = writerow(row) # Writing one row at a time
+            writer.writerow(row) # Writing one row at a time
    for c in cb:
       c.cancel()
 
