@@ -150,7 +150,7 @@ class UART:
             self.serial_connection_TB.close()
 
     # Run activated by start() method of QThreads
-    def run(self):
+    def send(self, info):
         """
         This module will send out all the configurations to the 2 different ports.
         :return: None
@@ -161,26 +161,7 @@ class UART:
             try:
 
                 # Read all data from bytearray - clears buffer too
-                data = self.serial_connection.read_all()
-
-                # Check for overflow warning
-                if len(data) > 10000:
-                    print('WARNING: more than 10000 elements in UART buffer')
-
-                # Adds to the bytearray what we just got from data (extend is like append for bytearray)
-                self.UART_buffer.extend(data)
-
-                # Search for '\n' to see the first instance of line break,
-                # once found then decode the section found, replacing all commas with spaces, then clears that part of
-                # the buffer. Once done, emits using signal to data manager.
-                i = self.UART_buffer.find(b'\n')
-                if i >= 0:
-                    line = self.UART_buffer[:i+1].decode('utf-8').rstrip(',')
-                    self.UART_buffer = self.UART_buffer[i+1:]
-                    self.serial_to_manager_carrier.emit(line)
-
-                # If there is no error anymore, then reset the previous error so that the exception works again.
-                self.previous_error = ''
+                self.serial_connection.write(info)
 
             # Sometimes the microcontroller has fragments saved, or the user presses soft reset at an awkward time,
             # giving rise to an incomplete line and hence no identifier/incomplete data.
@@ -195,3 +176,4 @@ class UART:
                     print(e)
                 else:
                     self.previous_error = e
+        

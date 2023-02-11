@@ -1,6 +1,6 @@
 """
 @author: Nicholas Kwok
-Temporary configuration file for sending user inputs into the microcontrollers
+Configuration file for sending user inputs into the microcontrollers
 """
 
 inputInfo = {
@@ -124,26 +124,4 @@ inputInfo = {
         "units": "",
         "submission_form": "transientInput"
     },
-}
-
-# Temporary user inputs for testing, in the future, this will be passed directly from Javascript
-userConfig = {
-    "syrLen": "150",
-    "syrDia": "30",
-    "dyeSpeed": "8",
-    "enPulse": "True",
-    "testDelay": "60",
-    "lenExperiment": "250",
-    "PIVfreq": "50",
-    "Datafreq": "100",
-    "cyclePeriod": "1.2",
-    "dutyCycle": "0.4"
-}
-
-transientInput = {
-    "start_y": "25", 
-    "end_y": "55",
-    "nodes": "7",
-    "presetConfig": "Linear",
-    "trans_time": "15" 
 }
