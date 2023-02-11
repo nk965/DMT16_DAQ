@@ -11,7 +11,7 @@ export default function CardUserConfig({ postResult }) {
     enPulse: "True",
     testDelay: 60,
     lenExperiment: 250,
-    PIVfreq: 300,
+    PIVfreq: 50,
     Datafreq: 5,
   });
 

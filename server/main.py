@@ -4,41 +4,47 @@ Main script for communicating with microcontrollers
 """
 
 import ctypes
-import math
 import numpy as np
 import matplotlib.pyplot as plt
 
-from userInputs import userConfig, transientInput
+from userInputs import userConfig, transientInput, inputInfo
 
-convertedConfig = {}
+def float_to_binary(x: float, input_range: list, bits: int) -> tuple:
 
-for key, value in userConfig.items():
-    if value.isdigit():
-        convertedConfig[key] = int(value)
-    elif value.lower() == "true":
-        convertedConfig[key] = True
-    elif value.lower() == "false":
-        convertedConfig[key] = False
-    else:
-        convertedConfig[key] = value
+    min_input, max_input = input_range[0], input_range[1]
+    
+    max_output = 2**bits - 1
 
-#f is frequency input
+    scaled = (x - min_input) / (max_input) * (max_output)
 
-f = np.arange(10,20000,1) # in Hz
+    rounded = round(scaled)
+    
+    binary = bin(rounded)
 
-no_ticks = np.round(84*10**6/(129*f),1) #TODO: send this in binary through serial port
+    actual = (rounded * max_input) / max_output
+    
+    return actual, binary
 
-#TODO: UTF-8 characters 
+def cleanInputs(dictionary):
 
-#binary bin(30) e.g. 
+    convertedConfig = {}
 
-f_actual = 84*10**6/(129*no_ticks)
+    for key, value in dictionary.items():
 
-# plt.scatter(f,f)
-# print(f_actual)
-plt.scatter(f,f_actual-f)
-plt.show()
+        if value.isdigit():
 
+            convertedConfig[key] = float(value)
 
+        elif value.lower() == "true":
 
+            convertedConfig[key] = True
 
+        elif value.lower() == "false":
+
+            convertedConfig[key] = False
+
+        else:
+
+            convertedConfig[key] = value
+
+    return convertedConfig
