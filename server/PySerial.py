@@ -12,7 +12,7 @@ class UART:
     It also deals with connecting to port and provides a method to change port during the execution of the program.
     """
 
-    def __init__(self, DAQ_port='COM14', TB_port='COM10', baud_rate=115200, buffer_size=10000):
+    def __init__(self, DAQ_port='COM9', TB_port='COM10', baud_rate=230400, buffer_size=10000):
 
         # Attributes for PySerial setup
         self.DAQ_port = DAQ_port
@@ -162,12 +162,17 @@ class UART:
 
                 # Read all data from bytearray - clears buffer too
                 print(info)
-                self.serial_connection.write(info)
+                self.serial_connection_DAQ.write(info)
+                time.sleep(3)
+                print(self.serial_connection_DAQ.read_all())
                 print("Happy Valentines Day")
+                self.close_port(0)
 
             # Sometimes the microcontroller has fragments saved, or the user presses soft reset at an awkward time,
             # giving rise to an incomplete line and hence no identifier/incomplete data.
             except Exception as e:
+
+                print(e)
 
                 # Re-initialize the UART buffer
                 del self.UART_buffer

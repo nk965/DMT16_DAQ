@@ -112,8 +112,8 @@ int main(void)
 
   // For testing (so that the LED blinks and is visible):
 
-  __HAL_TIM_SET_PRESCALER(&htim6,129-1); // Use this function to set it - it doesn't work otherwise.
-  __HAL_TIM_SET_AUTORELOAD(&htim6,10000-1); // Restart the timer in a special way
+//  __HAL_TIM_SET_PRESCALER(&htim6,129-1); // Use this function to set it - it doesn't work otherwise.
+//  __HAL_TIM_SET_AUTORELOAD(&htim6,60000-1); // Restart the timer in a special way
 
 //  // To show that changing the counter works
 //
@@ -142,7 +142,7 @@ int main(void)
   uint8_t UART_buf[3]; // Buffer for UART - auto typecast from char to uint8_t
   uint16_t PIV_counter; // Counter in uint16 + 1
   uint16_t counter_val; // Value of counter to put into autoreload function
-
+  HAL_TIM_Base_Stop_IT(&htim6);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -151,6 +151,10 @@ int main(void)
   {
 
 	HAL_UART_Receive(&huart2,UART_buf,3,HAL_MAX_DELAY); //3 bits max:
+
+//	if (UART_buf[0] == 'h'){
+//		HAL_GPIO_TogglePin(GPIOD,LD6_Pin);
+//	}
 
 
 	if (UART_buf[0] == 0b00000100){ // SPIV command - tell PIV what frequency to pulse
@@ -352,9 +356,9 @@ static void MX_TIM6_Init(void)
 
   /* USER CODE END TIM6_Init 1 */
   htim6.Instance = TIM6;
-  htim6.Init.Prescaler = 84-1;
+  htim6.Init.Prescaler = 8400-1;
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim6.Init.Period = 100-1;
+  htim6.Init.Period = 10000-1;
   htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
   {

@@ -144,8 +144,14 @@ int main(void)
   while (1)
   {
 	  HAL_UART_Receive(&huart1,Central_PC_UART_buf,4,HAL_MAX_DELAY); // Constantly poll for receiving the command from central PC
+//	  PIV_send_UART_buf[0] = 'h';
+//	  PIV_send_UART_buf[1] = 'h';
+//	  PIV_send_UART_buf[2] = 'h';
+//	  Send_UART_String(&huart5,PIV_send_UART_buf);
 
 	  if (Central_PC_UART_buf[0] == 0b00000011){ // SDAQ command - 1st bit hex identifier, 2-3 is PIV frequency in 0.1 kHz, 4 is Pico sampling time in 100 ms
+
+		  Send_UART_String(&huart1,(char*)Central_PC_UART_buf);
 
 		  // Re-format the PIV sending buffer
 

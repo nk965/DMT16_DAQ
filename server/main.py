@@ -37,15 +37,17 @@ def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_i
 
     UART.connect_port(0) # Connect through UART to DAQ (port 0 i.e., COM14)
     
-    message = bytearray.fromhex('01') # Command specific hex identifier - check documentation for details
+    message = bytearray.fromhex('03') # Command specific hex identifier - check documentation for details
 
     actualPIV, outPIVfreq = float_to_byte(PIVfreq_val, PIVfreq_info)
 
     actualDatafreq, outDatafreq = float_to_byte(Datafreq_val, Datafreq_info)
 
-    message.extend(outPIVfreq + outDatafreq)
+    extra = bytearray.fromhex("03030003")
 
-    UART.send(message)
+    # message.extend(extra + extra + extra)
+
+    UART.send(extra)
 
     return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV} 
 
@@ -59,11 +61,9 @@ if __name__ == "__main__":
     '''
 
     status = {}
+    process = UART()
 
     # start communication process by initialising UART class
-
-    process = UART(DAQ_port='COM9')
-    process.send("Hello")
 
     '''
     
