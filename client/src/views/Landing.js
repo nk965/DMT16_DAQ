@@ -62,8 +62,8 @@ export default function Landing() {
                     <div className="text-white p-3 text-center inline-flex items-center justify-center w-12 h-12 mb-5 shadow-lg rounded-full bg-red-400">
                       <i class="fa fa-terminal" aria-hidden="true"></i>
                     </div>
-                    <a href='/DAQ/Console'>
-                    <h6 className="text-xl font-semibold">Console</h6>
+                    <a href='/DAQ/Transient'>
+                    <h6 className="text-xl font-semibold">Transient</h6>
                     </a>
                   </div>
                 </div>

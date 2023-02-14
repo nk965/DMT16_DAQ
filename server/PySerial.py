@@ -12,7 +12,7 @@ class UART:
     It also deals with connecting to port and provides a method to change port during the execution of the program.
     """
 
-    def __init__(self, DAQ_port='COM14',TB_port = 'COM10', baud_rate=115200, buffer_size=10000):
+    def __init__(self, DAQ_port='COM14', TB_port='COM10', baud_rate=115200, buffer_size=10000):
 
         # Attributes for PySerial setup
         self.DAQ_port = DAQ_port
@@ -29,15 +29,16 @@ class UART:
         self.serial_connection_TB = serial.Serial()
 
         # Set the recieve and transmit buffer size
-        self.serial_connection_DAQ.set_buffer_size(rx_size=self.buffer_size, tx_size=self.buffer_size)
-        self.serial_connection_TB.set_buffer_size(rx_size=self.buffer_size, tx_size=self.buffer_size)
+        self.serial_connection_DAQ.set_buffer_size(
+            rx_size=self.buffer_size, tx_size=self.buffer_size)
+        self.serial_connection_TB.set_buffer_size(
+            rx_size=self.buffer_size, tx_size=self.buffer_size)
 
         # Connect to the COM port for both
         self.connect_port(0)
         self.connect_port(1)
 
     def list_ports(self):
-
         """
         Method tries and lists all available ports for connecting
         :return: List of string containing all available COM ports
@@ -69,7 +70,6 @@ class UART:
 
     # Changes the port attribute
     def change_port(self, port):
-
         """
         Allows the user to change ports with a method
         :param port: string specifying port, e.g. COM9
@@ -80,7 +80,6 @@ class UART:
 
     # Resets the UART buffer
     def reset(self):
-
         """
         Method accessed by Data Manager for full reset - clears buffers
         :return: None
@@ -89,8 +88,7 @@ class UART:
         self.UART_buffer = bytearray()
 
     # Connect port - used in initialization
-    def connect_port(self,portnum):
-
+    def connect_port(self, portnum):
         """
         Tries to connect to the port which is recorded in the class attribute self.port. If unavailable, prints error.
         :return: None
@@ -109,7 +107,8 @@ class UART:
                 self.serial_connection_DAQ.__del__()
                 self.serial_connection_DAQ.open()
 
-                print('Successfully connected to DAQ: %s' % self.serial_connection_DAQ.port)
+                print('Successfully connected to DAQ: %s' %
+                      self.serial_connection_DAQ.port)
 
             else:
                 self.serial_connection_TB.port = self.TB_port
@@ -120,7 +119,8 @@ class UART:
                 self.serial_connection_TB.__del__()
                 self.serial_connection_TB.open()
 
-                print('Successfully connected to Test Bed: %s' % self.serial_connection_TB.port)
+                print('Successfully connected to Test Bed: %s' %
+                      self.serial_connection_TB.port)
 
         except Exception as error:
 
@@ -133,12 +133,12 @@ class UART:
 
             print('If your error was the wrong port, try these ports:')
             print(available_ports)
-            print('The program is still running but will do nothing until you change the port')
+            print(
+                'The program is still running but will do nothing until you change the port')
 
     # To emergency close the port (used for debug)
 
-    def close_port(self,port):
-
+    def close_port(self, port):
         """
         Allows the user to close port and terminate the connection - used for debug and reset
         :return: None
@@ -150,47 +150,18 @@ class UART:
             self.serial_connection_TB.close()
 
     # Run activated by start() method of QThreads
-    def run(self):
-
+    def send(self, info):
         """
         This module will send out all the configurations to the 2 different ports.
         :return: None
         """
 
-
-
-
         # Check to see if the connection is open before trying to communicate:
         while self.serial_connection_DAQ.is_open or self.serial_connection_TB.is_open:
             try:
 
-
-
-
-
-
-
                 # Read all data from bytearray - clears buffer too
-                data = self.serial_connection.read_all()
-
-                # Check for overflow warning
-                if len(data) > 10000:
-                    print('WARNING: more than 10000 elements in UART buffer')
-
-                # Adds to the bytearray what we just got from data (extend is like append for bytearray)
-                self.UART_buffer.extend(data)
-
-                # Search for '\n' to see the first instance of line break,
-                # once found then decode the section found, replacing all commas with spaces, then clears that part of
-                # the buffer. Once done, emits using signal to data manager.
-                i = self.UART_buffer.find(b'\n')
-                if i >= 0:
-                    line = self.UART_buffer[:i+1].decode('utf-8').rstrip(',')
-                    self.UART_buffer = self.UART_buffer[i+1:]
-                    self.serial_to_manager_carrier.emit(line)
-
-                # If there is no error anymore, then reset the previous error so that the exception works again.
-                self.previous_error = ''
+                self.serial_connection.write(info)
 
             # Sometimes the microcontroller has fragments saved, or the user presses soft reset at an awkward time,
             # giving rise to an incomplete line and hence no identifier/incomplete data.
@@ -205,3 +176,4 @@ class UART:
                     print(e)
                 else:
                     self.previous_error = e
+        
