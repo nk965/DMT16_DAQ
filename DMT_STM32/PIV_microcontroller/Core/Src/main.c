@@ -112,7 +112,7 @@ int main(void)
 
   // For testing (so that the LED blinks and is visible):
 
-  __HAL_TIM_SET_PRESCALER(&htim6,8400-1); // Use this function to set it - it doesn't work otherwise.
+  __HAL_TIM_SET_PRESCALER(&htim6,129-1); // Use this function to set it - it doesn't work otherwise.
   __HAL_TIM_SET_AUTORELOAD(&htim6,10000-1); // Restart the timer in a special way
 
 //  // To show that changing the counter works
@@ -140,12 +140,8 @@ int main(void)
   // Used intermediate variables
 
   uint8_t UART_buf[3]; // Buffer for UART - auto typecast from char to uint8_t
-  uint16_t PIV_freq; // Frequency of the PIV in 0.1 kHz
-  uint16_t counter_val;
-
-  // Testing code to see if we can keep adjusting the timer or not
-
-  uint32_t counter_timer = 10000;
+  uint16_t PIV_counter; // Counter in uint16 + 1
+  uint16_t counter_val; // Value of counter to put into autoreload function
 
   /* USER CODE END 2 */
 
@@ -161,15 +157,11 @@ int main(void)
 
 		HAL_TIM_Base_Stop_IT(&htim6); // Stop the current timer
 
-		PIV_freq = ((uint16_t)UART_buf[1] << 8) | ((uint16_t)UART_buf[2]); // Read the PIV frequency in units of 0.1 kHz
-		counter_val = (uint32_t)((10^5/PIV_freq) - 1); // Convert this to the period - for reference 1 kHz requires 10000-1 steps
-		__HAL_TIM_SET_AUTORELOAD(&htim6,counter_val); // Restart the timer
+		PIV_counter = ((uint16_t)UART_buf[1] << 8) | ((uint16_t)UART_buf[2]); // Read the PIV frequency in units of 0.1 kHz
 
-		// Testing code - every time it gets a signal it will double the blinking frequency
+		counter_val = (uint32_t)(PIV_counter - 1); // Convert this to uint32, then subtract 1 for offset
 
-		counter_timer = counter_timer/2;
-
-		__HAL_TIM_SET_AUTORELOAD(&htim6,counter_timer-1); // Restart the timer in a special way
+		__HAL_TIM_SET_AUTORELOAD(&htim6,counter_val); // Restart the timer in a special way
 
 		HAL_GPIO_TogglePin(GPIOD,LD6_Pin); // Debugging pin - Blue for detecting UART transmission
 
