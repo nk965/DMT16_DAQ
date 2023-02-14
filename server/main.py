@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
     # start communication process by initialising UART class
 
-    process = UART()
+    process = UART(DAQ_port='COM9')
 
     '''
     
