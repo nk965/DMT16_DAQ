@@ -6,13 +6,13 @@ import numpy as np
 import time
 import collections
 import random
-import pyqtgraph as pg
+# import pyqtgraph as pg
 import datetime
 
-from PySide6 import QtCore, QtGui
-from PySide6.QtWidgets import QApplication
-from PySide6.QtCore import QThread
-from PySide6.QtCore import Signal
+# from PySide6 import QtCore, QtGui
+# from PySide6.QtWidgets import QApplication
+# from PySide6.QtCore import QThread
+# from PySide6.QtCore import Signal
 
 '''
 @author: Pike Amornchat

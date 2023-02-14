@@ -36,7 +36,7 @@ class UART:
 
         # Connect to the COM port for both
         self.connect_port(0)
-        self.connect_port(1)
+        # self.connect_port(1)
 
     def list_ports(self):
         """
@@ -161,7 +161,9 @@ class UART:
             try:
 
                 # Read all data from bytearray - clears buffer too
+                print(info)
                 self.serial_connection.write(info)
+                print("Happy Valentines Day")
 
             # Sometimes the microcontroller has fragments saved, or the user presses soft reset at an awkward time,
             # giving rise to an incomplete line and hence no identifier/incomplete data.

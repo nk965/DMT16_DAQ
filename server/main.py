@@ -12,13 +12,13 @@ def float_to_byte(value: float, info: dict) -> tuple:
 
     min_input, max_input = info["range"][0], info["range"][1]
     
-    max_output = 2**info.bits - 1
+    max_output = 2**info["bits"] - 1
 
     scaled = (value - min_input) / (max_input - min_input) * (max_output)
 
     rounded = round(scaled)
 
-    byte_count = info.bits // 8
+    byte_count = info["bits"] // 8
     byte_array = bytearray(value.to_bytes(byte_count, byteorder='big'))
 
     actual = (rounded * (max_input - min_input)) / max_output + min_input # check if this is correct
@@ -39,9 +39,9 @@ def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_i
     
     message = bytearray.fromhex('01') # Command specific hex identifier - check documentation for details
 
-    outPIVfreq, actualPIV = float_to_byte(PIVfreq_val, PIVfreq_info)
+    actualPIV, outPIVfreq = float_to_byte(PIVfreq_val, PIVfreq_info)
 
-    outDatafreq, actualDatafreq = float_to_byte(Datafreq_val, Datafreq_info)
+    actualDatafreq, outDatafreq = float_to_byte(Datafreq_val, Datafreq_info)
 
     message.extend(outPIVfreq + outDatafreq)
 
@@ -71,3 +71,5 @@ if __name__ == "__main__":
     '''
 
     status['SDAQ'] = SDAQCommand(process, inputInfo["PIVfreq"]["defaultValue"], inputInfo["Datafreq"]["defaultValue"], inputInfo["PIVfreq"], inputInfo["Datafreq"]) # TODO replace the second and third arguments with actual values from user input
+
+    print(status)
