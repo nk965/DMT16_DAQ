@@ -100,9 +100,14 @@ if __name__ == '__main__':
 
          for i in py_data:
 
-               row = [i]
+            # Setting each column for the csv writer
+            
+            py_gpio = i[0]
+            py_state = i[1]
+            py_tick = i[2]
+            py_diff = i[3]
 
-               writer.writerow(row)  # Writing one row at a time
+            writer.writerow([py_gpio, py_state, py_tick, py_diff])  # Writing one row at a time
 
       for c in cb:
 
