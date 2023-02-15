@@ -151,7 +151,7 @@ if __name__ == "__main__":
     status = {}
     process = UART() # initialise both UART ports
     
-    status["STB"] = STBCommand()
+    # status["STB"] = STBCommand()
 
     status['SDAQ'] = SDAQCommand(process, inputInfo["PIVfreq"]["defaultValue"], inputInfo["Datafreq"]["defaultValue"],
                                  inputInfo["PIVfreq"], inputInfo["Datafreq"])  # TODO replace the second and third arguments with actual values from user input
