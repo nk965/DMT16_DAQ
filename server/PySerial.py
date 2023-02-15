@@ -157,7 +157,7 @@ class UART:
     def send(self, portnum, info):
         """
         This module will send out all the configurations to the 2 different ports.
-        :return: None
+        :return: what it sent
         """
 
         if portnum == 0:
@@ -168,7 +168,7 @@ class UART:
                 
             serial_connection = self.serial_connection_TB
 
-        self.serial_connection_DAQ.write(info)
+        self.serial_connection.write(info)
                 
         time.sleep(2)
 
