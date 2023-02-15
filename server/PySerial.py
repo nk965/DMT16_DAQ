@@ -165,7 +165,7 @@ class UART:
             serial_connection = self.serial_connection_DAQ
 
         else: 
-
+                
             serial_connection = self.serial_connection_TB
 
         self.serial_connection_DAQ.write(info)
@@ -174,34 +174,3 @@ class UART:
 
         print(self.serial_connection_DAQ.read_all())
         print("Kill me")
-
-        # Check to see if the connection is open before trying to communicate:
-        while self.serial_connection_DAQ.is_open():
-         
-            try:
-
-                # Read all data from bytearray - clears buffer too
-                
-                self.serial_connection_DAQ.write(info)
-                
-                time.sleep(2)
-
-                return self.serial_connection_DAQ.read_all()
-
-            # Sometimes the microcontroller has fragments saved, or the user presses soft reset at an awkward time,
-            # giving rise to an incomplete line and hence no identifier/incomplete data.
-            
-            except Exception as e:
-
-                print(e)
-
-                # Re-initialize the UART buffer
-                del self.UART_buffer
-                self.UART_buffer = bytearray()
-
-                # If printed the same error already, don't print it again.
-                if e == self.previous_error:
-                    print(e)
-                else:
-                    self.previous_error = e
-        

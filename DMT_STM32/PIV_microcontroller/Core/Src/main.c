@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include "string.h"
+#include <math.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -169,17 +170,17 @@ int main(void)
 
 		// Separate the 4 hex Id's out:
 
-		nibble_1 = UART_buf[1] >> 4;
-		nibble_2 = (UART_buf[1] << 4)>>4;
-		nibble_3 = UART_buf[2] >> 4;
-		nibble_4 = (UART_buf[2] << 4)>>4;
+		nibble_1 = (UART_buf[1] & 0b11110000) >> 4;
+		nibble_2 = UART_buf[1] & 0b00001111;
+		nibble_3 = (UART_buf[2] & 0b11110000) >> 4;
+		nibble_4 = UART_buf[2] & 0b00001111;
 
 		// Undo the padding
 
-		nibble_2 = nibble_2 - 0b1;
-		nibble_4 = nibble_4 - 0b1;
+		nibble_2 = nibble_2 - 0b00000001;
+		nibble_4 = nibble_4 - 0b00000001;
 
-		PIV_counter = (nibble_1)*(15^3) + (nibble_2)*(15^2) + (nibble_3)*(15^1) + (nibble_4); // Read the PIV counter in base 15
+		PIV_counter = (nibble_1)*(pow(15,3)) + (nibble_2)*(pow(15,2)) + (nibble_3)*(pow(15,1)) + (nibble_4); // Read the PIV counter in base 15
 
 		counter_val = (uint32_t)(PIV_counter - 1); // Convert this to uint32, then subtract 1 for offset
 
@@ -373,7 +374,7 @@ static void MX_TIM6_Init(void)
 
   /* USER CODE END TIM6_Init 1 */
   htim6.Instance = TIM6;
-  htim6.Init.Prescaler = 8400-1;
+  htim6.Init.Prescaler = 332-1;
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim6.Init.Period = 10000-1;
   htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;

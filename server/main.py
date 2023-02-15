@@ -68,6 +68,7 @@ def convert_frequency_to_clock_tick(input_freq):
 
     hex_ticks = base_15_protocol_convert(no_ticks)
     
+
     return actual_freq, hex_ticks
 
 def float_to_hex_string(value: float, info: dict) -> tuple:
@@ -136,7 +137,7 @@ def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_i
     
     UART.send(0, message)
 
-    return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV, "PIV Ticks": actualPIVticks}
+    return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV, "PIV Ticks": actualPIV}
 
 
 if __name__ == "__main__":
