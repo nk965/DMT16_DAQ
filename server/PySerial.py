@@ -157,7 +157,7 @@ class UART:
     def send(self, portnum, info):
         """
         This module will send out all the configurations to the 2 different ports.
-        :return: None
+        :return: what it sent
         """
 
         if portnum == 0:
@@ -168,40 +168,10 @@ class UART:
 
             serial_connection = self.serial_connection_TB
 
-        self.serial_connection_DAQ.write(info)
+        self.serial_connection.write(info)
                 
         time.sleep(2)
 
-        print(self.serial_connection_DAQ.read_all())
-        print("Kill me")
+        return self.serial_connection.read_all()
 
-        # Check to see if the connection is open before trying to communicate:
-        while self.serial_connection_DAQ.is_open():
-         
-            try:
-
-                # Read all data from bytearray - clears buffer too
-                
-                self.serial_connection_DAQ.write(info)
-                
-                time.sleep(2)
-
-                return self.serial_connection_DAQ.read_all()
-
-            # Sometimes the microcontroller has fragments saved, or the user presses soft reset at an awkward time,
-            # giving rise to an incomplete line and hence no identifier/incomplete data.
-            
-            except Exception as e:
-
-                print(e)
-
-                # Re-initialize the UART buffer
-                del self.UART_buffer
-                self.UART_buffer = bytearray()
-
-                # If printed the same error already, don't print it again.
-                if e == self.previous_error:
-                    print(e)
-                else:
-                    self.previous_error = e
         
