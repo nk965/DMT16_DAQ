@@ -53,7 +53,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "PIVfreq": {
-        "defaultValue": 50,
+        "defaultValue": 0.01,
         "type": float,
         "range": [0.01, 50], #TODO check with Pike with this
         "bits": 16,

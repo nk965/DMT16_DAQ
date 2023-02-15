@@ -29,10 +29,10 @@ class UART:
         self.serial_connection_TB = serial.Serial()
 
         # Set the recieve and transmit buffer size
-        self.serial_connection_DAQ.set_buffer_size(
-            rx_size=self.buffer_size, tx_size=self.buffer_size)
-        self.serial_connection_TB.set_buffer_size(
-            rx_size=self.buffer_size, tx_size=self.buffer_size)
+        #self.serial_connection_DAQ.set_buffer_size(
+            #rx_size=self.buffer_size, tx_size=self.buffer_size)
+        #self.serial_connection_TB.set_buffer_size(
+            #rx_size=self.buffer_size, tx_size=self.buffer_size)
 
         # Connect to the COM port for both
         self.connect_port(0)
@@ -165,7 +165,6 @@ class UART:
                 self.serial_connection_DAQ.write(info)
                 time.sleep(3)
                 print(self.serial_connection_DAQ.read_all())
-                print("Happy Valentines Day")
                 self.close_port(0)
 
             # Sometimes the microcontroller has fragments saved, or the user presses soft reset at an awkward time,

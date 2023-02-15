@@ -12,18 +12,23 @@ def float_to_byte(value: float, info: dict) -> tuple:
 
     min_input, max_input = info["range"][0], info["range"][1]
     
-    max_output = 2**info["bits"] - 1
+    max_output = 2**(info["bits"] - 1) - 1 # using base 15 or base 7 for 2 byte and 1 byte inputs
 
-    scaled = (value - min_input) / (max_input - min_input) * (max_output)
+    min_output = 0
+
+    scaled = (((value - min_input) / (max_input - min_input)) * (max_output - min_output)) + min_output 
 
     rounded = round(scaled)
 
-    byte_count = info["bits"] // 8
-    byte_array = bytearray(value.to_bytes(byte_count, byteorder='big'))
+    actual = (((rounded - min_output ) * (max_input - min_input)) / (max_output - min_output)) + min_input 
 
-    actual = (rounded * (max_input - min_input)) / max_output + min_input # check if this is correct
+    num_hex_digits = info["bits"] // 4
+
+    format_string = "{:0" + str(num_hex_digits) + "X}"
     
-    return actual, byte_array
+    hex_string = format_string.format(rounded)
+
+    return actual, hex_string
 
 def STBCommand(testDelay: float): 
 
@@ -35,19 +40,21 @@ def STBCommand(testDelay: float):
 
 def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_info: dict, Datafreq_info: dict):
 
-    UART.connect_port(0) # Connect through UART to DAQ (port 0 i.e., COM14)
-    
-    message = bytearray.fromhex('03') # Command specific hex identifier - check documentation for details
+    UART.connect_port(0) # Connect through UART to DAQ (port 0)
+
+    hex_identifier = "03" # Command specific hex identifier - check documentation for details
 
     actualPIV, outPIVfreq = float_to_byte(PIVfreq_val, PIVfreq_info)
 
     actualDatafreq, outDatafreq = float_to_byte(Datafreq_val, Datafreq_info)
 
-    extra = bytearray.fromhex("03030003")
+    print(hex_identifier + outPIVfreq + outDatafreq)
 
-    # message.extend(extra + extra + extra)
+    message = bytearray.fromhex(hex_identifier + outPIVfreq + outDatafreq)
 
-    UART.send(extra)
+    print(message)
+
+    UART.send(message)
 
     return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV} 
 

@@ -22,7 +22,7 @@ export default function Dashboard() {
 
   const postResult = (result) => {
     console.log(result);
-    fetch('inputs/userConfig', {
+    fetch('http://127.0.0.1:5000/inputs/userConfig', {
       credentials: 'include',
       method: "POST",
       body: JSON.stringify({
