@@ -140,9 +140,15 @@ int main(void)
   // Used intermediate variables
 
   uint8_t UART_buf[3]; // Buffer for UART - auto typecast from char to uint8_t
-  uint16_t PIV_counter; // Counter in uint16 + 1
-  uint16_t counter_val; // Value of counter to put into autoreload function
+  uint16_t PIV_counter; // Counter in uint16
+  uint32_t counter_val; // Value of counter to put into autoreload function
   HAL_TIM_Base_Stop_IT(&htim6);
+
+  uint8_t nibble_1;
+  uint8_t nibble_2;
+  uint8_t nibble_3;
+  uint8_t nibble_4;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -161,7 +167,19 @@ int main(void)
 
 		HAL_TIM_Base_Stop_IT(&htim6); // Stop the current timer
 
-		PIV_counter = ((uint16_t)UART_buf[1] << 8) | ((uint16_t)UART_buf[2]); // Read the PIV frequency in units of 0.1 kHz
+		// Separate the 4 hex Id's out:
+
+		nibble_1 = UART_buf[1] >> 4;
+		nibble_2 = (UART_buf[1] << 4)>>4;
+		nibble_3 = UART_buf[2] >> 4;
+		nibble_4 = (UART_buf[2] << 4)>>4;
+
+		// Undo the padding
+
+		nibble_2 = nibble_2 - 0b1;
+		nibble_4 = nibble_4 - 0b1;
+
+		PIV_counter = (nibble_1)*(15^3) + (nibble_2)*(15^2) + (nibble_3)*(15^1) + (nibble_4); // Read the PIV counter in base 15
 
 		counter_val = (uint32_t)(PIV_counter - 1); // Convert this to uint32, then subtract 1 for offset
 
@@ -173,7 +191,6 @@ int main(void)
 
 	}
 	else if ((UART_buf[0] == 0b00001100) || (UART_buf[0] == 0b00001110)){ // EPIV command - tell PIV to stop running OR master stop
-
 
 		HAL_TIM_Base_Stop_IT(&htim6); // Stop the current timer
 	}
@@ -526,6 +543,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) // Timer interrupt I
 		HAL_GPIO_TogglePin(GPIOD,LD3_Pin); // Debugging pin - Yellow for timer
 	}
 }
+
+
 
 /* USER CODE END 4 */
 
