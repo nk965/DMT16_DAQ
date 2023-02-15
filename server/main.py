@@ -12,17 +12,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def convert_frequency_to_clock_tick(input_freq):
-
-    prescaler = 332  # Hardcoded prescaler - numerically optimized by Desmos
-    clock_speed = 84*10**6  # STM32F407 TIM6 clock speed
-    # The number of ticks converted into an integer
-    no_ticks = int(np.round(clock_speed/(prescaler*input_freq)))
-    # The actual frequency using the number of ticks
-    actual_freq = clock_speed/(prescaler*no_ticks)
-
-    return no_ticks, actual_freq
-
 def base_15_protocol_convert(num):
 
     def numberToBase(n, b):
@@ -67,6 +56,19 @@ def base_15_protocol_convert(num):
         final = "0" + final
 
     return final
+
+def convert_frequency_to_clock_tick(input_freq):
+
+    prescaler = 332  # Hardcoded prescaler - numerically optimized by Desmos
+    clock_speed = 84*10**6  # STM32F407 TIM6 clock speed
+    # The number of ticks converted into an integer
+    no_ticks = int(np.round(clock_speed/(prescaler*input_freq)))
+    # The actual frequency using the number of ticks
+    actual_freq = clock_speed/(prescaler*no_ticks)
+
+    hex_ticks = base_15_protocol_convert(no_ticks)
+    
+    return actual_freq, hex_ticks
 
 def float_to_hex_string(value: float, info: dict) -> tuple:
 
@@ -124,11 +126,9 @@ def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_i
 
     UART.connect_port(0)  # Connect through UART to DAQ (port 0)
 
-    hex_identifier = "03"  # Command specific hex identifier - check documentation for details
+    hex_identifier = "03"  # Command specific hex identifier - check documentation for detail
 
-    PIVticks, actualPIV = convert_frequency_to_clock_tick(PIVfreq_val)
-
-    actualPIVticks, outPIVticks = float_to_hex_string(PIVticks, PIVfreq_info)
+    actualPIV, outPIVticks = convert_frequency_to_clock_tick(PIVfreq_val)
 
     actualDatafreq, outDatafreq = float_to_hex_string(Datafreq_val, Datafreq_info)
 

@@ -26,7 +26,7 @@ class UART:
 
         # Initialize PySerial for both ports - specify baud rate
         self.serial_connection_DAQ = serial.Serial()
-        self.serial_connection_TB = serial.Serial()
+        # self.serial_connection_TB = serial.Serial()
 
         '''
         Not function for Nick's MacBook
@@ -40,7 +40,7 @@ class UART:
 
         # Connect to the COM port for both
         self.connect_port(0)
-        self.connect_port(1)
+        #self.connect_port(1)
 
     def list_ports(self):
         """
@@ -168,18 +168,25 @@ class UART:
 
             serial_connection = self.serial_connection_TB
 
+        self.serial_connection_DAQ.write(info)
+                
+        time.sleep(2)
+
+        print(self.serial_connection_DAQ.read_all())
+        print("Kill me")
+
         # Check to see if the connection is open before trying to communicate:
-        while serial_connection.is_open():
+        while self.serial_connection_DAQ.is_open():
          
             try:
 
                 # Read all data from bytearray - clears buffer too
                 
-                self.serial_connection.write(info)
+                self.serial_connection_DAQ.write(info)
                 
                 time.sleep(2)
 
-                return self.serial_connection.read_all()
+                return self.serial_connection_DAQ.read_all()
 
             # Sometimes the microcontroller has fragments saved, or the user presses soft reset at an awkward time,
             # giving rise to an incomplete line and hence no identifier/incomplete data.
