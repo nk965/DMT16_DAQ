@@ -8,7 +8,7 @@ import pigpio  # Library for high speed gpio
 
 """
 @author: Jimmy van de Worp
-TODO
+This script receives high speed GPIO indefinitely and records the Pin Number, State, and Tick of each GPIO change detected
 
 """
 
@@ -28,7 +28,9 @@ Defining Callback Function, GPIO = Pin No., level = state (1=HIGH, 0=LOW), tick 
 
 def procedure(GPIO, level, tick):
 
-   '''TODO: Write description
+   '''
+   This is the function that occurs when a GPIO change is detected in the pi.callback().
+   It appends the GPIO Pin, State, Tick, and Time Difference since last State Change was detected to the py_data array.
 
     Returns:
         None 
@@ -52,7 +54,7 @@ if __name__ == '__main__':
 
    last = [None]*32
 
-   cb = []  # Initialising list for data
+   cb = []  # Documented Standard for library and pi.callback()
    
    py_data = [['GPIO', 'State', 'Tick', 'Diff']]  # Titles
 
@@ -86,9 +88,9 @@ if __name__ == '__main__':
 
       while True:
 
-         time.sleep(60)
+         time.sleep(60) # Runs Indefinitely
 
-   except KeyboardInterrupt:
+   except KeyboardInterrupt: # Until Keyboard Interrupt
 
       print("\nTidying up")
 
