@@ -1,62 +1,143 @@
 """
-@author: Nicholas Kwok
+@author: Nicholas Kwok, Pike Amornchat
 Main script for communicating with microcontrollers
 """
 
 import time
 
-from PySerial import UART 
+from PySerial import UART
 from server_config import inputInfo
 
-def float_to_byte(value: float, info: dict) -> tuple:
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def convert_frequency_to_clock_tick(input_freq):
+
+    prescaler = 332  # Hardcoded prescaler - numerically optimized by Desmos
+    clock_speed = 84*10**6  # STM32F407 TIM6 clock speed
+    # The number of ticks converted into an integer
+    no_ticks = int(np.round(clock_speed/(prescaler*input_freq)))
+    # The actual frequency using the number of ticks
+    actual_freq = clock_speed/(prescaler*no_ticks)
+
+    return no_ticks, actual_freq
+
+def base_15_protocol_convert(num):
+
+    def numberToBase(n, b):
+        if n == 0:
+            return [0]
+        digits = []
+        while n:
+            digits.append(int(n % b))
+            n //= b
+        return digits[::-1]
+
+    bases = {
+        "0": "0",
+        "1": "1",
+        "2": "2",
+        "3": "3",
+        "4": "4",
+        "5": "5",
+        "6": "6",
+        "7": "7",
+        "8": "8",
+        "9": "9",
+        "10": "A",
+        "11": "B",
+        "12": "C",
+        "13": "D",
+        "14": "E",
+        "15": "F"
+    }
+
+    # Temporary array converted to base 15 in numbers
+    temp = numberToBase(num, 15)
+    final = ""  # The send string
+
+    for i in range(len(temp) - 1, -1, -2):  # Add 1 to pad to hex
+        temp[i] = temp[i] + 1
+
+    for i in temp:  # Convert to hex string + concatenate
+        final = final + bases[str(i)]
+
+    if len(final) % 2 == 1:  # Pad 0 if need be
+        final = "0" + final
+
+    return final
+
+def float_to_hex_string(value: float, info: dict) -> tuple:
 
     min_input, max_input = info["range"][0], info["range"][1]
-    
-    max_output = 2**(info["bits"] - 1) - 1 # using base 15 or base 7 for 2 byte and 1 byte inputs
+
+    max_output = 15**(info["bits"] // 4) - 1
 
     min_output = 0
 
-    scaled = (((value - min_input) / (max_input - min_input)) * (max_output - min_output)) + min_output 
+    scaled = (((value - min_input) / (max_input - min_input))
+              * (max_output - min_output)) + min_output
 
     rounded = round(scaled)
 
-    actual = (((rounded - min_output ) * (max_input - min_input)) / (max_output - min_output)) + min_input 
+    actual = (((rounded - min_output) * (max_input - min_input)) /
+              (max_output - min_output)) + min_input
 
-    num_hex_digits = info["bits"] // 4
+    return actual, base_15_protocol_convert(rounded)
 
-    format_string = "{:0" + str(num_hex_digits) + "X}"
-    
-    hex_string = format_string.format(rounded)
+def STBCommand(testDelay: float):
 
-    return actual, hex_string
-
-def STBCommand(testDelay: float): 
-
-    # TODO finish STB Command 
+    # TODO finish STB Command
 
     time.sleep(testDelay)
 
     return {"Testbed Delay": testDelay}
 
+def ETB1Command(UART):
+
+    message = bytearray.fromhex("09")
+
+    read_receipt = UART.send(1, message)
+
+    return {"ETB1 Output": read_receipt}
+
+def ETB2Command(UART):
+
+    message = bytearray.fromhex("0A")
+
+    read_receipt = UART.send(1, message)
+
+    return {"ETB2 Output": read_receipt}
+
+def EDAQCommand(UART):
+
+    message = bytearray.fromhex("0B")
+
+    read_receipt = UART.send(1, message)
+
+    UART.close(0) # Close UART to DAQ Microcontroller (port 0)
+
+    return {"EDAQ Output": read_receipt}
+
 def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_info: dict, Datafreq_info: dict):
 
-    UART.connect_port(0) # Connect through UART to DAQ (port 0)
+    UART.connect_port(0)  # Connect through UART to DAQ (port 0)
 
-    hex_identifier = "03" # Command specific hex identifier - check documentation for details
+    hex_identifier = "03"  # Command specific hex identifier - check documentation for details
 
-    actualPIV, outPIVfreq = float_to_byte(PIVfreq_val, PIVfreq_info)
+    PIVticks, actualPIV = convert_frequency_to_clock_tick(PIVfreq_val)
 
-    actualDatafreq, outDatafreq = float_to_byte(Datafreq_val, Datafreq_info)
+    actualPIVticks, outPIVticks = float_to_hex_string(PIVticks, PIVfreq_info)
 
-    print(hex_identifier + outPIVfreq + outDatafreq)
+    actualDatafreq, outDatafreq = float_to_hex_string(Datafreq_val, Datafreq_info)
 
-    message = bytearray.fromhex(hex_identifier + outPIVfreq + outDatafreq)
+    message = bytearray.fromhex(hex_identifier + outPIVticks + outDatafreq)
+    
+    UART.send(0, message)
 
-    print(message)
+    return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV, "PIV Ticks": actualPIVticks}
 
-    UART.send(message)
-
-    return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV} 
 
 if __name__ == "__main__":
 
@@ -64,20 +145,23 @@ if __name__ == "__main__":
     FOR TESTING ONLY -  in the future, a function will be called from this script in server.py
 
     TODO code functionality to use default values in a "debug" mode
-    
+
     '''
 
     status = {}
-    process = UART()
-
-    # start communication process by initialising UART class
-
-    '''
+    process = UART() # initialise both UART ports
     
-    status["STB"] = STBCommand()
+    # status["STB"] = STBCommand()
+
+    status['SDAQ'] = SDAQCommand(process, inputInfo["PIVfreq"]["defaultValue"], inputInfo["Datafreq"]["defaultValue"],
+                                 inputInfo["PIVfreq"], inputInfo["Datafreq"])  # TODO replace the second and third arguments with actual values from user input
+
+    # status['EBT1'] = ETB1Command(process)
+
+    time.sleep(10)
+
+    # status['EBT2'] = ETB2Command(process)
+
+    status['EDAQ'] = EDAQCommand(process)
     
-    '''
-
-    status['SDAQ'] = SDAQCommand(process, inputInfo["PIVfreq"]["defaultValue"], inputInfo["Datafreq"]["defaultValue"], inputInfo["PIVfreq"], inputInfo["Datafreq"]) # TODO replace the second and third arguments with actual values from user input
-
     print(status)
