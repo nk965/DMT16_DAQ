@@ -17,7 +17,7 @@ def convert_frequency_to_clock_tick(input_freq):
     prescaler = 332  # Hardcoded prescaler - numerically optimized by Desmos
     clock_speed = 84*10**6  # STM32F407 TIM6 clock speed
     # The number of ticks converted into an integer
-    no_ticks = np.round(clock_speed/(prescaler*input_freq), 1)
+    no_ticks = int(np.round(clock_speed/(prescaler*input_freq)))
     # The actual frequency using the number of ticks
     actual_freq = clock_speed/(prescaler*no_ticks)
 
@@ -57,7 +57,7 @@ def base_15_protocol_convert(num):
     temp = numberToBase(num, 15)
     final = ""  # The send string
 
-    for i in range(len(temp) - 1, 0, -2):  # Add 1 to pad to hex
+    for i in range(len(temp) - 1, -1, -2):  # Add 1 to pad to hex
         temp[i] = temp[i] + 1
 
     for i in temp:  # Convert to hex string + concatenate
@@ -94,6 +94,31 @@ def STBCommand(testDelay: float):
 
     return {"Testbed Delay": testDelay}
 
+def ETB1Command(UART):
+
+    message = bytearray.fromhex("09")
+
+    read_receipt = UART.send(1, message)
+
+    return {"ETB1 Output": read_receipt}
+
+def ETB2Command(UART):
+
+    message = bytearray.fromhex("0A")
+
+    read_receipt = UART.send(1, message)
+
+    return {"ETB2 Output": read_receipt}
+
+def EDAQCommand(UART):
+
+    message = bytearray.fromhex("0B")
+
+    read_receipt = UART.send(1, message)
+
+    UART.close(0) # Close UART to DAQ Microcontroller (port 0)
+
+    return {"EDAQ Output": read_receipt}
 
 def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_info: dict, Datafreq_info: dict):
 
@@ -109,7 +134,7 @@ def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_i
 
     message = bytearray.fromhex(hex_identifier + outPIVticks + outDatafreq)
     
-    UART.send(message)
+    UART.send(0, message)
 
     return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV, "PIV Ticks": actualPIVticks}
 
@@ -124,17 +149,19 @@ if __name__ == "__main__":
     '''
 
     status = {}
-    process = UART()
-
-    # start communication process by initialising UART class
-
-    '''
+    process = UART() # initialise both UART ports
     
     status["STB"] = STBCommand()
-    
-    '''
 
     status['SDAQ'] = SDAQCommand(process, inputInfo["PIVfreq"]["defaultValue"], inputInfo["Datafreq"]["defaultValue"],
                                  inputInfo["PIVfreq"], inputInfo["Datafreq"])  # TODO replace the second and third arguments with actual values from user input
 
+    # status['EBT1'] = ETB1Command(process)
+
+    time.sleep(10)
+
+    # status['EBT2'] = ETB2Command(process)
+
+    status['EDAQ'] = EDAQCommand(process)
+    
     print(status)

@@ -28,6 +28,10 @@ class UART:
         self.serial_connection_DAQ = serial.Serial()
         self.serial_connection_TB = serial.Serial()
 
+        '''
+        Not function for Nick's MacBook
+        '''
+
         # Set the recieve and transmit buffer size
         #self.serial_connection_DAQ.set_buffer_size(
             #rx_size=self.buffer_size, tx_size=self.buffer_size)
@@ -36,7 +40,7 @@ class UART:
 
         # Connect to the COM port for both
         self.connect_port(0)
-        # self.connect_port(1)
+        self.connect_port(1)
 
     def list_ports(self):
         """
@@ -150,25 +154,36 @@ class UART:
             self.serial_connection_TB.close()
 
     # Run activated by start() method of QThreads
-    def send(self, info):
+    def send(self, portnum, info):
         """
         This module will send out all the configurations to the 2 different ports.
         :return: None
         """
 
+        if portnum == 0:
+
+            serial_connection = self.serial_connection_DAQ
+
+        else: 
+
+            serial_connection = self.serial_connection_TB
+
         # Check to see if the connection is open before trying to communicate:
-        while self.serial_connection_DAQ.is_open or self.serial_connection_TB.is_open:
+        while serial_connection.is_open():
+         
             try:
 
                 # Read all data from bytearray - clears buffer too
-                print(info)
-                self.serial_connection_DAQ.write(info)
-                time.sleep(3)
-                print(self.serial_connection_DAQ.read_all())
-                self.close_port(0)
+                
+                self.serial_connection.write(info)
+                
+                time.sleep(2)
+
+                return self.serial_connection.read_all()
 
             # Sometimes the microcontroller has fragments saved, or the user presses soft reset at an awkward time,
             # giving rise to an incomplete line and hence no identifier/incomplete data.
+            
             except Exception as e:
 
                 print(e)
