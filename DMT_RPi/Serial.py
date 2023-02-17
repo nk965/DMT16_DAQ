@@ -1,17 +1,19 @@
 import serial
 
 
-def removePadding(string):
+def removePadding(string, bases):
+
+    result = 0 
 
     for i in range(len(string)):  # Loop through the string input
         if i % 2 == 1:  # Every 2 elements, it has been padded by +1 so we remove the padding then de-convert
-            ans += (int(bases[string[i]]) - 1) * \
+            result += (int(bases[string[i]]) - 1) * \
                 (pow(15, (len(string) - 1 - i)))
         else:  # Otherwise, standard conversion
-            ans += int(bases[string[i]]) * \
+            result += int(bases[string[i]]) * \
                 (pow(15, (len(string)-1-i)))
 
-    return string
+    return result
 
 
 def convert_back_base_15(UART_output):
@@ -42,7 +44,9 @@ def convert_back_base_15(UART_output):
 
     sampling_interval_hex = string[2:]
 
-    result = removePadding(sampling_interval_hex)
+    result = removePadding(sampling_interval_hex, bases)
+
+    # remove this later
 
     for i in range(len(sampling_interval_hex)):  # Loop through the string input
         if i % 2 == 1:  # Every 2 elements, it has been padded by +1 so we remove the padding then de-convert
