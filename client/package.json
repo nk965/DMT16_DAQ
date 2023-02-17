@@ -4,6 +4,7 @@
   "description": "Design, Make, Test Group 16 - Nuclear Thermal-Hydraulic Experiments",
   "repository": "https://github.com/nk965/DMT16_DAQ/",
   "license": "MIT",
+  "proxy": "http://127.0.0.1:5000/inputs",
   "dependencies": {
     "@fortawesome/fontawesome-free": "5.15.3",
     "@popperjs/core": "2.9.1",
