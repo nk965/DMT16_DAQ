@@ -68,7 +68,7 @@ def convert_back_base_15(UART_output):
 def convert_to_ms(sampling_interval_hex):
 
     actual = (((sampling_interval_hex - 0) * (5000 - 100)) /
-              ((15**(8 // 4) - 1) - 0)) + 0
+              ((15**(8 // 4) - 1) - 0)) + 100
 
     return actual
 
