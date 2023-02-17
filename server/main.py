@@ -65,6 +65,7 @@ def convert_frequency_to_clock_tick(input_freq):
     no_ticks = int(np.round(clock_speed/(prescaler*input_freq)))
     # The actual frequency using the number of ticks
     actual_freq = clock_speed/(prescaler*no_ticks)
+    print(1/(actual_freq))
 
     hex_ticks = base_15_protocol_convert(no_ticks)
     

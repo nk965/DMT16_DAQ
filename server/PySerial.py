@@ -12,7 +12,7 @@ class UART:
     It also deals with connecting to port and provides a method to change port during the execution of the program.
     """
 
-    def __init__(self, DAQ_port='COM9', TB_port='COM10', baud_rate=230400, buffer_size=10000):
+    def __init__(self, DAQ_port='COM7', TB_port='COM10', baud_rate=230400, buffer_size=10000):
 
         # Attributes for PySerial setup
         self.DAQ_port = DAQ_port
@@ -168,7 +168,7 @@ class UART:
                 
             serial_connection = self.serial_connection_TB
 
-        self.serial_connection.write(info)
+        self.serial_connection_DAQ.write(info)
                 
         time.sleep(2)
 
