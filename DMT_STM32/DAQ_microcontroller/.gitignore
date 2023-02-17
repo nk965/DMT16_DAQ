@@ -6,5 +6,4 @@ RemoteSystemsTempFiles/
 *.xml
 *.launch
 *.ioc
-USB_HOST/
 Debug/
