@@ -47,6 +47,8 @@ def convert_to_ms(sampling_interval_hex):
     actual = (((sampling_interval_hex - 0) * (5000 - 100)) /
               ((15**(8 // 4) - 1) - 0)) + 0
 
+    return actual 
+
 
 if __name__ == '__main__':
     ser = serial.Serial('/dev/ttyS0', 230400, timeout=1)
