@@ -36,8 +36,6 @@ def convert_back_base_15(UART_output):
         "f": "15"
     }
 
-    ans = 0  # Temporary return val
-
     string = str(UART_output.hex())  # Convert back to hex string
 
     hex_identifier = string[:2]
@@ -45,16 +43,6 @@ def convert_back_base_15(UART_output):
     sampling_interval_hex = string[2:]
 
     result = removePadding(sampling_interval_hex, bases)
-
-    # remove this later
-
-    for i in range(len(sampling_interval_hex)):  # Loop through the string input
-        if i % 2 == 1:  # Every 2 elements, it has been padded by +1 so we remove the padding then de-convert
-            ans += (int(bases[sampling_interval_hex[i]]) - 1) * \
-                (pow(15, (len(sampling_interval_hex) - 1 - i)))
-        else:  # Otherwise, standard conversion
-            ans += int(bases[sampling_interval_hex[i]]) * \
-                (pow(15, (len(sampling_interval_hex)-1-i)))
 
     message = {
         "hex_identifier": hex_identifier,
