@@ -58,31 +58,8 @@ def plot_data(logger_data):
 
         plt.show()
 
-def streaming_data(sampling_interval_ms, recording_period):
+def streaming_data(loggers, polling_period):
 
-    # extracts inputs from Serial.py and from configuration file
-
-    polling_interval = EXPERIMENT_CONFIG['polling_interval']
-
-    # defining array to be populated with LoggingUnit objects
-
-    loggers = []
-
-    # initialises and starts the TC08 loggers (LED to blink green)
-
-    for name, logger_info in USBTC08_CONFIG.items():
-        loggers.append(LoggingUnit(logger_info, name,
-                       sampling_interval_ms, recording_period))
-    
-    # creates array of polling intervals to loop through 
-
-    polling_period = getPolling_Period(recording_period, polling_interval)
-
-    # non time sensitive setting of buffers 
-
-    for logger in loggers:
-        logger.setBuffers(polling_period)
-    
     # runs unit and time stamps are marked in method
 
     for logger in loggers:
@@ -97,14 +74,11 @@ def streaming_data(sampling_interval_ms, recording_period):
         for logger in loggers:
             logger.pollData(index)
 
-    logger_stop()
+    logger_stop(loggers)
 
-def logger_stop():
+def logger_stop(loggers):
     
     # stops logger and print final status for debugging
-
-    for i in USBTC08_CONFIG.items():
-        loggers = len(i)
     
     logger_data = []
     logger_status = []
