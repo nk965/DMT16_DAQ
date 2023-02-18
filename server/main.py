@@ -5,11 +5,10 @@ Main script for communicating with microcontrollers
 
 import time
 
-from PySerial import UART
+from PySerial_refactor import UART, list_ports
 from server_config import inputInfo
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 def base_15_protocol_convert(num):
@@ -57,6 +56,7 @@ def base_15_protocol_convert(num):
 
     return final
 
+
 def convert_frequency_to_clock_tick(input_freq):
 
     prescaler = 332  # Hardcoded prescaler - numerically optimized by Desmos
@@ -67,9 +67,9 @@ def convert_frequency_to_clock_tick(input_freq):
     actual_freq = clock_speed/(prescaler*no_ticks)
 
     hex_ticks = base_15_protocol_convert(no_ticks)
-    
 
     return actual_freq, hex_ticks
+
 
 def float_to_hex_string(value: float, info: dict) -> tuple:
 
@@ -89,6 +89,7 @@ def float_to_hex_string(value: float, info: dict) -> tuple:
 
     return actual, base_15_protocol_convert(rounded)
 
+
 def STBCommand(testDelay: float):
 
     # TODO finish STB Command
@@ -97,21 +98,24 @@ def STBCommand(testDelay: float):
 
     return {"Testbed Delay": testDelay}
 
+
 def ETB1Command(UART):
 
     message = bytearray.fromhex("09")
 
-    read_receipt = UART.send(1, message)
+    read_receipt = UART.send(message)
 
     return {"ETB1 Output": read_receipt}
+
 
 def ETB2Command(UART):
 
     message = bytearray.fromhex("0A")
 
-    read_receipt = UART.send(1, message)
+    read_receipt = UART.send(message)
 
     return {"ETB2 Output": read_receipt}
+
 
 def EDAQCommand(UART):
 
@@ -125,21 +129,23 @@ def EDAQCommand(UART):
 
     return {"EDAQ Output": read_receipt}
 
+
 def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_info: dict, Datafreq_info: dict):
 
-    UART.connect_port(0)  # Connect through UART to DAQ (port 0)
+    UART.connect_port()  # Connect through UART to DAQ (port 0)
 
     hex_identifier = "03"  # Command specific hex identifier - check documentation for detail
 
     actualPIV, outPIVticks = convert_frequency_to_clock_tick(PIVfreq_val)
 
-    actualDatafreq, outDatafreq = float_to_hex_string(Datafreq_val, Datafreq_info)
+    actualDatafreq, outDatafreq = float_to_hex_string(
+        Datafreq_val, Datafreq_info)
 
     print(f'SDAQ Sends: {hex_identifier} {outPIVticks} {outDatafreq}')
 
     message = bytearray.fromhex(hex_identifier + outPIVticks + outDatafreq)
-    
-    UART.send(0, message)
+
+    UART.send(message)
 
     return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV, "PIV Ticks": actualPIV}
 
@@ -168,8 +174,13 @@ if __name__ == "__main__":
     '''
 
     status = {}
-    process = UART() # initialise both UART ports
-    
+
+    ports_available = list_ports()
+
+    DAQ_UART = UART("DAQ Microcontroller", ports_available[0]) # check this, optionally, specify the port number
+
+    TB_UART = UART("TB Microcontroller", ports_available[1])
+
     # status["STB"] = STBCommand()
 
     status['SDAQ'] = SDAQCommand(process, 10, inputInfo["Datafreq"]["defaultValue"],
@@ -186,9 +197,8 @@ if __name__ == "__main__":
     status['SDAQ'] = SDAQCommand(process, 5, inputInfo["Datafreq"]["defaultValue"],
                                  inputInfo["PIVfreq"], inputInfo["Datafreq"])
 
-    # status['EBT2'] = ETB2Command(process)
+    # status['EBT2'] = ETB2Command(TB_UART)
 
-    time.sleep(3)
-    status['EDAQ'] = EDAQCommand(process)
-    
+    status['EDAQ'] = EDAQCommand(DAQ_UART)
+
     print(status)
