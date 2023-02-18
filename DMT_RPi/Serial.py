@@ -1,6 +1,7 @@
 import serial
 from RPI_config import inputInfo
 from Streaming import streaming_data
+from Streaming import logger_stop
 
 def decode(string):
 
@@ -99,5 +100,7 @@ if __name__ == '__main__':
                 SRPICommand(UART_messages)
     
             else:
+
+                logger_stop()
     
                 print("Do something else")
