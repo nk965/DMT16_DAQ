@@ -95,7 +95,7 @@ class UART:
             self.serial_connection.__del__()
             self.serial_connection.open()
 
-            print(f'Successfully connected to {self.port_name}')
+            print(f'Successfully connected to {self.port_name} with port {self.port}')
 
         except Exception as error:
 
