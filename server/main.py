@@ -66,7 +66,6 @@ def convert_frequency_to_clock_tick(input_freq):
     no_ticks = int(np.round(clock_speed/(prescaler*input_freq)))
     # The actual frequency using the number of ticks
     actual_freq = clock_speed/(prescaler*no_ticks)
-    print(1/(actual_freq))
 
     hex_ticks = base_15_protocol_convert(no_ticks)
 
@@ -125,7 +124,7 @@ def EDAQCommand(UART):
 
     read_receipt = UART.send(message)
 
-    UART.close()  # Close UART to DAQ Microcontroller (port 0)
+    UART.close_port()  # Close UART to DAQ Microcontroller (port 0)
 
     return {"EDAQ Output": read_receipt}
 
@@ -172,7 +171,7 @@ if __name__ == "__main__":
 
     # status['EBT1'] = ETB1Command(TB_UART)
 
-    time.sleep(10)
+    time.sleep(2)
 
     # status['EBT2'] = ETB2Command(TB_UART)
 
