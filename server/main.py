@@ -1,6 +1,7 @@
 """
 @author: Nicholas Kwok, Pike Amornchat
 Main script for communicating with microcontrollers
+hello
 """
 
 import time
