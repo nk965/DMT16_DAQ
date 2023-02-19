@@ -256,9 +256,14 @@ def ERPI(loggers):
         
         print(UART_messages)
 
-        if UART_messages[0] == "05":
+        if UART_messages[0] == "0D" or "0E":
 
             logger_stop(loggers)
+        
+        else:
+
+            print('THIS IS A PROBLEM')
+
 
 
 
