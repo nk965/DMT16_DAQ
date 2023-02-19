@@ -121,7 +121,7 @@ def ETB2Command(UART):
 
 def EDAQCommand(UART):
 
-    message = bytearray.fromhex("0B")
+    message = bytearray.fromhex("0B010101")
 
     read_receipt = UART.send(message)
 
