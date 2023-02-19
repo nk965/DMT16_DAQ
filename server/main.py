@@ -1,11 +1,12 @@
 """
 @author: Nicholas Kwok, Pike Amornchat
 Main script for communicating with microcontrollers
+hello
 """
 
 import time
 
-from PySerial import UART
+from PySerial import UART, list_ports
 from server_config import inputInfo
 
 import numpy as np
@@ -65,7 +66,6 @@ def convert_frequency_to_clock_tick(input_freq):
     no_ticks = int(np.round(clock_speed/(prescaler*input_freq)))
     # The actual frequency using the number of ticks
     actual_freq = clock_speed/(prescaler*no_ticks)
-    print(1/(actual_freq))
 
     hex_ticks = base_15_protocol_convert(no_ticks)
 
@@ -124,7 +124,7 @@ def EDAQCommand(UART):
 
     read_receipt = UART.send(message)
 
-    UART.close()  # Close UART to DAQ Microcontroller (port 0)
+    UART.close_port()  # Close UART to DAQ Microcontroller (port 0)
 
     return {"EDAQ Output": read_receipt}
 
@@ -160,7 +160,11 @@ if __name__ == "__main__":
 
     ports_available = list_ports()
 
+    print(ports_available)
+
     DAQ_UART = UART("DAQ Microcontroller", ports_available[1]) # check this, optionally, specify the port number
+
+    TB_UART = UART("TB Microcontroller", ports_available[2])
 
     # status["STB"] = STBCommand()
 
@@ -171,7 +175,7 @@ if __name__ == "__main__":
 
     # status['EBT1'] = ETB1Command(TB_UART)
 
-    time.sleep(10)
+    time.sleep(2)
 
     # status['EBT2'] = ETB2Command(TB_UART)
 
