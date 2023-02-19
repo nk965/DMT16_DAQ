@@ -130,7 +130,7 @@ int main(void)
 
   // Apparently, it does not like small buffers - it just refused to work.
 
-  uint8_t Central_PC_UART_buf[4]; // uint8_t receive buffer
+  uint8_t Central_PC_UART_buf[6]; // uint8_t receive buffer
   char RPi_send_UART_buf[5]; // RPi command string send buffer
   char PIV_send_UART_buf[5]; // PIV command string send buffer
   char RPi_end_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
@@ -143,7 +143,7 @@ int main(void)
 
   while (1)
   {
-	  HAL_UART_Receive(&huart1,Central_PC_UART_buf,4,HAL_MAX_DELAY); // Constantly poll for receiving the command from central PC
+	  HAL_UART_Receive(&huart1,Central_PC_UART_buf,6,HAL_MAX_DELAY); // Constantly poll for receiving the command from central PC
 //	  PIV_send_UART_buf[0] = 'h';
 //	  PIV_send_UART_buf[1] = 'h';
 //	  PIV_send_UART_buf[2] = 'h';
@@ -163,6 +163,8 @@ int main(void)
 
 		  RPi_send_UART_buf[0] = 0b00000101; // Bit 1 is the identifier for SRPI
 		  RPi_send_UART_buf[1] = Central_PC_UART_buf[3]; // Bit 2 is the Pico time period in 100 ms
+		  RPi_send_UART_buf[1] = Central_PC_UART_buf[4]; // Bit 3 is the Pico time duration (first byte)
+		  RPi_send_UART_buf[1] = Central_PC_UART_buf[5]; // Bit 3 is the Pico time duration (second byte)
 
 		  // Send off the configured buffers
 
