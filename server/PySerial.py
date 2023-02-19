@@ -130,4 +130,4 @@ class UART:
 
         time.sleep(2)
 
-        print(f"Recieved: {self.serial_connection.read_all()}")
+        print(f"Microcontroller Sends Back: {self.serial_connection.read_all()}")
