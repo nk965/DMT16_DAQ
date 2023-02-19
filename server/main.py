@@ -5,7 +5,7 @@ Main script for communicating with microcontrollers
 
 import time
 
-from PySerial_refactor import UART, list_ports
+from PySerial import UART
 from server_config import inputInfo
 
 import numpy as np
@@ -120,7 +120,7 @@ def ETB2Command(UART):
 
 def EDAQCommand(UART):
 
-    message = bytearray.fromhex("0B")
+    message = bytearray.fromhex("0B010101")
 
     read_receipt = UART.send(message)
 
@@ -158,11 +158,9 @@ if __name__ == "__main__":
 
     status = {}
 
-    ports_available = list_ports()
+    #ports_available = list_ports()
 
-    DAQ_UART = UART("DAQ Microcontroller", ports_available[0]) # check this, optionally, specify the port number
-
-    TB_UART = UART("TB Microcontroller", ports_available[1])
+    DAQ_UART = UART() # check this, optionally, specify the port number
 
     # status["STB"] = STBCommand()
 
