@@ -12,11 +12,11 @@ class UART:
     It also deals with connecting to port and provides a method to change port during the execution of the program.
     """
 
-    def __init__(self, DAQ_port='COM7', TB_port='COM10', baud_rate=230400, buffer_size=10000):
+    def __init__(self, DAQ_port='COM7', TB_port='COM8', baud_rate=230400, buffer_size=10000):
 
         # Attributes for PySerial setup
-        self.DAQ_port = DAQ_port
-        self.TB_port = TB_port
+        self.DAQ_port = 'COM7'
+        self.TB_port = 'COM8'
         self.baud_rate = baud_rate
         self.buffer_size = buffer_size
         self.UART_buffer = bytearray()
@@ -39,7 +39,7 @@ class UART:
             #rx_size=self.buffer_size, tx_size=self.buffer_size)
 
         # Connect to the COM port for both
-        self.connect_port(0)
+        self.connect_port()
         #self.connect_port(1)
 
     def list_ports(self):
@@ -92,7 +92,7 @@ class UART:
         self.UART_buffer = bytearray()
 
     # Connect port - used in initialization
-    def connect_port(self, portnum):
+    def connect_port(self):
         """
         Tries to connect to the port which is recorded in the class attribute self.port. If unavailable, prints error.
         :return: None
@@ -102,38 +102,25 @@ class UART:
             # Setup up baud rate and port
 
             # Choose which port to connect to
-            if portnum == 0:
-                self.serial_connection_DAQ.port = self.DAQ_port
-                self.serial_connection_DAQ.baudrate = self.baud_rate
+            self.serial_connection_DAQ.port = self.DAQ_port
+            self.serial_connection_DAQ.baudrate = self.baud_rate
 
-                # Close all and then open the connection
-                self.serial_connection_DAQ.close()
-                self.serial_connection_DAQ.__del__()
-                self.serial_connection_DAQ.open()
+            # Close all and then open the connection
+            self.serial_connection_DAQ.close()
+            self.serial_connection_DAQ.__del__()
+            self.serial_connection_DAQ.open()
 
-                print('Successfully connected to DAQ: %s' %
-                      self.serial_connection_DAQ.port)
-
-            else:
-                self.serial_connection_TB.port = self.TB_port
-                self.serial_connection_TB.baudrate = self.baud_rate
-
-                # Close all and then open the connection
-                self.serial_connection_TB.close()
-                self.serial_connection_TB.__del__()
-                self.serial_connection_TB.open()
-
-                print('Successfully connected to Test Bed: %s' %
-                      self.serial_connection_TB.port)
+            print('Successfully connected to DAQ: %s' %
+                    self.serial_connection_DAQ.port)
 
         except Exception as error:
 
             available_ports = self.list_ports()
 
-            if portnum == 0:
-                print('Error in connecting to DAQ port : %s' % error)
-            else:
-                print('Error in connecting to TB port : %s' % error)
+            #if portnum == 0:
+            #    print('Error in connecting to DAQ port : %s' % error)
+            #else:
+             #   print('Error in connecting to TB port : %s' % error)
 
             print('If your error was the wrong port, try these ports:')
             print(available_ports)
@@ -154,21 +141,14 @@ class UART:
             self.serial_connection_TB.close()
 
     # Run activated by start() method of QThreads
-    def send(self, portnum, info):
+    def send(self, info):
         """
         This module will send out all the configurations to the 2 different ports.
         :return: what it sent
         """
 
-        if portnum == 0:
-
-            serial_connection = self.serial_connection_DAQ
-
-        else: 
-                
-            serial_connection = self.serial_connection_TB
-
         self.serial_connection_DAQ.write(info)
+        print(info)
                 
         time.sleep(2)
 
