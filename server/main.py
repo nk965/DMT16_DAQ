@@ -158,7 +158,7 @@ if __name__ == "__main__":
 
     status = {}
 
-    ports_available = list_ports()
+    #ports_available = list_ports()
 
     print(ports_available)
 
