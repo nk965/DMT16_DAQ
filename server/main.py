@@ -144,7 +144,7 @@ def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_i
 
     UART.send(message)
 
-    return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV, "PIV Ticks": actualPIV}
+    return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV, "PIV Ticks": outPIVticks}
 
 
 if __name__ == "__main__":
@@ -158,9 +158,9 @@ if __name__ == "__main__":
 
     status = {}
 
-    #ports_available = list_ports()
+    ports_available = list_ports()
 
-    DAQ_UART = UART() # check this, optionally, specify the port number
+    DAQ_UART = UART("DAQ Microcontroller", ports_available[1]) # check this, optionally, specify the port number
 
     # status["STB"] = STBCommand()
 
