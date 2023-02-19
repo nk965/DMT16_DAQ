@@ -6,7 +6,7 @@ hello
 
 import time
 
-from PySerial_refactor import UART, list_ports
+from PySerial import UART, list_ports
 from server_config import inputInfo
 
 import numpy as np
