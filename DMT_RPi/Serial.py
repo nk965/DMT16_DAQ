@@ -113,7 +113,6 @@ def SRPI_Read(UART):
 
 
 
-
 def convert_to_ms(decoded_sampling_interval):
 
     """This function converts the decoded value of the sampling interval to the real value given the limitations of sending the data

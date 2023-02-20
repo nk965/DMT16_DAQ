@@ -89,6 +89,7 @@ if __name__ == "__main__":
         logger.setBuffers(polling_period)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     # extracts inputs from Serial.py and from configuration file
 
     # extracts user inputs from text file
@@ -122,6 +123,8 @@ if __name__ == "__main__":
 
 =======
 >>>>>>> d4105df (Threading and ERPI UART code V1)
+=======
+>>>>>>> 5e080cf68e6abaac7eecb9c5e5d0d2341aa25cf8
     # runs unit and time stamps are marked in method
 
     for logger in loggers:
