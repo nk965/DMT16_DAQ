@@ -116,11 +116,11 @@ def ETB2Command(UART):
 
 def EDAQCommand(UART):
 
-    message = bytearray.fromhex("0B")
+    message = bytearray.fromhex("0B010101")
 
-    read_receipt = UART.send(1, message)
+    read_receipt = UART.send(0, message)
 
-    UART.close(0) # Close UART to DAQ Microcontroller (port 0)
+    UART.close_port(0) # Close UART to DAQ Microcontroller (port 0)
 
     return {"EDAQ Output": read_receipt}
 
@@ -155,15 +155,19 @@ if __name__ == "__main__":
     
     # status["STB"] = STBCommand()
 
-    status['SDAQ'] = SDAQCommand(process, inputInfo["PIVfreq"]["defaultValue"], inputInfo["Datafreq"]["defaultValue"],
+    status['SDAQ'] = SDAQCommand(process, 10, inputInfo["Datafreq"]["defaultValue"],
                                  inputInfo["PIVfreq"], inputInfo["Datafreq"])  # TODO replace the second and third arguments with actual values from user input
 
     # status['EBT1'] = ETB1Command(process)
 
-    time.sleep(10)
+    time.sleep(3)
+
+    status['SDAQ'] = SDAQCommand(process, 5, inputInfo["Datafreq"]["defaultValue"],
+                                 inputInfo["PIVfreq"], inputInfo["Datafreq"])
 
     # status['EBT2'] = ETB2Command(process)
 
+    time.sleep(3)
     status['EDAQ'] = EDAQCommand(process)
     
     print(status)
