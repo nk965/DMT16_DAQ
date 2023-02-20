@@ -97,9 +97,9 @@ def SRPI_Read(UART):
 
     hex_identifier = UART[0]
 
-    sampling_interval_hex = UART[2:4]
+    sampling_interval_hex = UART[1]
 
-    len_experiment_hex = UART[4:]
+    len_experiment_hex = UART[2] + UART[3] 
 
     decoded_sampling_interval = decode(sampling_interval_hex)
 
