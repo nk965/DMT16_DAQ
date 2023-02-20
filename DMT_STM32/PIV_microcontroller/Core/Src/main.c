@@ -159,9 +159,7 @@ int main(void)
 
 	HAL_UART_Receive(&huart2,UART_buf,3,HAL_MAX_DELAY); //3 bits max:
 
-//	if (UART_buf[0] == 'h'){
-//		HAL_GPIO_TogglePin(GPIOD,LD6_Pin);
-//	}
+	HAL_GPIO_TogglePin(GPIOD,LD6_Pin); // Debugging pin - Blue for detecting UART transmission
 
 
 	if (UART_buf[0] == 0b00000100){ // SPIV command - tell PIV what frequency to pulse
@@ -185,8 +183,6 @@ int main(void)
 		counter_val = (uint32_t)(PIV_counter - 1); // Convert this to uint32, then subtract 1 for offset
 
 		__HAL_TIM_SET_AUTORELOAD(&htim6,counter_val); // Restart the timer in a special way
-
-		HAL_GPIO_TogglePin(GPIOD,LD6_Pin); // Debugging pin - Blue for detecting UART transmission
 
 		HAL_TIM_Base_Start_IT(&htim6); // Start the timer in interrupt mode (can start multiple times with no error)
 
