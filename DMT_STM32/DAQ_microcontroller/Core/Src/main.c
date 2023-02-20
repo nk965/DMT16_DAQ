@@ -49,7 +49,6 @@ I2C_HandleTypeDef hi2c3;
 
 LTDC_HandleTypeDef hltdc;
 
-SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi5;
 
 TIM_HandleTypeDef htim1;
@@ -77,7 +76,6 @@ static void MX_TIM1_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_UART5_Init(void);
 static void MX_USART2_UART_Init(void);
-static void MX_SPI1_Init(void);
 void MX_USB_HOST_Process(void);
 
 /* USER CODE BEGIN PFP */
@@ -128,17 +126,15 @@ int main(void)
   MX_USB_HOST_Init();
   MX_UART5_Init();
   MX_USART2_UART_Init();
-  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
 
   // Apparently, it does not like small buffers - it just refused to work.
 
-  uint8_t Central_PC_UART_buf[6]; // uint8_t receive buffer
+  uint8_t Central_PC_UART_buf[4]; // uint8_t receive buffer
   char RPi_send_UART_buf[5]; // RPi command string send buffer
   char PIV_send_UART_buf[5]; // PIV command string send buffer
   char RPi_end_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
   char PIV_end_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
-  uint8_t send_debug[3];
 
   /* USER CODE END 2 */
 
@@ -159,14 +155,6 @@ int main(void)
 		  PIV_send_UART_buf[1] = Central_PC_UART_buf[1]; // Second byte is MSB of PIV counter
 		  PIV_send_UART_buf[2] = Central_PC_UART_buf[2]; // Third byte is LSB of PIV counter
 
-		  Send_UART_String(&huart5,PIV_send_UART_buf); // Send to PIV via USART5 - Duplex Async
-//		  HAL_UART_Receive(&huart5,send_debug,3,HAL_MAX_DELAY);
-//		  Send_UART_String(&huart1,(char*)send_debug);
-
-		  Send_UART_String(&huart5,PIV_send_UART_buf); // Send to PIV via USART5 - Duplex Async
-//		  HAL_UART_Receive(&huart5,send_debug,3,HAL_MAX_DELAY);
-//		  Send_UART_String(&huart1,(char*)send_debug);
-
 		  // Package the Raspberry Pi array
 
 		  RPi_send_UART_buf[0] = 0b00000101; // Byte 1 is the identifier for SRPI
@@ -175,6 +163,7 @@ int main(void)
 
 		  // Send off the configured buffers
 
+		  Send_UART_String(&huart5,PIV_send_UART_buf); // Send to PIV via USART5 - Duplex Async
 		  Send_UART_String(&huart2,RPi_send_UART_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 
 	  }
@@ -196,10 +185,7 @@ int main(void)
 		  PIV_end_command_buf[0] = 0b00001100;// Set buffer to hex ID of EPIV
 		  PIV_end_command_buf[1] = 0b00001100; // Extra padding for PIV (total 3 bytes always from DAQ)
 		  PIV_end_command_buf[2] = 0b00001100; // Extra padding for PIV (total 3 bytes always from DAQ)
-
 		  Send_UART_String(&huart5,PIV_end_command_buf); // Send to PIV via USART5 - Duplex Async
-		  HAL_UART_Receive(&huart5,send_debug,3,HAL_MAX_DELAY);
-		  Send_UART_String(&huart1,(char*)send_debug);
 
 		  RPi_end_command_buf[0] = 0b00001101; // Set buffer to hex ID of ERPi
 		  RPi_end_command_buf[1] = 0b00001101; // Extra padding for RPi (total 3 bytes always from DAQ)
@@ -207,26 +193,25 @@ int main(void)
 		  Send_UART_String(&huart2,RPi_end_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 	  }
 	  else if (Central_PC_UART_buf[0] == 0b00001110){ // Master stop command - send to everyone then terminate
-		  HAL_GPIO_TogglePin(GPIOD,LD4_Pin); // Debugging pin - Blue for detecting UART transmission
+
 		  PIV_end_command_buf[0] = 0b00001110; // Master stop hex ID
 		  PIV_end_command_buf[1] = 0b00001110; // Extra padding for PIV (total 3 bytes always from DAQ)
 		  PIV_end_command_buf[2] = 0b00001110; // Extra padding for PIV (total 3 bytes always from DAQ)
-
 		  Send_UART_String(&huart5,PIV_end_command_buf); // Send to PIV via USART5 - Duplex Async
 
 		  RPi_end_command_buf[0] = 0b00001110; // Master stop hex ID
-		  RPi_end_command_buf[1] = 0b00001110; // Extra padding for RPi (total 3 bytes always from DAQ)
+		  RPi_end_command_buf[1] = 0b00001110; // Extra padding for RPi (total 2 bytes always from DAQ)
 		  RPi_end_command_buf[2] = 0b00001110; // Extra padding for RPi (total 3 bytes always from DAQ)
 		  Send_UART_String(&huart2,RPi_end_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 	  }
 	  // Clear UART Receive Buffer
 
-	  memset(Central_PC_UART_buf, 0, sizeof(Central_PC_UART_buf));
-	  memset(RPi_send_UART_buf, 0, sizeof(RPi_send_UART_buf));
-	  memset(PIV_send_UART_buf, 0, sizeof(PIV_send_UART_buf));
-	  memset(RPi_end_command_buf, 0, sizeof(RPi_end_command_buf));
-	  memset(PIV_end_command_buf, 0, sizeof(PIV_end_command_buf));
-	  memset(send_debug,0,sizeof(send_debug));
+	  memset(Central_PC_UART_buf, 0, sizeof Central_PC_UART_buf);
+	  memset(RPi_send_UART_buf, 0, sizeof RPi_send_UART_buf);
+	  memset(PIV_send_UART_buf, 0, sizeof PIV_send_UART_buf);
+	  memset(RPi_end_command_buf, 0, sizeof RPi_end_command_buf);
+	  memset(PIV_end_command_buf, 0, sizeof PIV_end_command_buf);
+
 
     /* USER CODE END WHILE */
     MX_USB_HOST_Process();
@@ -451,43 +436,6 @@ static void MX_LTDC_Init(void)
   /* USER CODE BEGIN LTDC_Init 2 */
 
   /* USER CODE END LTDC_Init 2 */
-
-}
-
-/**
-  * @brief SPI1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_SPI1_Init(void)
-{
-
-  /* USER CODE BEGIN SPI1_Init 0 */
-
-  /* USER CODE END SPI1_Init 0 */
-
-  /* USER CODE BEGIN SPI1_Init 1 */
-
-  /* USER CODE END SPI1_Init 1 */
-  /* SPI1 parameter configuration*/
-  hspi1.Instance = SPI1;
-  hspi1.Init.Mode = SPI_MODE_SLAVE;
-  hspi1.Init.Direction = SPI_DIRECTION_1LINE;
-  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  hspi1.Init.CRCPolynomial = 10;
-  if (HAL_SPI_Init(&hspi1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN SPI1_Init 2 */
-
-  /* USER CODE END SPI1_Init 2 */
 
 }
 
