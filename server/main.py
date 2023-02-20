@@ -124,7 +124,7 @@ def ETB2Command(UART):
 
 def EDAQCommand(UART):
 
-    message = bytearray.fromhex("0B010101")
+    message = bytearray.fromhex("0B0101010101")
 
     print(f'EDAQ Sends: 0B010101')
 
