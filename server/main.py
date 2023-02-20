@@ -9,9 +9,6 @@ import time
 from PySerial import UART, list_ports
 from server_config import inputInfo
 
-import numpy as np
-
-
 def base_15_protocol_convert(num):
 
     def numberToBase(n, b):
@@ -124,7 +121,7 @@ def ETB2Command(UART):
 
 def EDAQCommand(UART):
 
-    message = bytearray.fromhex("0B0101010101")
+    message = bytearray.fromhex("0B010101")
 
     print(f'EDAQ Sends: 0B010101')
 
@@ -146,18 +143,13 @@ def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, LenExp_va
     actualDatafreq, outDatafreq = float_to_hex_string(
         Datafreq_val, Datafreq_info)
     
-    actualLenExp, outLenExp = float_to_hex_string(
-        LenExp_val, LenExp_info)
-    
-    print(actualLenExp, outLenExp)
+    print(f'SDAQ Sends: {hex_identifier} {outPIVticks} {outDatafreq}')
 
-    print(hex_identifier, outPIVticks, outDatafreq, outLenExp) 
-    
-    message = bytearray.fromhex(hex_identifier + outPIVticks + outDatafreq + outLenExp )
+    message = bytearray.fromhex(hex_identifier + outPIVticks + outDatafreq)
 
     UART.send(message)
 
-    return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV, "PIV Ticks": outPIVticks, "Experiment Length": actualLenExp}
+    return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV, "PIV Ticks": outPIVticks}
 
 def SDAQ2Command(UART, LenExperiment, LenExperimentInfo):
 
@@ -187,16 +179,16 @@ if __name__ == "__main__":
 
     ports_available = list_ports()
 
-    DAQ_UART = UART("DAQ Microcontroller", ports_available[1]) # check this, optionally, specify the port number
+    DAQ_UART = UART("DAQ Microcontroller", "COM9") # check this, optionally, specify the port number
 
     # status["STB"] = STBCommand()
 
     status['SDAQ'] = SDAQCommand(DAQ_UART, 10, inputInfo["Datafreq"]["defaultValue"],
                                  inputInfo["PIVfreq"], inputInfo["Datafreq"])  # TODO replace the second and third arguments with actual values from user input
 
-    status['SDAQ2'] = SDAQ2Command(DAQ_UART, inputInfo["lenExperiment"]['defaultValue'], inputInfo["lenExperiment"])
-
     time.sleep(0.1)
+
+    status['SDAQ2'] = SDAQ2Command(DAQ_UART, inputInfo["lenExperiment"]['defaultValue'], inputInfo["lenExperiment"])
     
     # status['EBT1'] = ETB1Command(process)
 
@@ -204,6 +196,7 @@ if __name__ == "__main__":
 
     status['SDAQ'] = SDAQCommand(DAQ_UART, 5, inputInfo["Datafreq"]["defaultValue"],
                                  inputInfo["PIVfreq"], inputInfo["Datafreq"])
+    
     time.sleep(status['SDAQ']["Experiment Length"])
 
     #status['EBT2'] = ETB2Command(TB_UART)
