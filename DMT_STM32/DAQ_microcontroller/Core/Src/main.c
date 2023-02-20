@@ -135,6 +135,7 @@ int main(void)
   char PIV_send_UART_buf[5]; // PIV command string send buffer
   char RPi_end_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
   char PIV_end_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
+  uint8_t send_debug[3];
 
   /* USER CODE END 2 */
 
@@ -155,6 +156,10 @@ int main(void)
 		  PIV_send_UART_buf[1] = Central_PC_UART_buf[1]; // Second byte is MSB of PIV counter
 		  PIV_send_UART_buf[2] = Central_PC_UART_buf[2]; // Third byte is LSB of PIV counter
 
+		  Send_UART_String(&huart5,PIV_send_UART_buf); // Send to PIV via USART5 - Duplex Async
+		  HAL_UART_Receive(&huart5,send_debug,3,HAL_MAX_DELAY);
+		  Send_UART_String(&huart1,(char*)send_debug);
+
 		  // Package the Raspberry Pi array
 
 		  RPi_send_UART_buf[0] = 0b00000101; // Byte 1 is the identifier for SRPI
@@ -163,7 +168,6 @@ int main(void)
 
 		  // Send off the configured buffers
 
-		  Send_UART_String(&huart5,PIV_send_UART_buf); // Send to PIV via USART5 - Duplex Async
 		  Send_UART_String(&huart2,RPi_send_UART_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 
 	  }
@@ -186,7 +190,9 @@ int main(void)
 		  PIV_end_command_buf[1] = 0b00001100; // Extra padding for PIV (total 3 bytes always from DAQ)
 		  PIV_end_command_buf[2] = 0b00001100; // Extra padding for PIV (total 3 bytes always from DAQ)
 
-		  Send_UART_String(&huart1,PIV_end_command_buf); // Send to PIV via USART5 - Duplex Async
+		  Send_UART_String(&huart5,PIV_end_command_buf); // Send to PIV via USART5 - Duplex Async
+		  HAL_UART_Receive(&huart5,send_debug,3,HAL_MAX_DELAY);
+		  Send_UART_String(&huart1,(char*)send_debug);
 
 		  RPi_end_command_buf[0] = 0b00001101; // Set buffer to hex ID of ERPi
 		  RPi_end_command_buf[1] = 0b00001101; // Extra padding for RPi (total 3 bytes always from DAQ)
