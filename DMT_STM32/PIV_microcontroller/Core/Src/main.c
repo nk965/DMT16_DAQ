@@ -106,7 +106,7 @@ int main(void)
   MX_I2C1_Init();
   MX_I2S3_Init();
   MX_SPI1_Init();
-//  MX_USB_HOST_Init();
+  MX_USB_HOST_Init();
   MX_USART2_UART_Init();
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
