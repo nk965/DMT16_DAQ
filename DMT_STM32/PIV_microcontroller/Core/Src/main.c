@@ -144,6 +144,7 @@ int main(void)
   uint16_t PIV_counter; // Counter in uint16
   uint32_t counter_val; // Value of counter to put into autoreload function
   HAL_TIM_Base_Stop_IT(&htim6);
+  char send_debug[3];
 
   uint8_t nibble_1;
   uint8_t nibble_2;
@@ -158,6 +159,10 @@ int main(void)
   {
 
 	HAL_UART_Receive(&huart2,UART_buf,3,HAL_MAX_DELAY); //3 bits max:
+	send_debug[0] = UART_buf[0];
+	send_debug[1] = UART_buf[1];
+	send_debug[2] = UART_buf[2];
+	PrintString(send_debug);
 
 	HAL_GPIO_TogglePin(GPIOD,LD6_Pin); // Debugging pin - Blue for detecting UART transmission
 
@@ -191,8 +196,6 @@ int main(void)
 
 		HAL_TIM_Base_Stop_IT(&htim6); // Stop the current timer
 	}
-
-
 
     /* USER CODE END WHILE */
     MX_USB_HOST_Process();
