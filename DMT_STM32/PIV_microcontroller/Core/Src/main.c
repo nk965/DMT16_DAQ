@@ -192,6 +192,8 @@ int main(void)
 		HAL_TIM_Base_Stop_IT(&htim6); // Stop the current timer
 	}
 
+	 memset(UART_buf, 0, sizeof UART_buf);
+
 
     /* USER CODE END WHILE */
     MX_USB_HOST_Process();
