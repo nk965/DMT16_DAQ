@@ -39,7 +39,6 @@ class UART:
             #rx_size=self.buffer_size, tx_size=self.buffer_size)
 
         # Connect to the COM port for both
-        self.connect_port(0)
         #self.connect_port(1)
 
     def list_ports(self):
@@ -170,7 +169,6 @@ class UART:
 
         self.serial_connection_DAQ.write(info)
                 
-        time.sleep(2)
+        time.sleep(0.1)
 
-        print(self.serial_connection_DAQ.read_all())
-        print("Kill me")
+        print(f'Microcontroller Recieves in Hex: {self.serial_connection_DAQ.read_all().hex()}')

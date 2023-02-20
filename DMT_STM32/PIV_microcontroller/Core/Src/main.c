@@ -111,33 +111,6 @@ int main(void)
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
 
-  // For testing (so that the LED blinks and is visible):
-
-//  __HAL_TIM_SET_PRESCALER(&htim6,129-1); // Use this function to set it - it doesn't work otherwise.
-//  __HAL_TIM_SET_AUTORELOAD(&htim6,60000-1); // Restart the timer in a special way
-
-//  // To show that changing the counter works
-//
-//  HAL_Delay(3000);
-//  __HAL_TIM_SET_AUTORELOAD(&htim6,5000-1);
-//
-//
-//  // To show that the stop works
-//
-//  HAL_Delay(3000);
-//  HAL_TIM_Base_Stop_IT(&htim6);
-//
-//  // To show that starting it back up works
-//
-//  HAL_Delay(3000);
-//  HAL_TIM_Base_Start_IT(&htim6);
-//
-//  // To show that starting 2 times is valid - it should do nothing.
-//
-//  HAL_Delay(3000);
-//  HAL_TIM_Base_Start_IT(&htim6); // Start the timer in interrupt mode
-//
-
   // Used intermediate variables
 
   uint8_t UART_buf[3]; // Buffer for UART - auto typecast from char to uint8_t
@@ -159,10 +132,7 @@ int main(void)
 
 	HAL_UART_Receive(&huart2,UART_buf,3,HAL_MAX_DELAY); //3 bits max:
 
-//	if (UART_buf[0] == 'h'){
-//		HAL_GPIO_TogglePin(GPIOD,LD6_Pin);
-//	}
-
+	HAL_GPIO_TogglePin(GPIOD,LD6_Pin); // Debugging pin - Blue for detecting UART transmission
 
 	if (UART_buf[0] == 0b00000100){ // SPIV command - tell PIV what frequency to pulse
 
@@ -186,8 +156,6 @@ int main(void)
 
 		__HAL_TIM_SET_AUTORELOAD(&htim6,counter_val); // Restart the timer in a special way
 
-		HAL_GPIO_TogglePin(GPIOD,LD6_Pin); // Debugging pin - Blue for detecting UART transmission
-
 		HAL_TIM_Base_Start_IT(&htim6); // Start the timer in interrupt mode (can start multiple times with no error)
 
 	}
@@ -195,7 +163,6 @@ int main(void)
 
 		HAL_TIM_Base_Stop_IT(&htim6); // Stop the current timer
 	}
-
 
     /* USER CODE END WHILE */
     MX_USB_HOST_Process();
@@ -544,8 +511,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) // Timer interrupt I
 		HAL_GPIO_TogglePin(GPIOD,LD3_Pin); // Debugging pin - Yellow for timer
 	}
 }
-
-
 
 /* USER CODE END 4 */
 

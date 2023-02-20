@@ -144,25 +144,22 @@ int main(void)
   while (1)
   {
 	  HAL_UART_Receive(&huart1,Central_PC_UART_buf,4,HAL_MAX_DELAY); // Constantly poll for receiving the command from central PC
-//	  PIV_send_UART_buf[0] = 'h';
-//	  PIV_send_UART_buf[1] = 'h';
-//	  PIV_send_UART_buf[2] = 'h';
-//	  Send_UART_String(&huart5,PIV_send_UART_buf);
 
-	  if (Central_PC_UART_buf[0] == 0b00000011){ // SDAQ command - 1st bit hex identifier, 2-3 is PIV frequency in 0.1 kHz, 4 is Pico sampling time in 100 ms
+	  if (Central_PC_UART_buf[0] == 0b00000011){ // SDAQ command - 1st byte hex identifier, 2-3 is PIV counter, 4 is Pico sampling time (ms)
 
-		  Send_UART_String(&huart1,(char*)Central_PC_UART_buf);
+		  Send_UART_String(&huart1,(char*)Central_PC_UART_buf); // Debugging print - this sends back the SDAQ command
 
 		  // Re-format the PIV sending buffer
 
 		  PIV_send_UART_buf[0] = 0b00000100; // Bit 1 is the identifier for SPIV
-		  PIV_send_UART_buf[1] = Central_PC_UART_buf[1]; // Second bit is MSB of PIV frequency (0.1 kHz)
-		  PIV_send_UART_buf[2] = Central_PC_UART_buf[2]; // Third bit is MSB of PIV frequency (0.1 kHz)
+		  PIV_send_UART_buf[1] = Central_PC_UART_buf[1]; // Second byte is MSB of PIV counter
+		  PIV_send_UART_buf[2] = Central_PC_UART_buf[2]; // Third byte is LSB of PIV counter
 
 		  // Package the Raspberry Pi array
 
-		  RPi_send_UART_buf[0] = 0b00000101; // Bit 1 is the identifier for SRPI
-		  RPi_send_UART_buf[1] = Central_PC_UART_buf[3]; // Bit 2 is the Pico time period in 100 ms
+		  RPi_send_UART_buf[0] = 0b00000101; // Byte 1 is the identifier for SRPI
+		  RPi_send_UART_buf[1] = Central_PC_UART_buf[3]; // Byte 2 is the Pico time period of sampling in ms
+		  RPi_send_UART_buf[2] = Central_PC_UART_buf[3]; // Byte 3 is padding
 
 		  // Send off the configured buffers
 
@@ -170,7 +167,20 @@ int main(void)
 		  Send_UART_String(&huart2,RPi_send_UART_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 
 	  }
+	  else if (Central_PC_UART_buf[0] == 0b00001111){ // SDAQ2 - length of experiment (2 bytes) in seconds + 1 byte pad
+
+		  // Package the Raspberry Pi array
+
+		  RPi_send_UART_buf[0] = 0b00010000; // Bit 1 is the identifier for SRPI2
+		  RPi_send_UART_buf[1] = Central_PC_UART_buf[1]; // Bit 2 is the Pico experiment time (MSB)
+		  RPi_send_UART_buf[2] = Central_PC_UART_buf[2]; // Bit 3 is the Pico experiment time (LSB)
+
+		  Send_UART_String(&huart2,RPi_send_UART_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
+		  Send_UART_String(&huart1,(char*)Central_PC_UART_buf); // Debugging send - this will send back the SDAQ2 command
+}
 	  else if (Central_PC_UART_buf[0] == 0b00001011){ // EDAQ Command - only bit is this, rest don't matter
+
+		  Send_UART_String(&huart1,(char*)Central_PC_UART_buf); // Debugging send - This will send back the EDAQ command
 
 		  PIV_end_command_buf[0] = 0b00001100;// Set buffer to hex ID of EPIV
 		  PIV_end_command_buf[1] = 0b00001100; // Extra padding for PIV (total 3 bytes always from DAQ)
@@ -178,7 +188,8 @@ int main(void)
 		  Send_UART_String(&huart5,PIV_end_command_buf); // Send to PIV via USART5 - Duplex Async
 
 		  RPi_end_command_buf[0] = 0b00001101; // Set buffer to hex ID of ERPi
-		  RPi_end_command_buf[1] = 0b00001101; // Extra padding for RPi (total 2 bytes always from DAQ)
+		  RPi_end_command_buf[1] = 0b00001101; // Extra padding for RPi (total 3 bytes always from DAQ)
+		  RPi_end_command_buf[2] = 0b00001101; // Extra padding for RPi (total 3 bytes always from DAQ)
 		  Send_UART_String(&huart2,RPi_end_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 	  }
 	  else if (Central_PC_UART_buf[0] == 0b00001110){ // Master stop command - send to everyone then terminate
@@ -190,6 +201,7 @@ int main(void)
 
 		  RPi_end_command_buf[0] = 0b00001110; // Master stop hex ID
 		  RPi_end_command_buf[1] = 0b00001110; // Extra padding for RPi (total 2 bytes always from DAQ)
+		  RPi_end_command_buf[2] = 0b00001110; // Extra padding for RPi (total 3 bytes always from DAQ)
 		  Send_UART_String(&huart2,RPi_end_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 	  }
 	  // Clear UART Receive Buffer

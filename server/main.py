@@ -65,7 +65,6 @@ def convert_frequency_to_clock_tick(input_freq):
     no_ticks = int(np.round(clock_speed/(prescaler*input_freq)))
     # The actual frequency using the number of ticks
     actual_freq = clock_speed/(prescaler*no_ticks)
-    print(1/(actual_freq))
 
     hex_ticks = base_15_protocol_convert(no_ticks)
     
@@ -118,6 +117,8 @@ def EDAQCommand(UART):
 
     message = bytearray.fromhex("0B010101")
 
+    print(f'EDAQ Sends: 0B010101')
+
     read_receipt = UART.send(0, message)
 
     UART.close_port(0) # Close UART to DAQ Microcontroller (port 0)
@@ -134,11 +135,27 @@ def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_i
 
     actualDatafreq, outDatafreq = float_to_hex_string(Datafreq_val, Datafreq_info)
 
+    print(f'SDAQ Sends: {hex_identifier} {outPIVticks} {outDatafreq}')
+
     message = bytearray.fromhex(hex_identifier + outPIVticks + outDatafreq)
     
     UART.send(0, message)
 
     return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV, "PIV Ticks": actualPIV}
+
+def SDAQ2Command(UART, LenExperiment, LenExperimentInfo):
+
+    hex_identifier = "0F"
+
+    actualLen, outLen = float_to_hex_string(LenExperiment, LenExperimentInfo)
+
+    print(f'SDAQ2 Sends: {hex_identifier} {outLen} 01')
+
+    message = bytearray.fromhex(hex_identifier + outLen + "01")
+
+    UART.send(0, message)
+
+    return {"Length of Experiment": actualLen}
 
 
 if __name__ == "__main__":
@@ -158,6 +175,10 @@ if __name__ == "__main__":
     status['SDAQ'] = SDAQCommand(process, 10, inputInfo["Datafreq"]["defaultValue"],
                                  inputInfo["PIVfreq"], inputInfo["Datafreq"])  # TODO replace the second and third arguments with actual values from user input
 
+    status['SDAQ2'] = SDAQ2Command(process, inputInfo["lenExperiment"]['defaultValue'], inputInfo["lenExperiment"])
+
+    time.sleep(0.1)
+    
     # status['EBT1'] = ETB1Command(process)
 
     time.sleep(3)
