@@ -106,7 +106,7 @@ int main(void)
   MX_I2C1_Init();
   MX_I2S3_Init();
   MX_SPI1_Init();
-  MX_USB_HOST_Init();
+//  MX_USB_HOST_Init();
   MX_USART2_UART_Init();
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
@@ -130,6 +130,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+	memset(UART_buf,0,sizeof(UART_buf));
+	memset(send_debug,0,sizeof(send_debug));
 
 	HAL_UART_Receive(&huart2,UART_buf,3,HAL_MAX_DELAY); //3 bits max:
 	send_debug[0] = UART_buf[0];
@@ -168,6 +171,9 @@ int main(void)
 
 		HAL_TIM_Base_Stop_IT(&htim6); // Stop the current timer
 	}
+
+	memset(UART_buf,0,sizeof(UART_buf));
+	memset(send_debug,0,sizeof(send_debug));
 
     /* USER CODE END WHILE */
     MX_USB_HOST_Process();
