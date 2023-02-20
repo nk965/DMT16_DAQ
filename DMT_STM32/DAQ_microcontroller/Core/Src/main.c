@@ -134,10 +134,10 @@ int main(void)
   // Apparently, it does not like small buffers - it just refused to work.
 
   uint8_t Central_PC_UART_buf[6]; // uint8_t receive buffer
-  char RPi_send_UART_buf[4]; // RPi command string send buffer
-  char PIV_send_UART_buf[3]; // PIV command string send buffer
-  char RPi_end_command_buf[4]; // For all shutdown commands, e.g. E or master stop with 1 byte
-  char PIV_end_command_buf[3]; // For all shutdown commands, e.g. E or master stop with 1 byte
+  char RPi_send_UART_buf[5]; // RPi command string send buffer
+  char PIV_send_UART_buf[5]; // PIV command string send buffer
+  char RPi_end_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
+  char PIV_end_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
   uint8_t send_debug[3];
 
   /* USER CODE END 2 */
@@ -147,18 +147,8 @@ int main(void)
 
   while (1)
   {
-	  memset(Central_PC_UART_buf, 0, sizeof(Central_PC_UART_buf));
-	  memset(RPi_send_UART_buf, 0, sizeof(RPi_send_UART_buf));
-	  memset(PIV_send_UART_buf, 0, sizeof(PIV_send_UART_buf));
-	  memset(RPi_end_command_buf, 0, sizeof(RPi_end_command_buf));
-	  memset(PIV_end_command_buf, 0, sizeof(PIV_end_command_buf));
-	  memset(send_debug,0,sizeof(send_debug));
 
 	  HAL_UART_Receive(&huart1,Central_PC_UART_buf,6,HAL_MAX_DELAY); // Constantly poll for receiving the command from central PC
-//	  PIV_send_UART_buf[0] = 'h';
-//	  PIV_send_UART_buf[1] = 'h';
-//	  PIV_send_UART_buf[2] = 'h';
-//	  Send_UART_String(&huart5,PIV_send_UART_buf);
 
 	  if (Central_PC_UART_buf[0] == 0b00000011){ // SDAQ command - 1st bit hex identifier, 2-3 is PIV frequency in 0.1 kHz, 4 is Pico sampling time in 100 ms
 
@@ -171,8 +161,8 @@ int main(void)
 		  PIV_send_UART_buf[2] = (char)Central_PC_UART_buf[2]; // Third bit is MSB of PIV frequency (0.1 kHz)
 
 		  Send_UART_String(&huart5,PIV_send_UART_buf); // Send to PIV via USART5 - Duplex Async
-		  HAL_UART_Receive(&huart5,send_debug,3,HAL_MAX_DELAY);
-		  Send_UART_String(&huart1,(char*)send_debug);
+//		  HAL_UART_Receive(&huart5,send_debug,3,HAL_MAX_DELAY);
+//		  Send_UART_String(&huart1,(char*)send_debug);
 
 		  // Package the Raspberry Pi array
 
