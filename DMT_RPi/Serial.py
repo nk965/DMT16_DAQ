@@ -95,20 +95,34 @@ def SRPI_Read(UART):
 
     sampling_interval_hex = UART[1]
 
-    len_experiment_hex = UART[2] + UART[3] 
-
     decoded_sampling_interval = decode(sampling_interval_hex)
 
     sampling_interval_ms = convert_to_ms(decoded_sampling_interval)
 
-    decoded_len_experiment = decode(len_experiment_hex)
-
-    len_experiment_s = convert_to_s(decoded_len_experiment)
-
-    message = {"hex_identifier": hex_identifier, "sampling_interval": sampling_interval_ms, "len_experiment": len_experiment_s}
+    message = {"hex_identifier": hex_identifier, "sampling_interval": sampling_interval_ms}
 
     return message
 
+
+def SRPI2_Read(UART):
+
+    """This function reads the split UART list of strings and on the condition that it is SPRI calls the conversion function for the sampling interval
+
+    Returns:
+        list: list of hex identifier and sampling interval in ms
+    """   
+
+    hex_identifier = UART[0]
+
+    lenExperiment = UART[1] + UART [2]
+
+    decoded_lenExperiment = decode(lenExperiment)
+
+    lenExperiment_s = convert_to_s(decoded_lenExperiment)
+
+    message = {"hex_identifier": hex_identifier, "Length of Experiment": lenExperiment_s}
+
+    return message
 
 
 
@@ -179,22 +193,32 @@ if __name__ == '__main__':
                 message = SRPI_Read(UART_messages)
 
                 sampling_interval_ms = message["sampling_interval"]
-            
-                # Initialise recording_period to be extremely high
-
-                recording_period = message["len_experiment"]  
 
                 # extracts inputs from Serial.py and from configuration file
 
                 polling_interval = EXPERIMENT_CONFIG['polling_interval']
 
-                property_list = [str(sampling_interval_ms), str(recording_period), str(polling_interval)]
+                property_list = [str(sampling_interval_ms), str(polling_interval)]
 
                 with open('SRPI.txt', 'w') as f:
                     for line in property_list:
                         f.write(line)
                         f.write('\n')
-    
+
             else:
-    
-                print("Do something else")
+
+                # TODO Jimmy can you fix this please? I'm not sure how to do this
+
+                message = SRPI2_Read(UART_messages)
+
+                lenExperiment_s = message["Length of Experiment"]
+                
+                property_list = [str(lenExperiment_s), str(polling_interval)] 
+
+
+
+                with open('SRPI.txt', 'w') as f:
+                    for line in property_list:
+                        f.write(line)
+                        f.write('\n')       
+
