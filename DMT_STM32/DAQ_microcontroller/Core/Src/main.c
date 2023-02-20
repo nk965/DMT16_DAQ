@@ -163,6 +163,10 @@ int main(void)
 //		  HAL_UART_Receive(&huart5,send_debug,3,HAL_MAX_DELAY);
 //		  Send_UART_String(&huart1,(char*)send_debug);
 
+		  Send_UART_String(&huart5,PIV_send_UART_buf); // Send to PIV via USART5 - Duplex Async
+		  HAL_UART_Receive(&huart5,send_debug,3,HAL_MAX_DELAY);
+		  Send_UART_String(&huart1,(char*)send_debug);
+
 		  // Package the Raspberry Pi array
 
 		  RPi_send_UART_buf[0] = 0b00000101; // Byte 1 is the identifier for SRPI
