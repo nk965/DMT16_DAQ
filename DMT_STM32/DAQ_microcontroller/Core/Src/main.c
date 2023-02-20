@@ -130,7 +130,7 @@ int main(void)
 
   // Apparently, it does not like small buffers - it just refused to work.
 
-  uint8_t Central_PC_UART_buf[4]; // uint8_t receive buffer
+  uint8_t Central_PC_UART_buf[6]; // uint8_t receive buffer
   char RPi_send_UART_buf[5]; // RPi command string send buffer
   char PIV_send_UART_buf[5]; // PIV command string send buffer
   char RPi_end_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
