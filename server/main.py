@@ -128,8 +128,6 @@ def EDAQCommand(UART):
 
     print(f'EDAQ Sends: 0B010101')
 
-    print(message)
-
     UART.close_port()  # Close UART to DAQ Microcontroller (port 0)
 
     return {"EDAQ Output": message}
