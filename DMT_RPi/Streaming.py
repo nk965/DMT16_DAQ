@@ -56,8 +56,9 @@ def plot_data(logger_data):
 
         plt.show()
 
+def streaming_data(sampling_interval_ms, recording_period):
 
-if __name__ == "__main__":
+    # extracts inputs from Serial.py and from configuration file
 
     # extracts user inputs from text file
 
@@ -105,10 +106,14 @@ if __name__ == "__main__":
     # stops logger and print final status for debugging
 
     logger_data = []
+    logger_status = []
 
     for logger in loggers:
         logger.stopUnit()
         logger.closeUnit()
+        logger_status.append(logger.__repr__())
         logger_data.append(logger.grabData())
 
     plot_data(logger_data)
+
+    return logger_status

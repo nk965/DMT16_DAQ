@@ -18,10 +18,6 @@ Thread 3: thread_EPRI
 
 """
 
-
-
-
-
 def decode(string):
 
     """This function decodes a string from UART in base 15 hex string to an integer value whilst padding
@@ -113,6 +109,7 @@ def SRPI_Read(UART):
 
     return message
 
+def convert_to_ms(decoded_sampling_interval):
 
 
 
