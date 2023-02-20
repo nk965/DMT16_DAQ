@@ -180,8 +180,8 @@ int main(void)
 
 		  RPi_end_command_buf[0] = 0b00001101; // Set buffer to hex ID of ERPi
 		  RPi_end_command_buf[1] = 0b00001101; // Extra padding for RPi (total 4 bytes always from DAQ)
-		  RPi_end_command_buf[1] = 0b00001101; // Extra padding for RPi (total 4 bytes always from DAQ)
-		  RPi_end_command_buf[1] = 0b00001101; // Extra padding for RPi (total 4 bytes always from DAQ)
+		  RPi_end_command_buf[2] = 0b00001101; // Extra padding for RPi (total 4 bytes always from DAQ)
+		  RPi_end_command_buf[3] = 0b00001101; // Extra padding for RPi (total 4 bytes always from DAQ)
 
 		  Send_UART_String(&huart2,RPi_end_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 	  }
@@ -195,8 +195,8 @@ int main(void)
 
 		  RPi_end_command_buf[0] = 0b00001110; // Master stop hex ID
 		  RPi_end_command_buf[1] = 0b00001110; // Extra padding for RPi (total 4 bytes always from DAQ)
-		  RPi_end_command_buf[1] = 0b00001110; // Extra padding for RPi (total 4 bytes always from DAQ)
-		  RPi_end_command_buf[1] = 0b00001110; // Extra padding for RPi (total 4 bytes always from DAQ)
+		  RPi_end_command_buf[2] = 0b00001110; // Extra padding for RPi (total 4 bytes always from DAQ)
+		  RPi_end_command_buf[3] = 0b00001110; // Extra padding for RPi (total 4 bytes always from DAQ)
 
 		  Send_UART_String(&huart2,RPi_end_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 	  }
