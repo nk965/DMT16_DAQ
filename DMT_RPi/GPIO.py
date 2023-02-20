@@ -83,37 +83,35 @@ if __name__ == '__main__':
    
          pins.append(int(i))  # For running code on multiple systems - IGNORE
       
-   start_time = time.monotonic()
-   while time.monotonic() - start_time < recording_period:
-
-      for pin in pins:
+   for pin in pins:
       
          # Calls function once event change is detected on pin g
       
-         cb.append(pi.callback(pin, pigpio.EITHER_EDGE, procedure))
+      cb.append(pi.callback(pin, pigpio.EITHER_EDGE, procedure))
 
    # Closing Procedure
 
-   print("\nTidying up")
+time.sleep(recording_period)
+print("\nTidying up")
 
-   with open('time_GPIO' + str(date.today()) + '.csv', 'a+', newline='') as csvfile:  # Writing Data into .csv
+with open('time_GPIO' + str(date.today()) + '.csv', 'a+', newline='') as csvfile:  # Writing Data into .csv
 
-      writer = csv.writer(csvfile)
+   writer = csv.writer(csvfile)
 
-      for i in py_data:
+   for i in py_data:
 
-         # Setting each column for the csv writer
-         
-         py_gpio = i[0]
-         py_state = i[1]
-         py_tick = i[2]
-         py_diff = i[3]
-         py_time = i[4]
+      # Setting each column for the csv writer
+      
+      py_gpio = i[0]
+      py_state = i[1]
+      py_tick = i[2]
+      py_diff = i[3]
+      py_time = i[4]
 
-         writer.writerow([py_gpio, py_state, py_tick, py_diff, py_time])  # Writing one row at a time
+      writer.writerow([py_gpio, py_state, py_tick, py_diff, py_time])  # Writing one row at a time
 
-   for c in cb:
+for c in cb:
 
-      c.cancel()
+   c.cancel()
 
-   pi.stop()
+pi.stop()
