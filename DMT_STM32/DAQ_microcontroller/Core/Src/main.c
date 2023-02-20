@@ -222,6 +222,7 @@ int main(void)
 	  memset(PIV_send_UART_buf, 0, sizeof(PIV_send_UART_buf));
 	  memset(RPi_end_command_buf, 0, sizeof(RPi_end_command_buf));
 	  memset(PIV_end_command_buf, 0, sizeof(PIV_end_command_buf));
+	  memset(send_debug,0,sizeof(send_debug));
 
     /* USER CODE END WHILE */
     MX_USB_HOST_Process();
