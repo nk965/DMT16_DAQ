@@ -144,10 +144,6 @@ int main(void)
   while (1)
   {
 	  HAL_UART_Receive(&huart1,Central_PC_UART_buf,4,HAL_MAX_DELAY); // Constantly poll for receiving the command from central PC
-//	  PIV_send_UART_buf[0] = 'h';
-//	  PIV_send_UART_buf[1] = 'h';
-//	  PIV_send_UART_buf[2] = 'h';
-//	  Send_UART_String(&huart5,PIV_send_UART_buf);
 
 	  if (Central_PC_UART_buf[0] == 0b00000011){ // SDAQ command - 1st bit hex identifier, 2-3 is PIV frequency in 0.1 kHz, 4 is Pico sampling time in 100 ms
 
@@ -156,15 +152,15 @@ int main(void)
 		  // Re-format the PIV sending buffer
 
 		  PIV_send_UART_buf[0] = 0b00000100; // Bit 1 is the identifier for SPIV
-		  PIV_send_UART_buf[1] = Central_PC_UART_buf[1]; // Second bit is MSB of PIV frequency (0.1 kHz)
-		  PIV_send_UART_buf[2] = Central_PC_UART_buf[2]; // Third bit is MSB of PIV frequency (0.1 kHz)
+		  PIV_send_UART_buf[1] = (char)Central_PC_UART_buf[1]; // Second bit is MSB of PIV frequency (0.1 kHz)
+		  PIV_send_UART_buf[2] = (char)Central_PC_UART_buf[2]; // Third bit is MSB of PIV frequency (0.1 kHz)
 
 		  // Package the Raspberry Pi array
 
 		  RPi_send_UART_buf[0] = 0b00000101; // Bit 1 is the identifier for SRPI
-		  RPi_send_UART_buf[1] = Central_PC_UART_buf[3]; // Bit 2 is the Pico sampling frequency
-		  RPi_send_UART_buf[2] = Central_PC_UART_buf[4]; // Bit 3 is the Pico experiment duration (MSB)
-		  RPi_send_UART_buf[3] = Central_PC_UART_buf[5]; // Bit 4 is the Pico experiment duration (LSB)
+		  RPi_send_UART_buf[1] = (char)Central_PC_UART_buf[3]; // Bit 2 is the Pico sampling frequency
+		  RPi_send_UART_buf[2] = (char)Central_PC_UART_buf[4]; // Bit 3 is the Pico experiment duration (MSB)
+		  RPi_send_UART_buf[3] = (char)Central_PC_UART_buf[5]; // Bit 4 is the Pico experiment duration (LSB)
 
 		  // Send off the configured buffers
 
