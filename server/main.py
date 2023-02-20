@@ -185,7 +185,7 @@ if __name__ == "__main__":
 
     status = {}
 
-    #ports_available = list_ports()
+    ports_available = list_ports()
 
     DAQ_UART = UART("DAQ Microcontroller", ports_available[1]) # check this, optionally, specify the port number
 
