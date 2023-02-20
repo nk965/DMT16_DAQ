@@ -131,14 +131,11 @@ int main(void)
   while (1)
   {
 
-	memset(UART_buf,0,sizeof(UART_buf));
-	memset(send_debug,0,sizeof(send_debug));
-
 	HAL_UART_Receive(&huart2,UART_buf,3,HAL_MAX_DELAY); //3 bits max:
 	send_debug[0] = UART_buf[0];
 	send_debug[1] = UART_buf[1];
 	send_debug[2] = UART_buf[2];
-	PrintString(send_debug);
+//	PrintString(send_debug);
 
 	HAL_GPIO_TogglePin(GPIOD,LD6_Pin); // Debugging pin - Blue for detecting UART transmission
 
