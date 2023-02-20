@@ -124,7 +124,7 @@ def ETB2Command(UART):
 
 def EDAQCommand(UART):
 
-    message = bytearray.fromhex("0B010101")
+    message = bytearray.fromhex("0B0101010101")
 
     read_receipt = UART.send(message)
 
@@ -184,9 +184,9 @@ if __name__ == "__main__":
 
     # status['EBT1'] = ETB1Command(TB_UART)
 
-    time.sleep(inputInfo["lenExperiment"]["defaultValue"])
+    time.sleep(status['SDAQ']["Experiment Length"])
 
-    # status['EBT2'] = ETB2Command(TB_UART)
+    #status['EBT2'] = ETB2Command(TB_UART)
 
     status['EDAQ'] = EDAQCommand(DAQ_UART)
 

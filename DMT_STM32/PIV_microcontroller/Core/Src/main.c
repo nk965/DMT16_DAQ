@@ -187,12 +187,11 @@ int main(void)
 		HAL_TIM_Base_Start_IT(&htim6); // Start the timer in interrupt mode (can start multiple times with no error)
 
 	}
-	else if ((UART_buf[0] == 0b00001100) || (UART_buf[0] == 0b00001110)){ // EPIV command - tell PIV to stop running OR master stop
+	else if (UART_buf[0] == 0b00001100){ // EPIV command - tell PIV to stop running OR master stop
 
 		HAL_TIM_Base_Stop_IT(&htim6); // Stop the current timer
 	}
 
-	 memset(UART_buf, 0, sizeof UART_buf);
 
 
     /* USER CODE END WHILE */
