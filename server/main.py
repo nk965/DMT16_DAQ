@@ -132,7 +132,7 @@ def EDAQCommand(UART):
 
     UART.close_port()  # Close UART to DAQ Microcontroller (port 0)
 
-    return {"EDAQ Output": read_receipt}
+    return {"EDAQ Output": message}
 
 
 def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, LenExp_val: float, PIVfreq_info: dict, Datafreq_info: dict, LenExp_info: dict):
