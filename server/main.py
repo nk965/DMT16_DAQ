@@ -9,6 +9,8 @@ import time
 from PySerial import UART, list_ports
 from server_config import inputInfo
 
+import numpy as np
+
 def base_15_protocol_convert(num):
 
     def numberToBase(n, b):
@@ -77,14 +79,10 @@ def float_to_hex_string(value: float, info: dict) -> tuple:
 
     min_output = 0
 
-    print(value)
-
     scaled = (((value - min_input) / (max_input - min_input))
               * (max_output - min_output)) + min_output
 
     rounded = round(scaled)
-
-    print(rounded)
 
     actual = (((rounded - min_output) * (max_input - min_input)) /
               (max_output - min_output)) + min_input
@@ -125,16 +123,12 @@ def EDAQCommand(UART):
 
     print(f'EDAQ Sends: 0B010101')
 
-    print(message)
-
     UART.close_port()  # Close UART to DAQ Microcontroller (port 0)
 
     return {"EDAQ Output": message}
 
 
-def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, LenExp_val: float, PIVfreq_info: dict, Datafreq_info: dict, LenExp_info: dict):
-
-    UART.connect_port()  # Connect through UART to DAQ (port 0)
+def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_info: dict, Datafreq_info: dict):
 
     hex_identifier = "03"  # Command specific hex identifier - check documentation for detail
 
@@ -161,7 +155,7 @@ def SDAQ2Command(UART, LenExperiment, LenExperimentInfo):
 
     message = bytearray.fromhex(hex_identifier + outLen + "01")
 
-    UART.send(0, message)
+    UART.send(message)
 
     return {"Length of Experiment": actualLen}
 
@@ -197,7 +191,7 @@ if __name__ == "__main__":
     status['SDAQ'] = SDAQCommand(DAQ_UART, 5, inputInfo["Datafreq"]["defaultValue"],
                                  inputInfo["PIVfreq"], inputInfo["Datafreq"])
     
-    time.sleep(status['SDAQ']["Experiment Length"])
+    time.sleep(status['SDAQ2']["Length of Experiment"])
 
     #status['EBT2'] = ETB2Command(TB_UART)
 

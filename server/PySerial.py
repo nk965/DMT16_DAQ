@@ -57,6 +57,8 @@ class UART:
         # Initialize PySerial for both ports - specify baud rate
         self.serial_connection = serial.Serial()
 
+        self.connect_port()
+
     # Changes the port attribute
     def change_port(self, port):
         """
@@ -130,4 +132,4 @@ class UART:
 
         time.sleep(2)
 
-        print(f"Microcontroller Sends Back: {self.serial_connection.read_all()}")
+        print(f'Microcontroller Sends Back: {self.serial_connection.read_all().hex()}')
