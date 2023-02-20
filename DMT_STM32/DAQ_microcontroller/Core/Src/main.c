@@ -167,8 +167,8 @@ int main(void)
 		  // Re-format the PIV sending buffer
 
 		  PIV_send_UART_buf[0] = 0b00000100; // Bit 1 is the identifier for SPIV
-		  PIV_send_UART_buf[1] = Central_PC_UART_buf[1]; // Second bit is MSB of PIV frequency (0.1 kHz)
-		  PIV_send_UART_buf[2] = Central_PC_UART_buf[2]; // Third bit is MSB of PIV frequency (0.1 kHz)
+		  PIV_send_UART_buf[1] = (char)Central_PC_UART_buf[1]; // Second bit is MSB of PIV frequency (0.1 kHz)
+		  PIV_send_UART_buf[2] = (char)Central_PC_UART_buf[2]; // Third bit is MSB of PIV frequency (0.1 kHz)
 
 		  Send_UART_String(&huart5,PIV_send_UART_buf); // Send to PIV via USART5 - Duplex Async
 		  HAL_UART_Receive(&huart5,send_debug,3,HAL_MAX_DELAY);
@@ -177,9 +177,9 @@ int main(void)
 		  // Package the Raspberry Pi array
 
 		  RPi_send_UART_buf[0] = 0b00000101; // Bit 1 is the identifier for SRPI
-		  RPi_send_UART_buf[1] = Central_PC_UART_buf[3]; // Bit 2 is the Pico time period in 100 ms
-		  RPi_send_UART_buf[2] = Central_PC_UART_buf[4]; // Bit 3 is the Pico time duration (first byte)
-		  RPi_send_UART_buf[3] = Central_PC_UART_buf[5]; // Bit 4 is the Pico time duration (second byte)
+		  RPi_send_UART_buf[1] = (char)Central_PC_UART_buf[3]; // Bit 2 is the Pico time period in 100 ms
+		  RPi_send_UART_buf[2] = (char)Central_PC_UART_buf[4]; // Bit 3 is the Pico time duration (first byte)
+		  RPi_send_UART_buf[3] = (char)Central_PC_UART_buf[5]; // Bit 4 is the Pico time duration (second byte)
 
 		  // Send off the configured buffers
 
