@@ -103,8 +103,15 @@ def streaming_data(sampling_interval_ms, recording_period):
         for logger in loggers:
             logger.pollData(index)
 
+    logger_stop()
+
+def logger_stop():
+    
     # stops logger and print final status for debugging
 
+    for i in USBTC08_CONFIG.items():
+        loggers = len(i)
+    
     logger_data = []
     logger_status = []
 
@@ -117,3 +124,4 @@ def streaming_data(sampling_interval_ms, recording_period):
     plot_data(logger_data)
 
     return logger_status
+    

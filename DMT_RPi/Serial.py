@@ -197,5 +197,7 @@ if __name__ == '__main__':
                         f.write('\n')
     
             else:
+
+                logger_stop()
     
                 print("Do something else")
