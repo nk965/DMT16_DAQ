@@ -80,10 +80,14 @@ def float_to_hex_string(value: float, info: dict) -> tuple:
 
     min_output = 0
 
+    print(value)
+
     scaled = (((value - min_input) / (max_input - min_input))
               * (max_output - min_output)) + min_output
 
     rounded = round(scaled)
+
+    print(rounded)
 
     actual = (((rounded - min_output) * (max_input - min_input)) /
               (max_output - min_output)) + min_input
@@ -144,8 +148,12 @@ def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, LenExp_va
     
     actualLenExp, outLenExp = float_to_hex_string(
         LenExp_val, LenExp_info)
+    
+    print(actualLenExp, outLenExp)
 
-    message = bytearray.fromhex(hex_identifier + outPIVticks + outDatafreq + outLenExp + "0101")
+    print(hex_identifier, outPIVticks, outDatafreq, outLenExp) 
+    
+    message = bytearray.fromhex(hex_identifier + outPIVticks + outDatafreq + outLenExp )
 
     UART.send(message)
 

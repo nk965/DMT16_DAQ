@@ -61,7 +61,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "Datafreq": {
-        "defaultValue": 100,
+        "defaultValue": 200,
         "type": float,
         "range": [100, 5000],
         "bits": 8,
