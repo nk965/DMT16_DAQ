@@ -152,6 +152,7 @@ int main(void)
 	  memset(PIV_send_UART_buf, 0, sizeof(PIV_send_UART_buf));
 	  memset(RPi_end_command_buf, 0, sizeof(RPi_end_command_buf));
 	  memset(PIV_end_command_buf, 0, sizeof(PIV_end_command_buf));
+	  memset(send_debug,0,sizeof(send_debug));
 
 	  HAL_UART_Receive(&huart1,Central_PC_UART_buf,6,HAL_MAX_DELAY); // Constantly poll for receiving the command from central PC
 //	  PIV_send_UART_buf[0] = 'h';
@@ -224,6 +225,7 @@ int main(void)
 	  memset(PIV_send_UART_buf, 0, sizeof(PIV_send_UART_buf));
 	  memset(RPi_end_command_buf, 0, sizeof(RPi_end_command_buf));
 	  memset(PIV_end_command_buf, 0, sizeof(PIV_end_command_buf));
+	  memset(send_debug,0,sizeof(send_debug));
 
     /* USER CODE END WHILE */
     MX_USB_HOST_Process();
