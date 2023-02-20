@@ -125,7 +125,7 @@ int main(void)
   MX_SPI5_Init();
   MX_TIM1_Init();
   MX_USART1_UART_Init();
-//  MX_USB_HOST_Init();
+  MX_USB_HOST_Init();
   MX_UART5_Init();
   MX_USART2_UART_Init();
   MX_SPI1_Init();
