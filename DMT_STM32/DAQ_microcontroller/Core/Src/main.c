@@ -185,6 +185,7 @@ int main(void)
 		  PIV_end_command_buf[0] = 0b00001100;// Set buffer to hex ID of EPIV
 		  PIV_end_command_buf[1] = 0b00001100; // Extra padding for PIV (total 3 bytes always from DAQ)
 		  PIV_end_command_buf[2] = 0b00001100; // Extra padding for PIV (total 3 bytes always from DAQ)
+
 		  Send_UART_String(&huart5,PIV_end_command_buf); // Send to PIV via USART5 - Duplex Async
 
 		  RPi_end_command_buf[0] = 0b00001101; // Set buffer to hex ID of ERPi
@@ -197,6 +198,7 @@ int main(void)
 		  PIV_end_command_buf[0] = 0b00001110; // Master stop hex ID
 		  PIV_end_command_buf[1] = 0b00001110; // Extra padding for PIV (total 3 bytes always from DAQ)
 		  PIV_end_command_buf[2] = 0b00001110; // Extra padding for PIV (total 3 bytes always from DAQ)
+
 		  Send_UART_String(&huart5,PIV_end_command_buf); // Send to PIV via USART5 - Duplex Async
 
 		  RPi_end_command_buf[0] = 0b00001110; // Master stop hex ID
