@@ -164,6 +164,9 @@ class UART:
 
             serial_connection = self.serial_connection_DAQ
 
+        else: 
+                
+            serial_connection = self.serial_connection_TB
 
         self.serial_connection_DAQ.write(info)
                 

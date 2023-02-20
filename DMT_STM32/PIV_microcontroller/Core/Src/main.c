@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "usb_host.h"
+//#include "usb_host.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -158,6 +158,11 @@ int main(void)
   {
 
 	HAL_UART_Receive(&huart2,UART_buf,3,HAL_MAX_DELAY); //3 bits max:
+
+//	if (UART_buf[0] == 'h'){
+//		HAL_GPIO_TogglePin(GPIOD,LD6_Pin);
+//	}
+
 
 	if (UART_buf[0] == 0b00000100){ // SPIV command - tell PIV what frequency to pulse
 

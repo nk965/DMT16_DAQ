@@ -116,11 +116,11 @@ def ETB2Command(UART):
 
 def EDAQCommand(UART):
 
-    message = bytearray.fromhex("0B010101")
+    message = bytearray.fromhex("0B")
 
-    read_receipt = UART.send(0, message)
+    read_receipt = UART.send(1, message)
 
-    UART.close_port(0) # Close UART to DAQ Microcontroller (port 0)
+    UART.close(0) # Close UART to DAQ Microcontroller (port 0)
 
     return {"EDAQ Output": read_receipt}
 
