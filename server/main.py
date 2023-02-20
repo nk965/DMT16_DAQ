@@ -191,7 +191,7 @@ if __name__ == "__main__":
     status['SDAQ'] = SDAQCommand(DAQ_UART, 5, inputInfo["Datafreq"]["defaultValue"],
                                  inputInfo["PIVfreq"], inputInfo["Datafreq"])
     
-    time.sleep(status['SDAQ2']["Length of Experiment"])
+    time.sleep(3) # this should be the time of the experiment 
 
     #status['EBT2'] = ETB2Command(TB_UART)
 
