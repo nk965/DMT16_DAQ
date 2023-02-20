@@ -123,7 +123,7 @@ int main(void)
   MX_SPI5_Init();
   MX_TIM1_Init();
   MX_USART1_UART_Init();
-  MX_USB_HOST_Init();
+//  MX_USB_HOST_Init();
   MX_UART5_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
@@ -131,10 +131,10 @@ int main(void)
   // Apparently, it does not like small buffers - it just refused to work.
 
   uint8_t Central_PC_UART_buf[6]; // uint8_t receive buffer
-  char RPi_send_UART_buf[5]; // RPi command string send buffer
-  char PIV_send_UART_buf[5]; // PIV command string send buffer
-  char RPi_end_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
-  char PIV_end_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
+  char RPi_send_UART_buf[4]; // RPi command string send buffer
+  char PIV_send_UART_buf[3]; // PIV command string send buffer
+  char RPi_end_command_buf[4]; // For all shutdown commands, e.g. E or master stop with 1 byte
+  char PIV_end_command_buf[3]; // For all shutdown commands, e.g. E or master stop with 1 byte
   uint8_t send_debug[3];
 
   /* USER CODE END 2 */
@@ -144,6 +144,12 @@ int main(void)
 
   while (1)
   {
+	  memset(Central_PC_UART_buf, 0, sizeof(Central_PC_UART_buf));
+	  memset(RPi_send_UART_buf, 0, sizeof(RPi_send_UART_buf));
+	  memset(PIV_send_UART_buf, 0, sizeof(PIV_send_UART_buf));
+	  memset(RPi_end_command_buf, 0, sizeof(RPi_end_command_buf));
+	  memset(PIV_end_command_buf, 0, sizeof(PIV_end_command_buf));
+
 	  HAL_UART_Receive(&huart1,Central_PC_UART_buf,6,HAL_MAX_DELAY); // Constantly poll for receiving the command from central PC
 //	  PIV_send_UART_buf[0] = 'h';
 //	  PIV_send_UART_buf[1] = 'h';
@@ -210,12 +216,11 @@ int main(void)
 	  }
 	  // Clear UART Receive Buffer
 
-	  memset(Central_PC_UART_buf, 0, sizeof Central_PC_UART_buf);
-	  memset(RPi_send_UART_buf, 0, sizeof RPi_send_UART_buf);
-	  memset(PIV_send_UART_buf, 0, sizeof PIV_send_UART_buf);
-	  memset(RPi_end_command_buf, 0, sizeof RPi_end_command_buf);
-	  memset(PIV_end_command_buf, 0, sizeof PIV_end_command_buf);
-
+	  memset(Central_PC_UART_buf, 0, sizeof(Central_PC_UART_buf));
+	  memset(RPi_send_UART_buf, 0, sizeof(RPi_send_UART_buf));
+	  memset(PIV_send_UART_buf, 0, sizeof(PIV_send_UART_buf));
+	  memset(RPi_end_command_buf, 0, sizeof(RPi_end_command_buf));
+	  memset(PIV_end_command_buf, 0, sizeof(PIV_end_command_buf));
 
     /* USER CODE END WHILE */
     MX_USB_HOST_Process();
