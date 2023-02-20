@@ -130,6 +130,6 @@ class UART:
 
         self.serial_connection.write(info)
 
-        time.sleep(2)
+        time.sleep(0.1)
 
         print(f'Microcontroller Sends Back: {self.serial_connection.read_all().hex()}')
