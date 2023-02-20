@@ -1,6 +1,14 @@
 import serial
+import threading
+import sys
+import time
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pigpio  # Library for high speed gpio
 from RPI_config import inputInfo
 from TC08_config import USBTC08_CONFIG, EXPERIMENT_CONFIG
+from TC08_unit import LoggingUnit
 
 """
 @author: Jimmy van de Worp
@@ -109,7 +117,7 @@ def SRPI_Read(UART):
 
     return message
 
-def convert_to_ms(decoded_sampling_interval):
+
 
 
 
@@ -197,7 +205,5 @@ if __name__ == '__main__':
                         f.write('\n')
     
             else:
-
-                logger_stop()
     
                 print("Do something else")

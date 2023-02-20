@@ -56,8 +56,9 @@ def plot_data(logger_data):
 
         plt.show()
 
-def streaming_data(sampling_interval_ms, recording_period):
+def streaming_data(loggers, polling_period):
 
+<<<<<<< HEAD
     # extracts inputs from Serial.py and from configuration file
 
     # extracts user inputs from text file
@@ -89,6 +90,8 @@ def streaming_data(sampling_interval_ms, recording_period):
     for logger in loggers:
         logger.setBuffers(polling_period)
 
+=======
+>>>>>>> d4105df (Threading and ERPI UART code V1)
     # runs unit and time stamps are marked in method
 
     for logger in loggers:
@@ -103,14 +106,11 @@ def streaming_data(sampling_interval_ms, recording_period):
         for logger in loggers:
             logger.pollData(index)
 
-    logger_stop()
+    logger_stop(loggers)
 
-def logger_stop():
+def logger_stop(loggers):
     
     # stops logger and print final status for debugging
-
-    for i in USBTC08_CONFIG.items():
-        loggers = len(i)
     
     logger_data = []
     logger_status = []
