@@ -152,15 +152,14 @@ int main(void)
 		  // Re-format the PIV sending buffer
 
 		  PIV_send_UART_buf[0] = 0b00000100; // Bit 1 is the identifier for SPIV
-		  PIV_send_UART_buf[1] = (char)Central_PC_UART_buf[1]; // Second bit is MSB of PIV frequency (0.1 kHz)
-		  PIV_send_UART_buf[2] = (char)Central_PC_UART_buf[2]; // Third bit is MSB of PIV frequency (0.1 kHz)
+		  PIV_send_UART_buf[1] = Central_PC_UART_buf[1]; // Second bit is MSB of PIV frequency (0.1 kHz)
+		  PIV_send_UART_buf[2] = Central_PC_UART_buf[2]; // Third bit is MSB of PIV frequency (0.1 kHz)
 
 		  // Package the Raspberry Pi array
 
 		  RPi_send_UART_buf[0] = 0b00000101; // Bit 1 is the identifier for SRPI
-		  RPi_send_UART_buf[1] = (char)Central_PC_UART_buf[3]; // Bit 2 is the Pico sampling frequency
-		  RPi_send_UART_buf[2] = (char)Central_PC_UART_buf[4]; // Bit 3 is the Pico experiment duration (MSB)
-		  RPi_send_UART_buf[3] = (char)Central_PC_UART_buf[5]; // Bit 4 is the Pico experiment duration (LSB)
+		  RPi_send_UART_buf[1] = Central_PC_UART_buf[3]; // Bit 2 is the Pico sampling frequency
+		  RPi_send_UART_buf[2] = Central_PC_UART_buf[4]; // Bit 3 is the Pico experiment duration (MSB)
 
 		  // Send off the configured buffers
 
@@ -179,7 +178,6 @@ int main(void)
 		  RPi_end_command_buf[0] = 0b00001101; // Set buffer to hex ID of ERPi
 		  RPi_end_command_buf[1] = 0b00001101; // Extra padding for RPi (total 4 bytes always from DAQ)
 		  RPi_end_command_buf[2] = 0b00001101; // Extra padding for RPi (total 4 bytes always from DAQ)
-		  RPi_end_command_buf[3] = 0b00001101; // Extra padding for RPi (total 4 bytes always from DAQ)
 
 		  Send_UART_String(&huart2,RPi_end_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 	  }
@@ -194,7 +192,6 @@ int main(void)
 		  RPi_end_command_buf[0] = 0b00001110; // Master stop hex ID
 		  RPi_end_command_buf[1] = 0b00001110; // Extra padding for RPi (total 4 bytes always from DAQ)
 		  RPi_end_command_buf[2] = 0b00001110; // Extra padding for RPi (total 4 bytes always from DAQ)
-		  RPi_end_command_buf[3] = 0b00001110; // Extra padding for RPi (total 4 bytes always from DAQ)
 
 		  Send_UART_String(&huart2,RPi_end_command_buf); // Send to RPi via UART2 - Single Wire Half Duplex Async
 	  }
