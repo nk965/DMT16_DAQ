@@ -162,7 +162,9 @@ int main(void)
 		  // Package the Raspberry Pi array
 
 		  RPi_send_UART_buf[0] = 0b00000101; // Bit 1 is the identifier for SRPI
-		  RPi_send_UART_buf[1] = Central_PC_UART_buf[3]; // Bit 2 is the Pico time period in 100 ms
+		  RPi_send_UART_buf[1] = Central_PC_UART_buf[3]; // Bit 2 is the Pico sampling frequency
+		  RPi_send_UART_buf[2] = Central_PC_UART_buf[4]; // Bit 3 is the Pico experiment duration (MSB)
+		  RPi_send_UART_buf[3] = Central_PC_UART_buf[5]; // Bit 4 is the Pico experiment duration (LSB)
 
 		  // Send off the configured buffers
 
