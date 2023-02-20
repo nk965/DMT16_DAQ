@@ -2,7 +2,6 @@
 import sys
 from datetime import datetime, date
 import time
-import numpy as np
 import csv
 import pigpio  # Library for high speed gpio
 
