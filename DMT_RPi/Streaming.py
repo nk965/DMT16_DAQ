@@ -56,7 +56,37 @@ def plot_data(logger_data):
 
         plt.show()
 
-def streaming_data(loggers, polling_period):
+
+if __name__ == "__main__":
+
+    # extracts user inputs from text file
+
+    x = []
+    file_in = open('SRPI.txt', 'r')
+    for line in file_in.readlines():
+        x.append(float(line))
+    file_in.close()
+
+    sampling_interval_ms, recording_period, polling_interval = x[0], x[1], x[2]
+
+    # defining array to be populated with LoggingUnit objects
+
+    loggers = []
+
+    # initialises and starts the TC08 loggers (LED to blink green)
+
+    for name, logger_info in USBTC08_CONFIG.items():
+        loggers.append(LoggingUnit(logger_info, name,
+                       sampling_interval_ms, recording_period))
+
+    # creates array of polling intervals to loop through 
+
+    polling_period = getPolling_Period(recording_period, polling_interval)
+
+    # non time sensitive setting of buffers 
+
+    for logger in loggers:
+        logger.setBuffers(polling_period)
 
 <<<<<<< HEAD
     # extracts inputs from Serial.py and from configuration file
@@ -106,22 +136,13 @@ def streaming_data(loggers, polling_period):
         for logger in loggers:
             logger.pollData(index)
 
-    logger_stop(loggers)
-
-def logger_stop(loggers):
-    
     # stops logger and print final status for debugging
-    
+
     logger_data = []
-    logger_status = []
 
     for logger in loggers:
         logger.stopUnit()
         logger.closeUnit()
-        logger_status.append(logger.__repr__())
         logger_data.append(logger.grabData())
 
     plot_data(logger_data)
-
-    return logger_status
-    
