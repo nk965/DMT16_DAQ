@@ -49,7 +49,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "lenExperiment": {
-        "defaultValue": 250,
+        "defaultValue": 10,
         "type": float,
         "range": [0, 800],
         "bits": 16,
