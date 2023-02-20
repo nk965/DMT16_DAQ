@@ -125,7 +125,7 @@ int main(void)
   MX_SPI5_Init();
   MX_TIM1_Init();
   MX_USART1_UART_Init();
-  MX_USB_HOST_Init();
+//  MX_USB_HOST_Init();
   MX_UART5_Init();
   MX_USART2_UART_Init();
   MX_SPI1_Init();
@@ -134,10 +134,10 @@ int main(void)
   // Apparently, it does not like small buffers - it just refused to work.
 
   uint8_t Central_PC_UART_buf[6]; // uint8_t receive buffer
-  char RPi_send_UART_buf[5]; // RPi command string send buffer
-  char PIV_send_UART_buf[5]; // PIV command string send buffer
-  char RPi_end_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
-  char PIV_end_command_buf[5]; // For all shutdown commands, e.g. E or master stop with 1 byte
+  char RPi_send_UART_buf[4]; // RPi command string send buffer
+  char PIV_send_UART_buf[3]; // PIV command string send buffer
+  char RPi_end_command_buf[4]; // For all shutdown commands, e.g. E or master stop with 1 byte
+  char PIV_end_command_buf[3]; // For all shutdown commands, e.g. E or master stop with 1 byte
   uint8_t send_debug[3];
 
   /* USER CODE END 2 */
