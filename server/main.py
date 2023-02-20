@@ -124,12 +124,14 @@ def EDAQCommand(UART):
 
     read_receipt = UART.send(message)
 
+    print(message)
+
     UART.close_port()  # Close UART to DAQ Microcontroller (port 0)
 
     return {"EDAQ Output": read_receipt}
 
 
-def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_info: dict, Datafreq_info: dict):
+def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, LenExp_val: float, PIVfreq_info: dict, Datafreq_info: dict, LenExp_info: dict):
 
     UART.connect_port()  # Connect through UART to DAQ (port 0)
 
@@ -139,12 +141,15 @@ def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_i
 
     actualDatafreq, outDatafreq = float_to_hex_string(
         Datafreq_val, Datafreq_info)
+    
+    actualLenExp, outLenExp = float_to_hex_string(
+        LenExp_val, LenExp_info)
 
-    message = bytearray.fromhex(hex_identifier + outPIVticks + outDatafreq)
+    message = bytearray.fromhex(hex_identifier + outPIVticks + outDatafreq + outLenExp + "0101")
 
     UART.send(message)
 
-    return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV, "PIV Ticks": outPIVticks}
+    return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV, "PIV Ticks": outPIVticks, "Experiment Length": actualLenExp}
 
 
 if __name__ == "__main__":
@@ -166,12 +171,12 @@ if __name__ == "__main__":
 
     # TODO replace the second and third arguments with actual values from user input
 
-    status['SDAQ'] = SDAQCommand(DAQ_UART, inputInfo["PIVfreq"]["defaultValue"], inputInfo["Datafreq"]["defaultValue"],
-                                 inputInfo["PIVfreq"], inputInfo["Datafreq"])
+    status['SDAQ'] = SDAQCommand(DAQ_UART, inputInfo["PIVfreq"]["defaultValue"], inputInfo["Datafreq"]["defaultValue"], inputInfo["lenExperiment"]["defaultValue"],
+                                 inputInfo["PIVfreq"], inputInfo["Datafreq"], inputInfo["lenExperiment"])
 
     # status['EBT1'] = ETB1Command(TB_UART)
 
-    time.sleep(2)
+    time.sleep(inputInfo["lenExperiment"]["defaultValue"])
 
     # status['EBT2'] = ETB2Command(TB_UART)
 
