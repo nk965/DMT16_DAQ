@@ -105,13 +105,19 @@ def SRPI_Read(UART):
 
     hex_identifier = UART[0]
 
-    sampling_interval_hex = UART[2:]
+    sampling_interval_hex = UART[2:4]
+
+    len_experiment_hex = UART[4:]
 
     decoded_sampling_interval = decode(sampling_interval_hex)
 
     sampling_interval_ms = convert_to_ms(decoded_sampling_interval)
 
-    message = {"hex_identifier": hex_identifier, "sampling_interval": sampling_interval_ms}
+    decoded_len_experiment = decode(len_experiment_hex)
+
+    len_experiment_s = convert_to_s(decoded_len_experiment)
+
+    message = {"hex_identifier": hex_identifier, "sampling_interval": sampling_interval_ms, "len_experiment": len_experiment_s}
 
     return message
 
@@ -142,132 +148,24 @@ def convert_to_ms(decoded_sampling_interval):
 
 
 
-def logger_stop(loggers):
+def convert_to_s(decoded_len_experiment):
 
-    """This function closes the dataloggers and calls for the data to be stored and recorded
-     
-    Returns:
-        array: the array of the status for each logger """
-    
-    # stops logger and print final status for debugging
-    
-    logger_data = []
-    logger_status = []
-
-    for logger in loggers:
-        logger.stopUnit()
-        logger.closeUnit()
-        logger_status.append(logger.__repr__())
-        logger_data.append(logger.grabData())
-
-    plot_data(logger_data)
-
-    return logger_status
-
-
-
-
-
-def getPolling_Period(recording_period, polling_interval):
-
-    """This function obtains an array of polling intervals
+    """This function converts the decoded value of the sampling interval to the real value given the limitations of sending the data
 
     Returns:
-        array: array of duration of time.sleep
-    """    
+        int: Integer value of the real sampling interval in ms
+    """   
 
-    current_time = 0
+    min_len_experiment, max_len_experiment = inputInfo["lenExperiment"]["range"][0], inputInfo["lenExperiment"]["range"][1] 
 
-    polling_period = []
+    encoded_message_min = 0 
 
-    while current_time < recording_period:
-        interval = min(polling_interval, recording_period - current_time)
-        polling_period.append(interval)
-        current_time += interval
+    encoded_message_max = 15**(inputInfo["lenExperiment"]["bits"] // 4) - 1
 
-    return polling_period
+    actual = (((decoded_len_experiment - encoded_message_min) * (max_len_experiment - min_len_experiment)) /
+              (encoded_message_max - encoded_message_min)) + min_len_experiment
 
-
-
-
-
-def plot_data(logger_data):
-
-    """This function plots data for all loggers """  
-
-    # iterates through all loggers
-
-    for logger in logger_data:
-
-        # extracts and plots channel as individual series
-
-        for channel, data in logger["raw_data"].items():
-            df = pd.DataFrame(
-                {'times_ms_buffers': data['times_ms_buffers'], 'temp_buffers': data['temp_buffers']})
-
-            sns.scatterplot(x=df['times_ms_buffers'],
-                y=df['temp_buffers'], label=channel)
-
-        plt.title(f'TC08 Temperature Data {logger["Name"]}')
-
-        plt.xlabel('Time Interval (ms)')
-
-        plt.ylabel('Temperature (deg)')
-
-        plt.legend()
-
-        plt.show()
-
-
-
-
-
-def streaming_data(loggers, polling_period):
-
-    """This function runs the dataloggers and calls for the loggers to stop and close after set period"""    
-
-    # runs unit and time stamps are marked in method
-
-    for logger in loggers:
-        logger.runUnit()
-
-    # regularly polls for data and saves it in buffer attribute
-
-    for index, poll in enumerate(polling_period):
-
-        time.sleep(poll)
-
-        for logger in loggers:
-            logger.pollData(index)
-
-    logger_stop(loggers)
-
-
-
-
-
-def ERPI(loggers):
-
-    """This function constantly pulls in UART for the ending procedure and then calls for the dataloggers to close """   
-
-    if ser.in_waiting > 0:
-        
-        UART_messages = split_UART(ser.readline())
-        
-        print(UART_messages)
-
-        if UART_messages[0] == "0D" or "0E":
-
-            logger_stop(loggers)
-        
-        else:
-
-            print('THIS IS A PROBLEM')
-
-
-
-
-
+    return actual
 
 
 
@@ -296,38 +194,18 @@ if __name__ == '__main__':
             
                 # Initialise recording_period to be extremely high
 
-                recording_period = 3600 # 1hr 
+                recording_period = message["len_experiment"]  
 
                 # extracts inputs from Serial.py and from configuration file
 
                 polling_interval = EXPERIMENT_CONFIG['polling_interval']
 
-                # defining array to be populated with LoggingUnit objects
+                property_list = [str(sampling_interval_ms), str(recording_period), str(polling_interval)]
 
-                loggers = []
-
-                # initialises and starts the TC08 loggers (LED to blink green)
-
-                for name, logger_info in USBTC08_CONFIG.items():
-                    loggers.append(LoggingUnit(logger_info, name,
-                                sampling_interval_ms, recording_period))
-                
-                # creates array of polling intervals to loop through 
-
-                polling_period = getPolling_Period(recording_period, polling_interval)
-
-                # non time sensitive setting of buffers 
-
-                for logger in loggers:
-                    logger.setBuffers(polling_period)
-                
-                thread_data_stream = threading.Thread(target = streaming_data(loggers, polling_period))
-                #thread_GPIO = threading.Thread(target = GPIO)
-                thread_ERPI = threading.Thread(target = ERPI(loggers))
-                
-                thread_data_stream.start()
-                thread_ERPI.start()
-
+                with open('SRPI.txt', 'w') as f:
+                    for line in property_list:
+                        f.write(line)
+                        f.write('\n')
     
             else:
     
