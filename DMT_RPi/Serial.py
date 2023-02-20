@@ -1,14 +1,6 @@
 import serial
-import threading
-import sys
-import time
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-import pigpio  # Library for high speed gpio
 from RPI_config import inputInfo
 from TC08_config import USBTC08_CONFIG, EXPERIMENT_CONFIG
-from TC08_unit import LoggingUnit
 
 """
 @author: Jimmy van de Worp
