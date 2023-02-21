@@ -57,8 +57,7 @@ def plot_data(logger_data):
         plt.show()
 
 
-def streaming_data():
-
+if __name__ == '__main__':
     # extracts user inputs from text file
 
     x = []
