@@ -4,17 +4,7 @@ from TC08_config import USBTC08_CONFIG, EXPERIMENT_CONFIG
 
 """
 @author: Jimmy van de Worp
-This script operates 3 threads:
-
-Thread 1: thread_data_stream
-    This thread performs streaming mode for a specified recording period, polling interval and sampling interval (ms).
-    It initialises the LoggingUnit object per logger used. 
-
-TODO: Thread 2: thread_GPIO    
-    This thread receives high speed GPIO indefinitely and records the Pin Number, State, and Tick of each GPIO change detected
-
-Thread 3: thread_EPRI
-    This thread will close thread 1 and 2 upon receival of UART command EPRI
+This script receieves and decodes two UART signals SPRI and SPRI2 and then reads these into a text file for GPIO.py and Streaming.py
 
 """
 
@@ -106,10 +96,10 @@ def SRPI_Read(UART):
 
 def SRPI2_Read(UART):
 
-    """This function reads the split UART list of strings and on the condition that it is SPRI calls the conversion function for the sampling interval
+    """This function reads the split UART list of strings and on the condition that it is SPRI2 calls the conversion function for the length of experiment
 
     Returns:
-        list: list of hex identifier and sampling interval in ms
+        list: list of hex identifier and length of experiment in s
     """   
 
     hex_identifier = UART[0]
@@ -177,9 +167,11 @@ if __name__ == '__main__':
     
     ser = serial.Serial('/dev/ttyS0', 230400, timeout=1)
     
-    ser.reset_input_buffer()    
+    ser.reset_input_buffer()
+
+    counter = 0    
     
-    while True:
+    while counter < 2:
     
         if ser.in_waiting > 0:
             # .decode('utf-8').rstrip()
@@ -204,21 +196,26 @@ if __name__ == '__main__':
                     for line in property_list:
                         f.write(line)
                         f.write('\n')
+                
+                counter +=1
 
-            else:
-
-                # TODO Jimmy can you fix this please? I'm not sure how to do this
+            if UART_messages[0] == "10":
 
                 message = SRPI2_Read(UART_messages)
 
                 lenExperiment_s = message["Length of Experiment"]
                 
-                property_list = [str(lenExperiment_s), str(polling_interval)] 
+                property_list = [str(lenExperiment_s)] 
 
 
 
-                with open('SRPI.txt', 'w') as f:
+                with open('SRPI.txt', 'a') as f:
                     for line in property_list:
                         f.write(line)
                         f.write('\n')       
+                
+                counter += 1
+
+            else:
+                print("Wrong")
 
