@@ -29,15 +29,10 @@ def cleanInputs(dictionary):
 @app.route('/inputs', methods=['GET', 'POST'])
 def inputs():
     
-    #print(request.form)
+    content = request.json.get('body')
+    print(content)
 
-    #content = request.json['body']
-    # Do something with the content received from the React app
-    # For example, you can print it to the console or save it to a database
-
-    #print(content)
-
-    return {"test": "1", "test": "2"}
+    return jsonify({'message': 'Success', 'data': content})
 
 
 if __name__ == '__main__':
