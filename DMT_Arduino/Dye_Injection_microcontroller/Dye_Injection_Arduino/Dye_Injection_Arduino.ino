@@ -5,9 +5,9 @@
 // Define pin connections
 const int dirPin = 2;
 const int stepPin = 3;
-const int step = 200; // Steps per revolution
+const int steps_per_rev = 200; // Steps per revolution
 int speed = 0;
-int const_speed = 200;
+int const_speed = 200; // Steps per second
 
 // Define motor interface type
 #define motorInterfaceType 1
@@ -143,7 +143,7 @@ void loop() {
     }
 
   // The total number of steps is the steps per revolution * number of revolutions
-  total_steps = step*step_counter;
+  total_steps = steps_per_rev*step_counter;
 
   // Tell the stepper to move to that place
   myStepper.moveTo(total_steps);
