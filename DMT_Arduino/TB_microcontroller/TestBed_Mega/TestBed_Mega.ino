@@ -2,6 +2,7 @@ int incomingByte;
 
 void setup() {
   Serial.begin(230400);
+  Serial1.begin(230400);
 }
 
 void loop() {
@@ -11,5 +12,6 @@ void loop() {
 
     // say what you got:
     Serial.write(incomingByte);
+    Serial1.write(incomingByte);
   }
 }
