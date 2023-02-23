@@ -1,8 +1,6 @@
-from flask import Flask, request, json
-from flask_cors import CORS
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
-CORS(app)
 
 def cleanInputs(dictionary):
 
@@ -30,16 +28,17 @@ def cleanInputs(dictionary):
 
 @app.route('/inputs', methods=['GET', 'POST'])
 def inputs():
-    response = flask.jsonify({'some': 'data'})
-    response.headers.add('Access-Control-Allow-Origin', '*')
     
-    return {"data": ["Member1", "Member2", "Member3"]}
+    #print(request.form)
 
-@app.route('/inputs/userConfig', methods=['POST'])
-def userConfig():
-    request_data = json.load(request.data)
-    request_data.headers.add('Access-Control-Allow-Origin', '*')
-    print(request_data)
+    #content = request.json['body']
+    # Do something with the content received from the React app
+    # For example, you can print it to the console or save it to a database
+
+    #print(content)
+
+    return {"test": "1", "test": "2"}
+
 
 if __name__ == '__main__':
     app.run(debug=True)
