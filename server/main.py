@@ -45,19 +45,19 @@ def TB_TESTING(port, inputInfo):
 
     TB_UART = UART("TB Microcontroller", port)
 
-    status['STB'] = STBCommand(TB_UART, 10)
+    status['STB'] = STBCommand(TB_UART, inputInfo["stabilising_delay"]["defaultValue"], inputInfo["stabilising_delay"], inputInfo["start_y"]["defaultValue"], inputInfo["start_y"]["defaultValue"], inputInfo["branch_temp"]["defaultValue"], inputInfo["branch_temp"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
 
     time.sleep(3)
 
-    status['STB1'] = STB1Command(TB_UART)
+    status['STB1'] = STB1Command(TB_UART, inputInfo["stabilising_delay"]["defaultValue"], inputInfo["syrLen"]["defaultValue"], inputInfo["syrLen"], inputInfo["syrDia"]["defaultValue"], inputInfo["syrDia"]["defaultValue"], inputInfo["vol_inject"]["defaultValue"], inputInfo["vol_inject"]["defaultValue"], inputInfo["dyeSpeed"]["defaultValue"], inputInfo["dyeSpeed"], inputInfo["enPulse"]["defaultValue"], inputInfo["dutyCycle"]["defaultValue"], inputInfo["dutyCycle"], inputInfo["cyclePeriod"]["defaultValue"], inputInfo["cyclePeriod"])
 
     time.sleep(3)
 
-    status['RTB'] = RTBCommand(TB_UART)
+    status['RTB'] = RTBCommand(TB_UART) # TODO 
 
     time.sleep(3)
     
-    status['ETB1'] = ETB1Command(TB_UART)
+    status['ETB1'] = ETB1Command(TB_UART) 
     
     time.sleep(3)
 
