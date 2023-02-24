@@ -54,10 +54,15 @@ def base_15_protocol_convert(num):
 def convert_frequency_to_clock_tick(input_freq):
 
     prescaler = 332  # Hardcoded prescaler - numerically optimized by Desmos
+    
     clock_speed = 84*10**6  # STM32F407 TIM6 clock speed
+    
     # The number of ticks converted into an integer
+    
     no_ticks = int(np.round(clock_speed/(prescaler*input_freq)))
+    
     # The actual frequency using the number of ticks
+    
     actual_freq = clock_speed/(prescaler*no_ticks)
 
     hex_ticks = base_15_protocol_convert(no_ticks)
@@ -81,4 +86,10 @@ def float_to_hex_string(value: float, info: dict) -> tuple:
     actual = (((rounded - min_output) * (max_input - min_input)) /
               (max_output - min_output)) + min_input
 
-    return actual, base_15_protocol_convert(rounded)
+    return actual, rounded
+
+def float_to_base_15(value: float, info:dict) -> tuple:
+
+    actual, rounded = float_to_hex_string(value, info)
+
+    return actual, base_15_protocol_convert(rounded) 

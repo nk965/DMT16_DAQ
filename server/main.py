@@ -10,6 +10,16 @@ from PySerial import UART, list_ports
 from server_config import inputInfo
 from commands import STBCommand, STB1Command, SDAQCommand, SDAQ2Command, ETB1Command, ETB2Command, EDAQCommand, DyeInjectTest, STB1Command, RTBCommand
 
+def DyeInjectTestCommand(port, inputInfo):
+
+    status = {}
+
+    TB_UART = UART("TB Microcontroller", port)
+
+    status['Dye Inject Test Command'] = DyeInjectTest(TB_UART)
+
+    return status
+
 def DAQ_TESTING(port, inputInfo):
 
     status = {}
@@ -29,16 +39,6 @@ def DAQ_TESTING(port, inputInfo):
 
     return status
 
-def DyeInjectTestCommand(port, inputInfo):
-
-    status = {}
-
-    TB_UART = UART("TB Microcontroller", port)
-
-    status['Dye Inject Test Command'] = DyeInjectTest(TB_UART)
-
-    return status
-
 def TBTestingCommand(port, inputInfo):
 
     status = {}
@@ -52,6 +52,10 @@ def TBTestingCommand(port, inputInfo):
     status['STB1'] = STB1Command(TB_UART)
 
     time.sleep(3)
+
+    status['RTB'] = RTBCommand(TB_UART)
+
+    time.sleep(3)
     
     status['ETB1'] = ETB1Command(TB_UART)
     
@@ -60,7 +64,6 @@ def TBTestingCommand(port, inputInfo):
     status['ETB2'] = ETB2Command(TB_UART)
 
     return status
-
 
 if __name__ == "__main__":
 

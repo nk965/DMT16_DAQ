@@ -9,7 +9,6 @@ identifiers).
 It also deals with connecting to port and provides a method to change port during the execution of the program.
 """
 
-
 def list_ports():
     """
     Function tries and lists all available ports for connecting

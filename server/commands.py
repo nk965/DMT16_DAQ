@@ -5,7 +5,7 @@ List of commands from Central PC side
 
 from Modules import *
 
-from helpers import convert_frequency_to_clock_tick, float_to_hex_string
+from helpers import convert_frequency_to_clock_tick, float_to_hex_string, float_to_base_15
 
 def DyeInjectTest(UART):
 
@@ -15,8 +15,7 @@ def DyeInjectTest(UART):
 
     return {"Dye Injection Output": result}
 
-
-def STBCommand(UART, testDelay: float):
+def STBCommand(UART, testDelay: float, ):
 
     message = bytearray.fromhex("01000000000000000000")
 
@@ -58,7 +57,6 @@ def ETB2Command(UART):
 
     return {"ETB2 Output": read_receipt}
 
-
 def EDAQCommand(UART):
 
     message = bytearray.fromhex("0B010101")
@@ -71,14 +69,13 @@ def EDAQCommand(UART):
 
     return {"EDAQ Output": message}
 
-
 def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_info: dict, Datafreq_info: dict):
 
     hex_identifier = "03"  # Command specific hex identifier - check documentation for detail
 
     actualPIV, outPIVticks = convert_frequency_to_clock_tick(PIVfreq_val)
 
-    actualDatafreq, outDatafreq = float_to_hex_string(
+    actualDatafreq, outDatafreq = float_to_base_15(
         Datafreq_val, Datafreq_info)
     
     print(f'SDAQ Sends: {hex_identifier} {outPIVticks} {outDatafreq}')
@@ -93,7 +90,7 @@ def SDAQ2Command(UART, LenExperiment, LenExperimentInfo):
 
     hex_identifier = "0F"
 
-    actualLen, outLen = float_to_hex_string(LenExperiment, LenExperimentInfo)
+    actualLen, outLen = float_to_base_15(LenExperiment, LenExperimentInfo)
 
     print(f'SDAQ2 Sends: {hex_identifier} {outLen} 01')
 
