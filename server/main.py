@@ -8,7 +8,7 @@ from Modules import *
 
 from PySerial import UART, list_ports
 from server_config import inputInfo
-from commands import STBCommand, SDAQCommand, SDAQ2Command, ETB2Command, EDAQCommand, DyeInjectTest
+from commands import STBCommand, SDAQCommand, SDAQ2Command, ETB2Command, EDAQCommand, DyeInjectTest, TBTesting
 
 def DAQ_TESTING(port, inputInfo):
 
@@ -45,7 +45,7 @@ def TBTestingCommand(port, inputInfo):
 
     TB_UART = UART("TB Microcontroller", port)
 
-    status['Dye Inject Test Command'] = DyeInjectTest(TB_UART)
+    status['Dye Inject Test Command'] = TBTesting(TB_UART)
 
     return status
 
@@ -68,5 +68,5 @@ if __name__ == "__main__":
     TB_port_index = int(input("Choose TB port selection number input should be an integer: "))
 
     # print(DAQ_TESTING(ports_available[DAQ_port_index], inputInfo))
-    # print(DyeInjectTestCommand(ports_available[TB_port_index], inputInfo))
     print(TBTestingCommand(ports_available[TB_port_index], inputInfo))
+    # print(DyeInjectTestCommand(ports_available[TB_port_index], inputInfo))

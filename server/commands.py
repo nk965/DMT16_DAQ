@@ -17,11 +17,9 @@ def TBTesting(UART):
 
 def DyeInjectTest(UART):
 
-    string = "turn 3"
+    message = "pico"
 
-    message = string.encode("ascii")
-
-    result = UART.send(message)
+    result = UART.send(message.encode("ascii"))
 
     return {"Dye Injection Output": result}
 

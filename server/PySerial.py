@@ -128,10 +128,11 @@ class UART:
         :return: what it sent
         """
 
+        time.sleep(1)
+
         self.serial_connection.write(info)
 
-        time.sleep(0.01)
+        time.sleep(1)
 
-        if self.serial_connection.in_waiting():
+        return self.serial_connection.read_all()
 
-            return f'Microcontroller Sends Back: {self.serial_connection.read_all()}'

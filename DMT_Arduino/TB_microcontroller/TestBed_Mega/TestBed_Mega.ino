@@ -11,6 +11,9 @@ void loop() {
     digitalWrite(LED_BUILTIN, HIGH);
     // read the incoming byte:
     incomingByte = Serial.read();
+
+    
+    
     // say what you got:
     Serial.write(incomingByte);
     // Serial1.write(incomingByte);
