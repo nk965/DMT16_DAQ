@@ -9,7 +9,7 @@ from helpers import convert_frequency_to_clock_tick, float_to_hex_string
 
 def TBTesting(UART):
 
-    message = bytearray.fromhex("FF03") # initial testing
+    message = bytearray.fromhex("FF") # initial testing
     
     result = UART.send(message)
 

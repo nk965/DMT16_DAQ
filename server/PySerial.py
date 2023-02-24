@@ -132,11 +132,7 @@ class UART:
 
         self.serial_connection.write(info)
 
-        time.sleep(2)
-
-        while True:
-            if self.serial_connection.in_waiting:
-                return self.serial_connection.read_all()
+        time.sleep(1)
 
         return self.serial_connection.read_all()
 
