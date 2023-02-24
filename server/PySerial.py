@@ -132,7 +132,7 @@ class UART:
 
         self.serial_connection.write(info)
 
-        time.sleep(3)
+        time.sleep(1)
 
         return self.serial_connection.read_all()
 
