@@ -1,128 +1,62 @@
-int index = 0;          // Initialize an index variable to keep track of the next available position in the array
-int incomingByte;
+const int max_bytes = 10; // Max length for Arduino communication protocol 
 
-// Hex Identifiers (i.e., start byte)
+// Hex Identifiers
+int STBCommand = 0b00000001; // STB Command - Info for Testbed actuators, stabilising delay, temperatures, length of experiment
+int STB1Command = 0b0001111; // STB1 Command - Info for Dye Injection Microcontroller, runs SDYE
+int RTBCommand = 0b00000111; // RTB Command - Iteratively receives actuator input data from PC 
+int ETB1Command = 0b00001001; // ETB1 Command - Sends GP/IO to Raspberry Pi, signalling end of transient conditions
+int ETB2Command = 0b00001010; // ETB2 Command - Tells Testbed actuators to stop the flow
 
-int STBCommand = 0b00000001;
-int RTBCommand = 0b00000111;
-int ETB1Command = 0b00001001;
-int ETB2Command = 0b00001010;
+uint8_t receivedData[max_bytes]; // Array of length largest number of bytes recieved, typecasted to uint8_t
 
-uint8_t receivedData[14];
-
+// Initialises UART, with baud rate of 230400
 void setup()
 {
-  Serial.begin(230400); // Initialize serial communication
+  Serial.begin(230400);  // Initialize Central PC Serial communication
+  Serial1.begin(230400); // Initialise Dye Injection Serial Communication
 }
 
+// Realises messages from UART, byte by byte 
+void readData(uint8_t *data, int length)
+{
+
+  for (int i = 0; i < length; i++)
+  {
+    data[i] = (uint8_t)Serial.read();
+  }
+}
+
+// Main loop function 
 void loop()
 {
 
-  delay(10);
+  delay(10); // Short delay to ensure that data is being read
 
-  if (Serial.available() >= 14 || Serial.available() == 0)
+  if (Serial.available() >= max_bytes)
   {
-    for (int i = 0; i < 14; i++)
-    {
-      receivedData[i] = (uint8_t)Serial.read();
-    } 
+    readData(receivedData, max_bytes);
     if (receivedData[0] == STBCommand)
     {
-
-      for (int i = 0; i < 14; i++) {
-
-        Serial.write(receivedData[i]);
-
-      }
-
+      Serial.write("STB");
     }
-
-    if (receivedData[0] == RTBCommand)
+    if (receivedData[0] == STB1Command)
     {
-      Serial.print("RTB");
+      Serial.write("STB1");
     }
-
-    if (receivedData[0] == ETB1Command)
+    else if (receivedData[0] == RTBCommand)
     {
-      Serial.print("ETB1");
+      Serial.write("RTB");
     }
-
-    if (receivedData[0] == ETB2Command)
+    else if (receivedData[0] == ETB1Command)
     {
-      Serial.print("ETB2");
+      Serial.write("ETB1");
+    }
+    else if (receivedData[0] == ETB2Command)
+    {
+      Serial.write("ETB2");
     }
   }
+
+  memset(receivedData, 0, sizeof(receivedData)); // Resets recievedData array after command has been read
+
 }
-
-// void loop()
-// {
-
-//   if (Serial.available() > 0)
-//   {
-
-//     byte incomingByte = Serial.read();
-
-//     if (incomingByte == STBCommand || incomingByte == RTBCommand || incomingByte == ETB1Command || incomingByte == ETB2Command)
-//     {
-//       dataIndex = 0; // Reset the index variable
-
-//       while (Serial.available() && Serial.peek() != stopByte)
-//       { // Loop until the stop byte is received or there is no more data available
-
-//         dataArray[dataIndex++] = Serial.read(); // Add the incoming byte to the data array and increment the index
-
-//         delay(10);
-//       }
-//       else
-//       {
-
-//         Serial.print("Error");
-//       }
-//     }
-//   }
-// }
-
-// void loop() {
-
-//   delay(500);
-
-//   if (Serial.available() > 0) {
-//     // read the incoming byte:
-//     byte b = Serial.read();
-//     myArray[index] = b;
-//     index++;
-
-//   }
-
-//   size_t arraySize = sizeof(myArray) / sizeof(byte);
-
-//   for (int i = 0; i < 16; i++) {
-
-//     Serial.write(myArray[i]);
-
-//   }
-// }
-
-/* void loop()
-{
-
-  if (Serial.available() > 0)
-  {
-    byte b = Serial.read();
-    myArray[index] = b;
-    index++;
-    Serial.print(Serial.available());
-  }
-  if (Serial.available() == 2)
-  {
-
-    for (int i = 0; i < 3; i++)
-    {
-      Serial.write(Serial.available());
-    }
-  }
-  else
-  {
-
-  }
-} */

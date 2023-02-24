@@ -7,14 +7,6 @@ from Modules import *
 
 from helpers import convert_frequency_to_clock_tick, float_to_hex_string
 
-def TBTesting(UART):
-
-    message = bytearray.fromhex("0703040304030403040304030404") # initial testing
-    
-    result = UART.send(message)
-
-    return {"TB Testing": result}
-
 def DyeInjectTest(UART):
 
     message = "turn 1\n"
@@ -24,27 +16,43 @@ def DyeInjectTest(UART):
     return {"Dye Injection Output": result}
 
 
-def STBCommand(testDelay: float):
+def STBCommand(UART, testDelay: float):
 
-    # TODO finish STB Command
+    message = bytearray.fromhex("01000000000000000000")
 
-    time.sleep(testDelay)
+    read_receipt = UART.send(message)
 
-    return {"Testbed Delay": testDelay}
+    # time.sleep(testDelay)
 
+    return {"STB Output": read_receipt}
+
+def STB1Command(UART):
+
+    message = bytearray.fromhex("0F000000000000000000")
+
+    read_receipt = UART.send(message)
+
+    return {"STB1 Output": read_receipt}
+
+def RTBCommand(UART):
+
+    message = bytearray.fromhex("07000000000000000000")
+
+    read_receipt = UART.send(message)
+
+    return {"RTB Output": read_receipt}
 
 def ETB1Command(UART):
 
-    message = bytearray.fromhex("09")
+    message = bytearray.fromhex("09000000000000000000")
 
     read_receipt = UART.send(message)
 
     return {"ETB1 Output": read_receipt}
 
-
 def ETB2Command(UART):
 
-    message = bytearray.fromhex("0A")
+    message = bytearray.fromhex("0A000000000000000000")
 
     read_receipt = UART.send(message)
 
