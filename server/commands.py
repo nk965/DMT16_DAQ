@@ -3,7 +3,8 @@
 List of commands from Central PC side
 """
 
-import time
+from Modules import *
+
 from helpers import convert_frequency_to_clock_tick, float_to_hex_string
 
 def TBTesting(UART):

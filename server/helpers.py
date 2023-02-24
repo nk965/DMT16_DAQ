@@ -3,7 +3,7 @@
 Helper functions for command protocols
 """
 
-import numpy as np
+from Modules import *
 
 def base_15_protocol_convert(num):
 

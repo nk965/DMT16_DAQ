@@ -4,7 +4,7 @@ Main script for communicating with microcontrollers
 hello
 """
 
-import time
+from Modules import *
 
 from PySerial import UART, list_ports
 from server_config import inputInfo
