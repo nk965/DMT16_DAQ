@@ -69,6 +69,8 @@ void loop() {
         // Wait until it sees an enter key
         input = Serial.readStringUntil('\n');
 
+        Serial.write(input);
+
         // If the command is "turn", e.g. "turn 3":
         if (input.substring(0,5) == "turn "){
 
