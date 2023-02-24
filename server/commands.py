@@ -19,7 +19,7 @@ def DyeInjectTest(UART):
 
     string = "turn 3"
 
-    message = string.encode("utf-8")
+    message = string.encode("ascii")
 
     result = UART.send(message)
 
