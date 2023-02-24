@@ -133,3 +133,5 @@ class UART:
         time.sleep(0.1)
 
         print(f'Microcontroller Sends Back: {self.serial_connection.read_all().hex()}')
+
+        return self.serial_connection.read_all()

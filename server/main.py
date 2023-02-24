@@ -23,7 +23,7 @@ def DAQ_TESTING(port, inputInfo):
 
     status['SDAQ2'] = SDAQ2Command(DAQ_UART, inputInfo["lenExperiment"]['defaultValue'], inputInfo["lenExperiment"])
     
-    time.sleep(3) # this should be the time of the experiment 
+    time.sleep(5) # this should be the time of the experiment 
 
     status['EDAQ'] = EDAQCommand(DAQ_UART)
 
@@ -61,12 +61,12 @@ if __name__ == "__main__":
     
     ports_available = list_ports()
 
-    for port, index in ports_available:
-        print(f'SELECTION NUMBER {index}: {port}')
+    for port, index in enumerate(ports_available):
+        print(f'SELECTION {index}: {port}')
 
     DAQ_port_index = int(input("Choose DAQ port selection number input should be an integer: "))
     TB_port_index = int(input("Choose TB port selection number input should be an integer: "))
 
-    print(DAQ_TESTING(ports_available[DAQ_port_index], inputInfo))
-    print(DyeInjectTestCommand(ports_available[TB_port_index], inputInfo))
-    # print(TBTestingCommand(ports_available[TB_port_index], inputInfo))
+    # print(DAQ_TESTING(ports_available[DAQ_port_index], inputInfo))
+    # print(DyeInjectTestCommand(ports_available[TB_port_index], inputInfo))
+    print(TBTestingCommand(ports_available[TB_port_index], inputInfo))
