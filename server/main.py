@@ -29,17 +29,17 @@ def DAQ_TESTING(port, inputInfo):
     status['SDAQ'] = SDAQCommand(DAQ_UART, 10, inputInfo["Datafreq"]["defaultValue"],
                                  inputInfo["PIVfreq"], inputInfo["Datafreq"])  # TODO replace the second and third arguments with actual values from user input
 
-    time.sleep(0.01)
+    time.sleep(0.01) 
 
     status['SDAQ2'] = SDAQ2Command(DAQ_UART, inputInfo["lenExperiment"]['defaultValue'], inputInfo["lenExperiment"])
     
-    time.sleep(5) # this should be the time of the experiment 
+    time.sleep(5) # this should be how long the Pico Logger is Logging for i.e., lenExperiment
 
     status['EDAQ'] = EDAQCommand(DAQ_UART)
 
     return status
 
-def TBTestingCommand(port, inputInfo):
+def TB_TESTING(port, inputInfo):
 
     status = {}
 
@@ -83,5 +83,5 @@ if __name__ == "__main__":
     TB_port_index = int(input("Choose TB port selection number input should be an integer: "))
 
     # print(DAQ_TESTING(ports_available[DAQ_port_index], inputInfo))
-    print(TBTestingCommand(ports_available[TB_port_index], inputInfo))
+    print(TB_TESTING(ports_available[TB_port_index], inputInfo))
     # print(DyeInjectTestCommand(ports_available[TB_port_index], inputInfo))

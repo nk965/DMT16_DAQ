@@ -133,5 +133,5 @@ class UART:
 
         time.sleep(1)
 
-        return self.serial_connection.read_all()
+        print(f'{self.port_name} sends back {self.serial_connection.read_all()}')
 

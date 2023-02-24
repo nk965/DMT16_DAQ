@@ -88,6 +88,18 @@ def float_to_hex_string(value: float, info: dict) -> tuple:
 
     return actual, rounded
 
+def bool_to_hex_string(value: bool): 
+
+    if value == True:
+
+        hex_string = "0001"
+
+    else:
+
+        hex_string = "0000"
+
+    return hex_string
+
 def float_to_base_15(value: float, info:dict) -> tuple:
 
     actual, rounded = float_to_hex_string(value, info)

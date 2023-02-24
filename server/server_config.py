@@ -124,4 +124,28 @@ inputInfo = {
         "units": "",
         "submission_form": "transientInput"
     },
+    "stabilising_delay": {
+        "defaultValue": 15,
+        "type": float,
+        "range": [0, 2000],
+        "bits": 8,
+        "units": "s",
+        "submission_form": None
+    },
+    "branch_temp": {
+        "defaultValue": 80,
+        "type": float,
+        "range": [30, 100],
+        "bits": 16,
+        "units": "C",
+        "submission_form": None
+    },
+    "vol_inject": {
+        "defaultValue": 25,
+        "type": float,
+        "range": [0, 100],
+        "bits": 8,
+        "units": "ml",
+        "submission_form": None
+    },
 }
