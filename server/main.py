@@ -45,7 +45,7 @@ def TBTestingCommand(port, inputInfo):
 
     TB_UART = UART("TB Microcontroller", port)
 
-    status['Dye Inject Test Command'] = TBTesting(TB_UART)
+    status['TB Testing Command'] = TBTesting(TB_UART)
 
     return status
 

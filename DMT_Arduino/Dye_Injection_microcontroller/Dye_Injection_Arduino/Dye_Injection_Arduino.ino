@@ -31,7 +31,7 @@ boolean toggle1 = 0;
 void setup() {
   pinMode(dirPin, OUTPUT);
   myStepper.setMaxSpeed(1000);
-  Serial.begin(9600);
+  Serial.begin(230400);
   myStepper.setSpeed(0);
   Serial.flush();
   pinMode(13, OUTPUT);
@@ -67,9 +67,10 @@ void loop() {
   if(Serial.available() > 0){
 
         // Wait until it sees an enter key
-        input = Serial.readStringUntil('\n');
-
-        Serial.write(input);
+        input = Serial.read();
+        delay(1500);
+        Serial.write(5);
+        // Serial.print(input);
 
         // If the command is "turn", e.g. "turn 3":
         if (input.substring(0,5) == "turn "){
