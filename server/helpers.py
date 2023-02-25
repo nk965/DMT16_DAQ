@@ -69,12 +69,17 @@ def convert_frequency_to_clock_tick(input_freq):
 
     return actual_freq, hex_ticks
 
+def int_to_hex_string(n: int, bits: int) -> str:
+
+    hex_string = hex(n)[2:].upper().zfill(bits // 4)
+
+    return hex_string
 
 def float_to_hex_string(value: float, info: dict) -> tuple: #TODO not maximising resolution for Arduino Serial
 
     min_input, max_input = info["range"][0], info["range"][1]
 
-    max_output = 15**(info["bits"] // 4) - 1
+    max_output = 16**(info["bits"] // 4) - 1
 
     min_output = 0
 
@@ -86,7 +91,9 @@ def float_to_hex_string(value: float, info: dict) -> tuple: #TODO not maximising
     actual = (((rounded - min_output) * (max_input - min_input)) /
               (max_output - min_output)) + min_input
 
-    return actual, rounded
+    hex_string = int_to_hex_string(rounded, info["bits"])
+
+    return actual, hex_string
 
 def bool_to_hex_string(value: bool): 
 
@@ -102,6 +109,39 @@ def bool_to_hex_string(value: bool):
 
 def float_to_base_15(value: float, info:dict) -> tuple:
 
-    actual, rounded = float_to_hex_string(value, info)
+    min_input, max_input = info["range"][0], info["range"][1]
+
+    max_output = 15**(info["bits"] // 4) - 1
+
+    min_output = 0
+
+    scaled = (((value - min_input) / (max_input - min_input))
+              * (max_output - min_output)) + min_output
+
+    rounded = round(scaled)
+
+    actual = (((rounded - min_output) * (max_input - min_input)) /
+              (max_output - min_output)) + min_input
 
     return actual, base_15_protocol_convert(rounded) 
+
+def float_array_to_hex_string(arr: np.ndarray, info: dict) -> np.ndarray:
+    min_input, max_input = info["range"][0], info["range"][1]
+    max_output = 2**info["bits"] - 1
+    min_output = 0
+
+    scaled = (((arr - min_input) / (max_input - min_input))
+              * (max_output - min_output)) + min_output
+
+    rounded = np.round(scaled).astype(int)
+
+    int_array = np.clip(rounded, min_output, max_output)
+
+    actual_array = (((int_array - min_output) / (max_output - min_output))
+                * (max_input - min_input)) + min_input
+
+    hex_func = np.vectorize(lambda x: int_to_hex_string(x, info["bits"]))
+
+    hex_string_array = hex_func(int_array)
+
+    return actual_array, hex_string_array

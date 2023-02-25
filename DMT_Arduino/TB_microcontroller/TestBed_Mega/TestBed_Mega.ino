@@ -19,7 +19,6 @@ void setup()
 // Realises messages from UART, byte by byte 
 void readData(uint8_t *data, int length)
 {
-
   for (int i = 0; i < length; i++)
   {
     data[i] = (uint8_t)Serial.read();
