@@ -5,7 +5,7 @@ List of commands from Central PC side
 
 from Modules import *
 
-from helpers import convert_frequency_to_clock_tick, float_to_hex_string, float_to_base_15, bool_to_hex_string, float_array_to_hex_string
+from helpers import convert_frequency_to_clock_tick, float_to_hex_string, float_to_base_15, bool_to_hex_string, float_array_to_hex_string, linear_interpolation
 
 def STBCommand(UART, testDelay: float, testDelay_info: dict, start_y: float, start_y_info: dict, branch_temp: float, branch_temp_info: dict, trans_time: float, trans_time_info: dict):
 
@@ -57,40 +57,36 @@ def STB1Command(UART, testDelay: float, syrLen: float, syrLen_Info: dict, syrDia
 
     return {"Syringe Length": actualSyrLen, "Syringe Diameter": actualSyrDia, "Volume Injected": actual_vol_inject, "Dye Speed": actualDyeSpeed, "Enable Pulse": enPulse, "Duty Cycle": actualDutyCycle, "Cycle Period": actualCyclePeriod}
 
-def RTBProcedure(UART, start_y, end_y, nodes, trans_time, preset_config):
+def RTBProcedure(UART, start_y, end_y, nodes, trans_time, preset_config="Linear"):
 
     # generate actuator_array and time_array based on user input
 
-    actuator_array = np.array([])
-    time_array = np.array([])
+    if preset_config=="Linear":
 
-    actual_actuator_pos_array, time_step = RTBCommand(UART, actuator_array, time_array)
+        times, y_values = linear_interpolation(start_y, end_y, nodes, trans_time)
 
-    return {"Actuator Position Array": actual_actuator_pos_array, "Time Step": time_step}
+    actual_actuator_pos_array = RTBCommand(UART, y_values, times)
+
+    return {"Actuator Position Array": actual_actuator_pos_array, "Time Step": times}
 
 
-def RTBCommand(UART, actuator_array, time_array):
-
-    # TODO find actutor array, must be numpy array (try)
-    # TODO time_array should be from 0 to transient time length
-
-    time_step = time_array[1] - time_array[0]
+def RTBCommand(UART, actuator_array, times):
 
     info = {"range": [np.min(actuator_array), np.max(actuator_array)], "bits": 8}
 
     hex_identifier = "07"
 
-    actual_actuator_pos_array, out_actuator_pos_array = float_array_to_hex_string(actuator_position, info)
+    actual_actuator_pos_array, out_actuator_pos_array = float_array_to_hex_string(actuator_array, info)
 
-    for actuator_position in out_actuator_pos_array: 
+    for actuator_position, index in enumerate(out_actuator_pos_array): 
 
         message = bytearray.fromhex(hex_identifier + actuator_position + "0000000000000000")
 
         UART.send(message)
 
-        time.sleep(time_step)
+        time.sleep(times[index])
 
-    return actual_actuator_pos_array, time_step
+    return actual_actuator_pos_array
 
 def ETB1Command(UART):
 

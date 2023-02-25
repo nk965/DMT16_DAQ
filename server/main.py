@@ -11,6 +11,9 @@ from server_config import inputInfo
 from commands import STBCommand, STB1Command, SDAQCommand, SDAQ2Command, ETB1Command, ETB2Command, EDAQCommand, STB1Command, RTBProcedure
 
 def DAQ_TESTING(port, inputInfo):
+    '''
+    Benchscale Test
+    '''
 
     status = {}
 
@@ -30,6 +33,10 @@ def DAQ_TESTING(port, inputInfo):
     return status
 
 def TB_TESTING(port, inputInfo):
+
+    '''
+    Benchscale Test
+    '''
 
     status = {}
 

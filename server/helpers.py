@@ -5,6 +5,33 @@ Helper functions for command protocols
 
 from Modules import *
 
+def linear_interpolation(start_y: float, end_y: float, nodes: int, time: float) -> tuple:
+    """
+    Returns an array of times (with the correct number of nodes) and an array of y assuming linear interpolation
+    
+    Args:
+    start_y: float, starting value of y
+    end_y: float, ending value of y
+    nodes: int, number of nodes for interpolation
+    time: float, total time
+    
+    Returns:
+    tuple, consisting of two numpy arrays: (1) array of times and (2) array of y values
+    """
+    # Calculate time step between each node
+    time_step = time / (nodes - 1)
+    
+    # Create array of times
+    times = np.arange(0, time + time_step, time_step)[:nodes]
+    
+    # Calculate slope between start_y and end_y
+    slope = (end_y - start_y) / (nodes - 1)
+    
+    # Calculate array of y values using linear interpolation
+    y_values = start_y + slope * np.arange(nodes)
+    
+    return times, y_values
+
 def base_15_protocol_convert(num):
 
     def numberToBase(n, b):
