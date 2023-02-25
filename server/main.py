@@ -62,8 +62,8 @@ def process(DAQ_port, TB_port, inputs, info):
 
     status = {}
 
-    TB_UART = UART("TB Microcontroller", port)
-    DAQ_UART = UART("DAQ Microcontroller", port)
+    TB_UART = UART("TB Microcontroller", TB_port)
+    DAQ_UART = UART("DAQ Microcontroller", DAQ_port)
 
     status['STB'] = STBCommand(TB_UART, inputs["stabilising_delay"], info["stabilising_delay"], inputs["start_y"], info["start_y"], inputs["branch_temp"], info["branch_temp"], inputs["trans_time"], info["trans_time"])
 
@@ -127,4 +127,5 @@ if __name__ == "__main__":
 
     # print(DAQ_TESTING(ports_available[DAQ_port_index], inputInfo))
     print(TB_TESTING(ports_available[TB_port_index], inputInfo))
+    # print(run())
 
