@@ -8,17 +8,7 @@ from Modules import *
 
 from PySerial import UART, list_ports
 from server_config import inputInfo
-from commands import STBCommand, STB1Command, SDAQCommand, SDAQ2Command, ETB1Command, ETB2Command, EDAQCommand, DyeInjectTest, STB1Command, RTBCommand
-
-def DyeInjectTestCommand(port, inputInfo):
-
-    status = {}
-
-    TB_UART = UART("TB Microcontroller", port)
-
-    status['Dye Inject Test Command'] = DyeInjectTest(TB_UART)
-
-    return status
+from commands import STBCommand, STB1Command, SDAQCommand, SDAQ2Command, ETB1Command, ETB2Command, EDAQCommand, STB1Command, RTBCommand
 
 def DAQ_TESTING(port, inputInfo):
 

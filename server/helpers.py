@@ -70,7 +70,7 @@ def convert_frequency_to_clock_tick(input_freq):
     return actual_freq, hex_ticks
 
 
-def float_to_hex_string(value: float, info: dict) -> tuple:
+def float_to_hex_string(value: float, info: dict) -> tuple: #TODO not maximising resolution for Arduino Serial
 
     min_input, max_input = info["range"][0], info["range"][1]
 
