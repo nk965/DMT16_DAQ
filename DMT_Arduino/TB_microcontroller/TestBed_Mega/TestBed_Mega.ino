@@ -36,8 +36,6 @@ void sendData(uint8_t* data, int dataSize) {
 void loop()
 {
 
-  delay(100); // Short delay to ensure that data is being read
-
   if (Serial.available() >= max_bytes)
   {
     readData(receivedData, max_bytes);
@@ -45,7 +43,7 @@ void loop()
     {
       sendData(receivedData, max_bytes); // Debugging print - this sends back the SDAQ command
     }
-    if (receivedData[0] == STB1Command) // Sends SDYE (i.e., info for dye injection)
+    else if (receivedData[0] == STB1Command) // Sends SDYE (i.e., info for dye injection)
     {
       sendData(receivedData, max_bytes); // Debugging print - this sends back the STB1 command
 
