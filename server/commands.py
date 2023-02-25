@@ -78,13 +78,12 @@ def RTBCommand(UART, actuator_array, times):
 
     actual_actuator_pos_array, out_actuator_pos_array = float_array_to_hex_string(actuator_array, info)
 
-    for actuator_position, index in enumerate(out_actuator_pos_array): 
-
-        message = bytearray.fromhex(hex_identifier + actuator_position + "0000000000000000")
-
+    for index in range (1, len(times)):
+        message = bytearray.fromhex(hex_identifier + out_actuator_pos_array[index] + "0000000000000000")
+        
         UART.send(message)
 
-        time.sleep(times[index])
+        time.sleep(times[index] - times[index-1])
 
     return actual_actuator_pos_array
 
