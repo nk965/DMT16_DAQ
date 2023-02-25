@@ -50,10 +50,7 @@ def TB_TESTING(port, inputInfo):
 
     time.sleep(3)
 
-    actuator_array = np.array([])
-    time_array = np.array([])
-
-    status['RTB'] = RTBProcedure(TB_UART, actuator_array, time_array) # TODO 
+    status['RTB'] = RTBProcedure(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
 
     time.sleep(3)
     

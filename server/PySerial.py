@@ -41,7 +41,7 @@ def list_ports():
 
 class UART:
 
-    def __init__(self, port_name, port='COM7', baud_rate=230400, buffer_size=10000):
+    def __init__(self, port_name, port='COM7', baud_rate=9600, buffer_size=10000):
 
         # Attributes for PySerial setup
         self.port = port
@@ -133,5 +133,7 @@ class UART:
 
         time.sleep(1)
 
-        print(f'{self.port_name} sends back {self.serial_connection.read_all()}')
+        read_receipt = self.serial_connection.read_all()
+
+        print(f'{self.port_name} sends back {read_receipt}')
 

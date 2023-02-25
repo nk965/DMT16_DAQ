@@ -18,10 +18,10 @@ def STBCommand(UART, testDelay: float, testDelay_info: dict, start_y: float, sta
     actualBranch, outBranch = float_to_hex_string(branch_temp, branch_temp_info)
 
     actualTransTime, outTransTime = float_to_hex_string(trans_time, trans_time_info)
-    
-    print(f'STB Sends: {hex_identifier} {outTestDelay} {outStartY} {outBranch} {outTransTime} + 00000000')
 
     message = bytearray.fromhex(hex_identifier + outTestDelay + outStartY + outBranch + outTransTime + '00000000')
+
+    print(f'STB Sends: {hex_identifier} {outTestDelay} {outStartY} {outBranch} {outTransTime} 00000000 in the form of {message}')
 
     UART.send(message)
 
@@ -31,7 +31,7 @@ def STB1Command(UART, testDelay: float, syrLen: float, syrLen_Info: dict, syrDia
 
     # note that testDelay (stabilising time) is not sent over 
 
-    hex_identifier = "OF"
+    hex_identifier = "00"
 
     actualSyrLen, outSyrLen = float_to_hex_string(syrLen, syrLen_Info)
 
@@ -47,9 +47,9 @@ def STB1Command(UART, testDelay: float, syrLen: float, syrLen_Info: dict, syrDia
 
     actualCyclePeriod, outCyclePeriod = float_to_hex_string(cyclePeriod, cyclePeriod_info)
 
-    print(f'STB1 Sends: {hex_identifier} {outSyrLen} {outSyrDia} {out_vol_inject} {outDyeSpeed} {outEnPulse} {outDutyCycle} {outCyclePeriod}')
+    message = bytearray.fromhex("00" + outSyrLen + outSyrDia + out_vol_inject + outDyeSpeed + outEnPulse + outDutyCycle + outCyclePeriod)
 
-    message = bytearray.fromhex(hex_identifier + outSyrLen + outSyrDia + out_vol_inject + outDyeSpeed + outEnPulse + outDutyCycle + outCyclePeriod)
+    print(f'STB1 Sends: {hex_identifier} {outSyrLen} {outSyrDia} {out_vol_inject} {outDyeSpeed} {outEnPulse} {outDutyCycle} {outCyclePeriod} in the form of: {message}')
 
     UART.send(message)
 
@@ -79,7 +79,10 @@ def RTBCommand(UART, actuator_array, times):
     actual_actuator_pos_array, out_actuator_pos_array = float_array_to_hex_string(actuator_array, info)
 
     for index in range (1, len(times)):
+
         message = bytearray.fromhex(hex_identifier + out_actuator_pos_array[index] + "0000000000000000")
+        
+        print(f'RTB Sends: {hex_identifier} {out_actuator_pos_array[index]} 0000000000000000 in the form of {message}')
         
         UART.send(message)
 
@@ -91,7 +94,7 @@ def ETB1Command(UART):
 
     message = bytearray.fromhex("09000000000000000000")
 
-    print(f'ETB1 Sends: 09000000000000000000')
+    print(f'ETB1 Sends: 09000000000000000000 in the form of {message}')
 
     UART.send(message)
 
@@ -101,7 +104,7 @@ def ETB2Command(UART):
 
     message = bytearray.fromhex("0A000000000000000000")
 
-    print(f'ETB2 Sends: 0A000000000000000000')
+    print(f'ETB2 Sends: 0A000000000000000000 in the form of {message}')
 
     UART.send(message)
 
@@ -113,7 +116,7 @@ def EDAQCommand(UART):
 
     message = bytearray.fromhex("0B010101")
 
-    print(f'EDAQ Sends: 0B010101')
+    print(f'EDAQ Sends: 0B010101 in the form of {message}')
 
     UART.send(message)  
 

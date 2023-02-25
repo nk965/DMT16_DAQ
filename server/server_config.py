@@ -88,7 +88,7 @@ inputInfo = {
         "defaultValue": 25,
         "type": float,
         "range": [0, 100],
-        "bits": None,
+        "bits": 8,
         "units": "%", #TODO: use units of momentum ratio?
         "submission_form": "transientInput"
     },
@@ -96,12 +96,12 @@ inputInfo = {
         "defaultValue": 55,
         "type": float,
         "range": [0, 100],
-        "bits": None,
+        "bits": 8,
         "units": "", #TODO: use units of momentum ratio?
         "submission_form": "transientInput"
     },
     "nodes": {
-        "defaultValue": 7,
+        "defaultValue": 5,
         "type": float,
         "range": [0, 500],
         "bits": None,
@@ -117,10 +117,10 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "trans_time": {
-        "defaultValue": 15,
+        "defaultValue": 20,
         "type": float,
         "range": [0, 800],
-        "bits": None,
+        "bits": 16,
         "units": "",
         "submission_form": "transientInput"
     },
