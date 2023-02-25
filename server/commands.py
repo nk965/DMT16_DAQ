@@ -47,7 +47,7 @@ def STB1Command(UART, testDelay: float, syrLen: float, syrLen_Info: dict, syrDia
 
     actualCyclePeriod, outCyclePeriod = float_to_hex_string(cyclePeriod, cyclePeriod_info)
 
-    message = bytearray.fromhex("00" + outSyrLen + outSyrDia + out_vol_inject + outDyeSpeed + outEnPulse + outDutyCycle + outCyclePeriod)
+    message = bytearray.fromhex(hex_identifier + outSyrLen + outSyrDia + out_vol_inject + outDyeSpeed + outEnPulse + outDutyCycle + outCyclePeriod)
 
     print(f'STB1 Sends: {hex_identifier} {outSyrLen} {outSyrDia} {out_vol_inject} {outDyeSpeed} {outEnPulse} {outDutyCycle} {outCyclePeriod} in the form of: {message}')
 

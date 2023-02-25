@@ -72,6 +72,6 @@ void loop()
     }
   }
 
-  memset(receivedData, 0, sizeof(receivedData)); // Resets recievedData array after command has been read
+  // memset(receivedData, 0, sizeof(receivedData)); // Resets recievedData array after command has been read
 
 }

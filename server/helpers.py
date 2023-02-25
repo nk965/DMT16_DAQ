@@ -54,12 +54,12 @@ def base_15_protocol_convert(num):
         "7": "7",
         "8": "8",
         "9": "9",
-        "10": "A",
-        "11": "B",
-        "12": "C",
-        "13": "D",
-        "14": "E",
-        "15": "F"
+        "10": "a",
+        "11": "b",
+        "12": "c",
+        "13": "d",
+        "14": "e",
+        "15": "f"
     }
 
     # Temporary array converted to base 15 in numbers
@@ -98,7 +98,7 @@ def convert_frequency_to_clock_tick(input_freq):
 
 def int_to_hex_string(n: int, bits: int) -> str:
 
-    hex_string = hex(n)[2:].upper().zfill(bits // 4)
+    hex_string = hex(n)[2:].zfill(bits // 4)
 
     return hex_string
 
