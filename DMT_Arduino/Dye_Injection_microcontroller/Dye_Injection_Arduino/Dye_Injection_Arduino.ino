@@ -6,27 +6,31 @@
 const int dirPin = 2;
 const int stepPin = 3;
 const int steps_per_rev = 200; // Steps per revolution
-int speed = 0;
+int speed = 0; // The speed variable used to set stuff - there are 2 variables because this allows the motor to remember the speed after reset
 int const_speed = 200; // Steps per second
 
 // Define motor interface type
 #define motorInterfaceType 1
 
-// Creates an instance
+// Creates an instance of a stepper motor
 AccelStepper myStepper(motorInterfaceType, stepPin, dirPin);
+
 String input;
-int no_steps;
-int total_steps;
-int step_counter;
-float duty = 0.5;
-float period = 1;
-int pulse = 0;
-int pulse_counter = 0;
-float cycles_per_ms = 0.1395;
-//float cycles_per_ms = 0.01;
-int delay_cycles = 0;
-int total_cycles = 0;
-boolean toggle1 = 0;
+unsigned int no_turns; // Variable for storing the number of steps requested using turn or pulse command
+int total_steps; // Total number of steps issued - used in reset to turn the correct number of times backwards. In steps, so NOT revs
+unsigned int turn_counter; // Turn counter - in REVS NOT STEPS
+float duty = 0.4; // Duty cycle value
+float period = 0.5; // Period of pulses - max period is around 9 seconds and a bit
+boolean pulse = 0; // Pulse mode: 1 = enabled, 0 = disabled
+boolean on_off = 0; // During pulse mode: on = 1 (pulsing), off = 0 (stop)
+
+// Pulse variables
+
+unsigned int on_period_counter = 0; // Max counter val for on period before switch
+unsigned int off_period_counter = 0; // Max counter val for off period before switch
+unsigned int current_counter = 0; // Current value of counter - incremented by timer
+unsigned int clock_freq = 10000; // 10 kHz interrupt
+
 
 void setup() {
   pinMode(dirPin, OUTPUT);
@@ -34,30 +38,25 @@ void setup() {
   Serial.begin(230400);
   myStepper.setSpeed(0);
   Serial.flush();
-  pinMode(13, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
 
   cli();//stop interrupts
 
-  //set timer1 interrupt at 1Hz
-
+  //set timer1 interrupt at 10kHz
   TCCR1A = 0;// set entire TCCR1A register to 0
   TCCR1B = 0;// same for TCCR1B
   TCNT1  = 0;//initialize counter value to 0
-  // set compare match register for 1hz increments
-  OCR1A = 15624;// = (16*10^6) / (1*1024) - 1 (must be <65536)
+  // set compare match register for 10kHz increments
+  OCR1A = 1599;// = (16*10^6) / (Prescaler*desired_freq) - 1 (must be <65536)
   // turn on CTC mode
   TCCR1B |= (1 << WGM12);
-  // Set CS10 and CS12 bits for 1024 prescaler
-  TCCR1B |= (1 << CS12) | (1 << CS10);  
+  // Set CS12 and CS10 bits for 1 prescaler
+  TCCR1B |= (1 << CS10);  
   // enable timer compare interrupt
   TIMSK1 |= (1 << OCIE1A);
 
   sei();//allow interrupts
 
-}
-
-void reset(){
-  myStepper.moveTo(0);
 }
 
 void loop() {
@@ -67,10 +66,7 @@ void loop() {
   if(Serial.available() > 0){
 
         // Wait until it sees an enter key
-        input = Serial.read();
-        delay(1500);
-        Serial.write(5);
-        // Serial.print(input);
+        input = Serial.readStringUntil('\n');
 
         // If the command is "turn", e.g. "turn 3":
         if (input.substring(0,5) == "turn "){
@@ -79,13 +75,13 @@ void loop() {
           pulse = 0;
 
           // Record the demanded number of steps
-          no_steps = input.substring(5).toInt();
+          no_turns = input.substring(5).toInt();
 
           // Set the speed to be whatever it currently is
           speed = const_speed;
 
           // Add it to the total step count
-          step_counter = step_counter + no_steps;
+          turn_counter = turn_counter + no_turns;
         }
 
         // If user wants to reset:
@@ -98,7 +94,7 @@ void loop() {
           speed = -800;
 
           // Reset the step counter - now we are back at square zero
-          step_counter = 0;
+          turn_counter = 0;
         }
 
         // If input is the speed of the motor:
@@ -129,24 +125,28 @@ void loop() {
           pulse = 1;
 
           // Extract the number of steps
-          no_steps = input.substring(6).toInt();
+          no_turns = input.substring(6).toInt();
 
           // Set the speed to whatever it was set to
           speed = const_speed;
 
           // Record the total steo count
-          step_counter = step_counter + no_steps;
+          turn_counter = turn_counter + no_turns;
 
           // Calculate off-time:
-          // On time in ms = period in s * duty
-          // 
-          delay_cycles = round(period*(duty)*cycles_per_ms*1000);
-          total_cycles = round(period*cycles_per_ms*1000);
+          // On time in ms = period in seconds * duty * ticks/second = ticks
+          
+          on_period_counter = round(period*duty*clock_freq);
+          off_period_counter = round(period*(1-duty)*clock_freq);
+
+          current_counter = 0;
+
+          on_off = 1;
         }
     }
 
   // The total number of steps is the steps per revolution * number of revolutions
-  total_steps = steps_per_rev*step_counter;
+  total_steps = steps_per_rev*turn_counter;
 
   // Tell the stepper to move to that place
   myStepper.moveTo(total_steps);
@@ -158,42 +158,60 @@ void loop() {
     myStepper.setSpeed(speed);
     myStepper.run();
   }
-
   // If the stepper hasn't reached there yet, and is on pulse mode:
   else if ((abs(myStepper.distanceToGo()) > 0) && (pulse == 1)){
 
-    // If the pulses are still less than the no. of pulses when the duty cycle is low:
-    if (pulse_counter <= delay_cycles){
-
-      // keep running
+    // If the mode is on:
+    if (on_off){
+    
+      // Then turn the motor
       myStepper.setSpeed(speed);
-      myStepper.run();
+      myStepper.run();      
     }
 
-    // If the number of pulses in a period is still not met:
-    if (pulse_counter <= total_cycles){
-      
-      // Keep incrementing
-      pulse_counter = pulse_counter + 1;
-    }
-
-    // If it has overflowed:
-    else {
-      // Reset the pulse counter
-     pulse_counter = 0;
-    }
+    // If not, leave it alone
   }
-  delay(1);
+
 }
+ISR(TIMER1_COMPA_vect){//timer1 interrupt 10 kHz
 
-ISR(TIMER1_COMPA_vect){//timer1 interrupt 1Hz toggles pin 13 (LED)
-//generates pulse wave of frequency 1Hz/2 = 0.5kHz (takes two cycles for full wave- toggle high then toggle low)
-  if (toggle1){
-    digitalWrite(13,HIGH);
-    toggle1 = 0;
-  }
-  else{
-    digitalWrite(13,LOW);
-    toggle1 = 1;
+  // If pulse mode:
+  if (pulse == 1){
+    
+    // If motor is in on duty:
+
+    if (on_off){
+
+      // If the on period has not been reached:
+      if (current_counter <= on_period_counter){
+
+        // Keep counting
+        current_counter++;
+
+      }
+      else{
+
+        // If period has been reached, switch to off period
+        on_off = 0;
+        current_counter = 0;
+      }
+    }
+
+    // If not on, then must be off:
+    else{
+      // If the off period has not been reached:
+      if (current_counter <= off_period_counter){
+
+        // Keep counting
+        current_counter++;
+
+      }
+      else{
+        // If period has been reached, switch to off period
+        on_off = 1;
+        current_counter = 0;
+      }
+    }
+
   }
 }
