@@ -101,7 +101,7 @@ class UART:
 
         except Exception as error:
 
-            available_ports = self.list_ports()
+            available_ports = list_ports()
 
             print('Error in connecting to port : %s' % error)
 
