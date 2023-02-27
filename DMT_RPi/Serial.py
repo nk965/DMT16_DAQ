@@ -190,9 +190,7 @@ if __name__ == '__main__':
 
                 polling_interval = EXPERIMENT_CONFIG['polling_interval']
 
-                lenExperiment_s = message["Length of Experiment"]
-
-                property_list = [str(sampling_interval_ms), str(polling_interval), str(lenExperiment_s)]
+                property_list = [str(sampling_interval_ms), str(polling_interval)]
 
                 with open('SRPI.txt', 'w') as f:
                     for line in property_list:
