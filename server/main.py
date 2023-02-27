@@ -175,14 +175,14 @@ if __name__ == "__main__":
 
     ports_available = list_ports()
 
-    DAQ_UART = UART("DAQ Microcontroller", "COM9") # check this, optionally, specify the port number
+    DAQ_UART = UART("DAQ Microcontroller", "COM7") # check this, optionally, specify the port number
 
     # status["STB"] = STBCommand()
 
     status['SDAQ'] = SDAQCommand(DAQ_UART, 10, inputInfo["Datafreq"]["defaultValue"],
                                  inputInfo["PIVfreq"], inputInfo["Datafreq"])  # TODO replace the second and third arguments with actual values from user input
 
-    time.sleep(0.1)
+    time.sleep(0.01)
 
     status['SDAQ2'] = SDAQ2Command(DAQ_UART, inputInfo["lenExperiment"]['defaultValue'], inputInfo["lenExperiment"])
     
