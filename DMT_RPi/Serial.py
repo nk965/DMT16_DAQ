@@ -208,8 +208,6 @@ if __name__ == '__main__':
                 
                 property_list = [str(lenExperiment_s)] 
 
-
-
                 with open('SRPI.txt', 'a') as f:
                     for line in property_list:
                         f.write(line)
