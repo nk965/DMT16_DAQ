@@ -81,7 +81,7 @@ def SRPI_Read(UART):
         list: list of hex identifier and sampling interval in ms
     """   
 
-    hex_identifier = UART[0]
+    hex_identifier_1 = UART[0]
 
     sampling_interval_hex = UART[1]
 
@@ -89,7 +89,15 @@ def SRPI_Read(UART):
 
     sampling_interval_ms = convert_to_ms(decoded_sampling_interval)
 
-    message = {"hex_identifier": hex_identifier, "sampling_interval": sampling_interval_ms}
+    hex_identifier_2 = UART[3]
+
+    lenExperiment = UART[4] + UART [5]
+
+    decoded_lenExperiment = decode(lenExperiment)
+
+    lenExperiment_s = convert_to_s(decoded_lenExperiment)
+
+    message = {"hex_identifier_1": hex_identifier_1, "sampling_interval": sampling_interval_ms, "hex_identifier_2": hex_identifier_2, "Length of Experiment": lenExperiment_s}
 
     return message
 
@@ -171,7 +179,7 @@ if __name__ == '__main__':
 
     counter = 0    
     
-    while counter < 2:
+    while counter < 1:
     
         if ser.in_waiting > 0:
             # .decode('utf-8').rstrip()
@@ -190,31 +198,33 @@ if __name__ == '__main__':
 
                 polling_interval = EXPERIMENT_CONFIG['polling_interval']
 
-                property_list = [str(sampling_interval_ms), str(polling_interval)]
+                lenExperiment_s = message["Length of Experiment"]
+
+                property_list = [str(sampling_interval_ms), str(polling_interval), str(lenExperiment_s)]
 
                 with open('SRPI.txt', 'w') as f:
                     for line in property_list:
                         f.write(line)
                         f.write('\n')
-                
+
                 counter +=1
 
-            if UART_messages[0] == "10":
+            #if UART_messages[0] == "10":
 
-                message = SRPI2_Read(UART_messages)
+                #message = SRPI2_Read(UART_messages)
 
-                lenExperiment_s = message["Length of Experiment"]
+                #lenExperiment_s = message["Length of Experiment"]
                 
-                property_list = [str(lenExperiment_s)] 
+                #property_list = [str(lenExperiment_s)] 
 
 
 
-                with open('SRPI.txt', 'a') as f:
-                    for line in property_list:
-                        f.write(line)
-                        f.write('\n')       
+                #with open('SRPI.txt', 'a') as f:
+                    #for line in property_list:
+                        #f.write(line)
+                        #f.write('\n')       
                 
-                counter += 1
+                #counter += 1
 
             else:
                 print("Wrong")
