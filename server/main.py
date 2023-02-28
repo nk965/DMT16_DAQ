@@ -44,35 +44,19 @@ def TB_TESTING(port, inputInfo):
 
     status['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) 
 
-    time.sleep(1)
-
     status['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
 
-    time.sleep(1)
-
     status['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
-
-    time.sleep(1)
     
     status['STB1'] = STB1Command(TB_UART, inputInfo["syrLen"]["defaultValue"], inputInfo["syrLen"], inputInfo["syrDia"]["defaultValue"], inputInfo["syrDia"])
 
-    time.sleep(1)
-
     status['STB3'] = STB3Command(TB_UART, inputInfo['vol_inject']['defaultValue'], inputInfo['vol_inject'], inputInfo['dyeSpeed']['defaultValue'], inputInfo['dyeSpeed'])
-
-    time.sleep(1)
 
     status['STB4'] = STB4Command(TB_UART, inputInfo['enPulse']['defaultValue'], inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['cyclePeriod']['defaultValue'], inputInfo['cyclePeriod'])
 
-    time.sleep(1)
-
     status['RTB'] = RTBProcedure(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
-    
-    time.sleep(1)
 
     status['ETB1'] = ETB1Command(TB_UART) 
-
-    time.sleep(1)
 
     status['ETB2'] = ETB2Command(TB_UART)
 
@@ -85,11 +69,17 @@ def process(DAQ_port, TB_port, inputs, info):
     TB_UART = UART("TB Microcontroller", TB_port)
     DAQ_UART = UART("DAQ Microcontroller", DAQ_port)
 
-    status['STB'] = STBCommand(TB_UART, inputs["stabilising_delay"], info["stabilising_delay"], inputs["start_y"], info["start_y"], inputs["branch_temp"], info["branch_temp"], inputs["trans_time"], info["trans_time"])
+    status['ITB'] = ITBCommand(TB_UART, inputs["stabilising_delay"], info['stabilising_delay']) 
 
-    # time.sleep(3) wait for Serial communication to finish (test if needed)
+    status['STB'] = STBCommand(TB_UART, inputs["start_y"], info["start_y"], inputs["trans_time"], info["trans_time"])
 
-    status['STB1'] = STB1Command(TB_UART, inputs["stabilising_delay"], inputs["syrLen"], info["syrLen"], inputs["syrDia"], info["syrDia"], inputs["vol_inject"], info["vol_inject"], inputs["dyeSpeed"], info["dyeSpeed"], inputs["enPulse"], inputs["dutyCycle"], info["dutyCycle"], inputs["cyclePeriod"], info["cyclePeriod"])
+    status['STB2'] = STB2Command(TB_UART, inputs['branch_temp'], info['branch_temp'])
+    
+    status['STB1'] = STB1Command(TB_UART, inputs["syrLen"], info["syrLen"], inputs["syrDia"], info["syrDia"])
+
+    status['STB3'] = STB3Command(TB_UART, inputs['vol_inject'], info['vol_inject'], inputs['dyeSpeed'], info['dyeSpeed'])
+
+    status['STB4'] = STB4Command(TB_UART, inputs['enPulse'], inputs['dutyCycle'], info['dutyCycle'], inputs['cyclePeriod'], info['cyclePeriod'])
 
     time.sleep(inputs["stabilising_delay"]) # Stabilising delay, tune to how long testbed needs and dye injection needs
 
@@ -99,7 +89,7 @@ def process(DAQ_port, TB_port, inputs, info):
 
     status['SDAQ2'] = SDAQ2Command(DAQ_UART, inputs["lenExperiment"], info["lenExperiment"]) 
     
-    status['RTB'] = RTBProcedure(TB_UART, inputs['start_y'], inputs['end_y'], inputs['nodes'], inputs['trans_time'], inputs['preset_config'])
+    status['RTB'] = RTBProcedure(TB_UART, inputs["start_y"], inputs["end_y"], inputs["nodes"], inputs["trans_time"], inputs["presetConfig"]) 
 
     time.sleep(inputs["trans_time"])
 
