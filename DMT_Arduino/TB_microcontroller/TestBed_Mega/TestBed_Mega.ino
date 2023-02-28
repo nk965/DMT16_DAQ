@@ -10,14 +10,16 @@ int STB2Command = 0b00010001;
 int STB3Command = 0b00010010;
 int STB4Command = 0b00010011;
 int ITBCommand = 0b00010100; 
+int TestCommand = 0b00010101;
 
 uint8_t receivedData[max_bytes]; // Array of length largest number of bytes recieved, typecasted to uint8_t
 
 // Initialises UART, with baud rate of 230400
 void setup()
 {
-  Serial.begin(9600);  // Initialize Central PC Serial communication
-  Serial1.begin(9600); // Initialise Dye Injection Serial Communication
+  Serial.begin(230400);  // Initialize Central PC Serial communication
+  Serial1.begin(230400); // Initialise Dye Injection Serial Communication
+  pinMode(10, OUTPUT); // Initialize GPIO Output Pin for start and end of Transient Experiment
 }
 
 // Receives messages from UART, byte by byte 
@@ -47,6 +49,17 @@ void loop()
     {
       sendData(receivedData, max_bytes);
     }
+    else if (receivedData[0] == TestCommand)
+    {
+      // sendData(receivedData, max_bytes); // Debugging print
+
+      if (receivedData[1] == 'a'){
+
+        sendData(receivedData, max_bytes);
+
+      }
+
+    }
     else if (receivedData[0] == STBCommand)
     {
       sendData(receivedData, max_bytes); // Debugging print
@@ -72,6 +85,11 @@ void loop()
     }
     else if (receivedData[0] == RTBCommand) // RTB - 2 byte has actuator position, first iteration sends RDYE
     {
+      if (receivedData[2] == 0b00000000)
+      {
+        digitalWrite(10, HIGH);  
+      }
+      
       sendData(receivedData, max_bytes); // Debugging print
 
       // On first iteration, sends RDYE
@@ -79,6 +97,7 @@ void loop()
     }
     else if (receivedData[0] == ETB1Command) // ETB1 - sending GP/IO at end of experiment
     {
+      digitalWrite(10, LOW);
       sendData(receivedData, max_bytes); // Debugging print
 
       // Send GP/IO at end of experiment

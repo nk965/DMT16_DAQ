@@ -8,7 +8,7 @@ from Modules import *
 
 from PySerial import UART, list_ports
 from server_config import inputInfo
-from commands import STBCommand, STB1Command, SDAQCommand, SDAQ2Command, ETB1Command, ETB2Command, EDAQCommand, STB1Command, RTBProcedure, ITBCommand, STB3Command, STB4Command, STB2Command
+from commands import STBCommand, STB1Command, SDAQCommand, SDAQ2Command, ETB1Command, ETB2Command, EDAQCommand, STB1Command, RTBProcedure, ITBCommand, STB3Command, STB4Command, STB2Command, TestCommand
 
 def DAQ_TESTING(port, inputInfo):
     '''
@@ -44,19 +44,21 @@ def TB_TESTING(port, inputInfo):
 
     status['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) 
 
-    status['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
+    status['Test'] = TestCommand(TB_UART)
 
-    status['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
+    # status['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
+
+    # status['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
     
-    status['STB1'] = STB1Command(TB_UART, inputInfo["syrLen"]["defaultValue"], inputInfo["syrLen"], inputInfo["syrDia"]["defaultValue"], inputInfo["syrDia"])
+    # status['STB1'] = STB1Command(TB_UART, inputInfo["syrLen"]["defaultValue"], inputInfo["syrLen"], inputInfo["syrDia"]["defaultValue"], inputInfo["syrDia"])
 
-    status['STB3'] = STB3Command(TB_UART, inputInfo['vol_inject']['defaultValue'], inputInfo['vol_inject'], inputInfo['dyeSpeed']['defaultValue'], inputInfo['dyeSpeed'])
+    # status['STB3'] = STB3Command(TB_UART, inputInfo['vol_inject']['defaultValue'], inputInfo['vol_inject'], inputInfo['dyeSpeed']['defaultValue'], inputInfo['dyeSpeed'])
 
-    status['STB4'] = STB4Command(TB_UART, inputInfo['enPulse']['defaultValue'], inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['cyclePeriod']['defaultValue'], inputInfo['cyclePeriod'])
+    # status['STB4'] = STB4Command(TB_UART, inputInfo['enPulse']['defaultValue'], inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['cyclePeriod']['defaultValue'], inputInfo['cyclePeriod'])
 
-    status['RTB'] = RTBProcedure(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
+    # status['RTB'] = RTBProcedure(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
 
-    status['ETB1'] = ETB1Command(TB_UART) 
+    # status['ETB1'] = ETB1Command(TB_UART) 
 
     status['ETB2'] = ETB2Command(TB_UART)
 
