@@ -47,9 +47,9 @@ void loop()
     {
       sendData(receivedData, max_bytes);
     }
-    else if (receivedData[0] == STBCommand) // info for actuators, stabilising delay, temperatures, transient time of experiment
+    else if (receivedData[0] == STBCommand)
     {
-      sendData(receivedData, max_bytes); // Debugging print - this sends back the SDAQ command
+      sendData(receivedData, max_bytes); // Debugging print
     }
     else if (receivedData[0] == STB2Command)
     {
@@ -57,7 +57,7 @@ void loop()
     }
     else if (receivedData[0] == STB1Command) // Sends SDYE (i.e., info for dye injection)
     {
-      sendData(receivedData, max_bytes); // Debugging print - this sends back the STB1 command
+      sendData(receivedData, max_bytes); // Debugging print
 
       // Send SDYE
 
@@ -72,24 +72,22 @@ void loop()
     }
     else if (receivedData[0] == RTBCommand) // RTB - 2 byte has actuator position, first iteration sends RDYE
     {
-      sendData(receivedData, max_bytes); // Debugging print - this sends back the RTB command
+      sendData(receivedData, max_bytes); // Debugging print
 
       // On first iteration, sends RDYE
 
     }
     else if (receivedData[0] == ETB1Command) // ETB1 - sending GP/IO at end of experiment
     {
-      sendData(receivedData, max_bytes); // Debugging print - this sends back the ETB1 command
+      sendData(receivedData, max_bytes); // Debugging print
 
       // Send GP/IO at end of experiment
 
     }
     else if (receivedData[0] == ETB2Command) // ETB2 - tells Testbed to stop flowing
     {
-      sendData(receivedData, max_bytes); // Debugging print - this sends back the ETB2 command
+      sendData(receivedData, max_bytes); // Debugging print
     }
   }
-
-  // memset(receivedData, 0, sizeof(receivedData)); // Resets recievedData array after command has been read
 
 }

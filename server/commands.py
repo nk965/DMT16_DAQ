@@ -132,12 +132,13 @@ def RTBCommand(UART, actuator_array, times):
 
     for index in range (1, len(times)):
 
-        message = bytearray.fromhex(hex_identifier + out_actuator_pos_array[index] + "0000")
-        
-        print(f'RTB Sends: {hex_identifier} {out_actuator_pos_array[index]} 0000 in the form of {message}')
-        
-        UART.send(message)
+        padding = "0100" if index != 1 else "0000"
 
+        message = bytearray.fromhex(hex_identifier + out_actuator_pos_array[index] + padding)
+        
+        print(f'RTB Sends: {hex_identifier} {out_actuator_pos_array[index]} {padding} in the form of {message}')
+        UART.send(message)
+        
         time.sleep(times[index] - times[index-1])
 
     return actual_actuator_pos_array
