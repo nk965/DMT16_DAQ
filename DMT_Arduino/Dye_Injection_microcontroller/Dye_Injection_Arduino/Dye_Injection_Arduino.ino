@@ -2,6 +2,13 @@
 #include <AccelStepper.h>
 #include <string.h>
 
+const int max_bytes = 4;
+uint8_t receivedData[max_bytes];
+int RDYECommand = 0b00001000;
+int SDYECommand = 0b00000010;
+int SDYE2Command = 0b00010110;
+int EDYECommand = 0b00010111;
+
 // Define pin connections
 const int dirPin = 2;
 const int stepPin = 3;
@@ -17,6 +24,7 @@ AccelStepper myStepper(motorInterfaceType, stepPin, dirPin);
 
 String input;
 float no_turns; // Variable for storing the number of steps requested using turn or pulse command
+unsigned int no_steps; // Variable to store the current number of steps
 int total_steps; // Total number of steps issued - used in reset to turn the correct number of times backwards. In steps, so NOT revs
 float turn_counter; // Turn counter - in REVS NOT STEPS
 float duty = 0.4; // Duty cycle value
@@ -35,9 +43,9 @@ unsigned int clock_freq = 10000; // 10 kHz interrupt
 void setup() {
   pinMode(dirPin, OUTPUT);
   myStepper.setMaxSpeed(1000);
-  Serial.begin(230400);
+  Serial1.begin(230400);
   myStepper.setSpeed(0);
-  Serial.flush();
+  Serial1.flush();
   pinMode(LED_BUILTIN, OUTPUT);
 
   cli();//stop interrupts
@@ -61,32 +69,66 @@ void setup() {
 
 void loop() {
 
-  // If it receives something from the serial port:
+  // If it receives something from the serial port (which is 4 long or above):
 
-  if(Serial.available() > 0){
+  if(Serial1.available() >= max_bytes){
 
-        // Wait until it sees an enter key
-        input = Serial.readStringUntil('\n');
-        // Serial.write(input);
+        // Read data into the buffer - only 4 long (max_bytes = 4)
+        readData(receivedData,max_bytes);
 
-        // If the command is "turn", e.g. "turn 3":
-        if (input.substring(0,5) == "turn "){
+        // If the command is RDYE:
+        if (receivedData[0] == RDYECommand){
 
-          // Disable pulse mode
-          pulse = 0;
-
-          // Record the demanded number of steps
-          no_turns = input.substring(5).toFloat();
+          // Extract the number of steps we have inputted from 2 bytes
+          no_steps = (unsigned int)(((uint16_t)receivedData[2] << 8) | ((uint16_t)receivedData[3]));
 
           // Set the speed to be whatever it currently is
           speed = const_speed;
 
-          // Add it to the total step count
-          turn_counter = turn_counter + no_turns;
-        }
+          // If turn mode:
+          if (receivedData[1] == 't'){
 
-        // If user wants to reset:
-        else if (input == "reset"){
+            // Disable pulse mode
+            pulse = 0;
+
+          }
+          // If pulse mode requested:
+          else if (receivedData[1] == 'p'){
+
+            // Calculate off-time:
+            // On time in ms = period in seconds * duty * ticks/second = ticks
+            
+            on_period_counter = round(period*duty*clock_freq);
+            off_period_counter = round(period*(1-duty)*clock_freq);
+
+            current_counter = 0;
+
+            on_off = 1;
+
+            // Enable pulse mode
+            pulse = 1;
+
+          }
+        }
+        // If the SDYE command is called:
+        else if (receivedData[0] == SDYECommand){
+
+          // Extract the speed we have inputted from 2 bytes
+          const_speed = (int)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2]));
+
+        }
+        // If the SDYE2 command is called:
+        else if (receivedData[0] == SDYE2Command){
+          
+          // Extract the duty value
+          duty = (float)receivedData[1]/((float)255);
+
+          // Extract the speed we have inputted from 2 bytes
+          period = (float)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2]))/((float)100);
+
+        }
+        // If the EDYE command is called::
+        else if (receivedData[0] == EDYECommand){
 
           // Disable pulse mode
           pulse = 0;
@@ -94,60 +136,14 @@ void loop() {
           // Max speed backwards
           speed = -800;
 
-          // Reset the step counter - now we are back at square zero
-          turn_counter = 0;
-        }
-
-        // If input is the speed of the motor:
-        else if (input.substring(0,6) == "speed "){
-
-          // Set the speed to be whatever is inputted
-          const_speed = input.substring(6).toInt();
-        }
-
-        // If the input is the duty cycle:
-        else if (input.substring(0,5) == "duty "){
-
-          // Extract anything after duty_ and turn into a float, then store the duty cycle
-          duty = input.substring(5).toFloat();
-        }
-
-        // If the input is the period of the pulse:
-        else if (input.substring(0,7) == "period "){
-
-          // Store the period
-          period = input.substring(7).toFloat();
-        }
-
-        // If pulse mode requested:
-        if (input.substring(0,6) == "pulse "){
-
-          // Enable pulse mode
-          pulse = 1;
-
-          // Extract the number of steps
-          no_turns = input.substring(6).toFloat();
-
-          // Set the speed to whatever it was set to
-          speed = const_speed;
-
-          // Record the total steo count
-          turn_counter = turn_counter + no_turns;
-
-          // Calculate off-time:
-          // On time in ms = period in seconds * duty * ticks/second = ticks
-          
-          on_period_counter = round(period*duty*clock_freq);
-          off_period_counter = round(period*(1-duty)*clock_freq);
-
-          current_counter = 0;
-
-          on_off = 1;
+          // Reset all of the step variables
+          total_steps = 0;
+          no_steps = 0;
         }
     }
 
-  // The total number of steps is the steps per revolution * number of revolutions
-  total_steps = (int)round(steps_per_rev*turn_counter);
+  // The total number of steps gets incremented by the number of steps requested
+  total_steps = total_steps + no_steps;
 
   // Tell the stepper to move to that place
   myStepper.moveTo(total_steps);
@@ -174,6 +170,15 @@ void loop() {
   }
 
 }
+
+
+void readData(uint8_t * data, int length){
+  for (int i = 0; i < length; i++){
+    data[i] = (uint8_t)Serial1.read();
+  }
+}
+
+
 ISR(TIMER1_COMPA_vect){//timer1 interrupt 10 kHz
 
   // If pulse mode:
