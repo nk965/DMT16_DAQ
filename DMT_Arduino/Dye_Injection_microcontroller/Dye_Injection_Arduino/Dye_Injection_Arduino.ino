@@ -16,9 +16,9 @@ int const_speed = 200; // Steps per second
 AccelStepper myStepper(motorInterfaceType, stepPin, dirPin);
 
 String input;
-unsigned int no_turns; // Variable for storing the number of steps requested using turn or pulse command
+float no_turns; // Variable for storing the number of steps requested using turn or pulse command
 int total_steps; // Total number of steps issued - used in reset to turn the correct number of times backwards. In steps, so NOT revs
-unsigned int turn_counter; // Turn counter - in REVS NOT STEPS
+float turn_counter; // Turn counter - in REVS NOT STEPS
 float duty = 0.4; // Duty cycle value
 float period = 0.5; // Period of pulses - max period is around 9 seconds and a bit
 boolean pulse = 0; // Pulse mode: 1 = enabled, 0 = disabled
@@ -67,6 +67,7 @@ void loop() {
 
         // Wait until it sees an enter key
         input = Serial.readStringUntil('\n');
+        // Serial.write(input);
 
         // If the command is "turn", e.g. "turn 3":
         if (input.substring(0,5) == "turn "){
@@ -75,7 +76,7 @@ void loop() {
           pulse = 0;
 
           // Record the demanded number of steps
-          no_turns = input.substring(5).toInt();
+          no_turns = input.substring(5).toFloat();
 
           // Set the speed to be whatever it currently is
           speed = const_speed;
@@ -125,7 +126,7 @@ void loop() {
           pulse = 1;
 
           // Extract the number of steps
-          no_turns = input.substring(6).toInt();
+          no_turns = input.substring(6).toFloat();
 
           // Set the speed to whatever it was set to
           speed = const_speed;
@@ -146,7 +147,7 @@ void loop() {
     }
 
   // The total number of steps is the steps per revolution * number of revolutions
-  total_steps = steps_per_rev*turn_counter;
+  total_steps = (int)round(steps_per_rev*turn_counter);
 
   // Tell the stepper to move to that place
   myStepper.moveTo(total_steps);
