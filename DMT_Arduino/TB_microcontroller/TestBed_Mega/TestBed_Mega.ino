@@ -10,14 +10,15 @@ int STB2Command = 0b00010001;
 int STB3Command = 0b00010010;
 int STB4Command = 0b00010011;
 int ITBCommand = 0b00010100; 
+int TestCommand = 0b00010101;
 
 uint8_t receivedData[max_bytes]; // Array of length largest number of bytes recieved, typecasted to uint8_t
 
 // Initialises UART, with baud rate of 230400
 void setup()
 {
-  Serial.begin(9600);  // Initialize Central PC Serial communication
-  Serial1.begin(9600); // Initialise Dye Injection Serial Communication
+  Serial.begin(230400);  // Initialize Central PC Serial communication
+  Serial1.begin(230400); // Initialise Dye Injection Serial Communication
 }
 
 // Receives messages from UART, byte by byte 
@@ -46,6 +47,17 @@ void loop()
     if (receivedData[0] == ITBCommand)
     {
       sendData(receivedData, max_bytes);
+    }
+    else if (receivedData[0] == TestCommand)
+    {
+      // sendData(receivedData, max_bytes); // Debugging print
+
+      if (receivedData[1] == 'a'){
+
+        sendData(receivedData, max_bytes);
+
+      }
+
     }
     else if (receivedData[0] == STBCommand)
     {

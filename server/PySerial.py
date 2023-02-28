@@ -41,7 +41,7 @@ def list_ports():
 
 class UART:
 
-    def __init__(self, port_name, port='COM7', baud_rate=9600, buffer_size=10000):
+    def __init__(self, port_name, port='COM7', baud_rate=230400, buffer_size=10000):
 
         # Attributes for PySerial setup
         self.port = port

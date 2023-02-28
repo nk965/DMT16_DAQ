@@ -122,6 +122,18 @@ def RTBProcedure(UART, start_y, end_y, nodes, trans_time, preset_config="Linear"
     return {"Actuator Position Array": actual_actuator_pos_array, "Time Step": times}
 
 
+def TestCommand(UART):
+
+    hex_identifier = "15"
+
+    message = bytearray.fromhex(hex_identifier + "61" + "0000")
+
+    print(f'TestCommand Sends: {hex_identifier} in the form of {message}')
+
+    UART.send(message)
+
+    return {}
+
 def RTBCommand(UART, actuator_array, times):
 
     info = {"range": [np.min(actuator_array), np.max(actuator_array)], "bits": 8}
