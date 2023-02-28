@@ -1,11 +1,15 @@
-const int max_bytes = 10; // Max length for Arduino communication protocol 
+const int max_bytes = 4; // Max length for Arduino communication protocol 
 
 // Hex Identifiers
 int STBCommand = 0b00000001; // STB Command - Info for Testbed actuators, stabilising delay, temperatures, length of experiment
-int STB1Command = 0b0000000; // STB1 Command - Info for Dye Injection Microcontroller, runs SDYE
+int STB1Command = 0b00010101; // STB1 Command - Info for Dye Injection Microcontroller, runs SDYE
 int RTBCommand = 0b00000111; // RTB Command - Iteratively receives actuator input data from PC 
 int ETB1Command = 0b00001001; // ETB1 Command - Sends GP/IO to Raspberry Pi, signalling end of transient conditions
 int ETB2Command = 0b00001010; // ETB2 Command - Tells Testbed actuators to stop the flow
+int STB2Command = 0b00010001;
+int STB3Command = 0b00010010;
+int STB4Command = 0b00010011;
+int ITBCommand = 0b00010100; 
 
 uint8_t receivedData[max_bytes]; // Array of length largest number of bytes recieved, typecasted to uint8_t
 
@@ -39,9 +43,17 @@ void loop()
   if (Serial.available() >= max_bytes)
   {
     readData(receivedData, max_bytes);
-    if (receivedData[0] == STBCommand) // info for actuators, stabilising delay, temperatures, transient time of experiment
+    if (receivedData[0] == ITBCommand)
+    {
+      sendData(receivedData, max_bytes);
+    }
+    else if (receivedData[0] == STBCommand) // info for actuators, stabilising delay, temperatures, transient time of experiment
     {
       sendData(receivedData, max_bytes); // Debugging print - this sends back the SDAQ command
+    }
+    else if (receivedData[0] == STB2Command)
+    {
+      sendData(receivedData, max_bytes);
     }
     else if (receivedData[0] == STB1Command) // Sends SDYE (i.e., info for dye injection)
     {
@@ -49,6 +61,14 @@ void loop()
 
       // Send SDYE
 
+    }
+    else if (receivedData[0] == STB3Command)
+    {
+      sendData(receivedData, max_bytes);
+    }
+    else if (receivedData[0] == STB4Command)
+    {
+      sendData(receivedData, max_bytes);
     }
     else if (receivedData[0] == RTBCommand) // RTB - 2 byte has actuator position, first iteration sends RDYE
     {

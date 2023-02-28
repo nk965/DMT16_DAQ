@@ -8,7 +8,7 @@ from Modules import *
 
 from PySerial import UART, list_ports
 from server_config import inputInfo
-from commands import STBCommand, STB1Command, SDAQCommand, SDAQ2Command, ETB1Command, ETB2Command, EDAQCommand, STB1Command, RTBProcedure
+from commands import STBCommand, STB1Command, SDAQCommand, SDAQ2Command, ETB1Command, ETB2Command, EDAQCommand, STB1Command, RTBProcedure, ITBCommand, STB3Command, STB4Command, STB2Command
 
 def DAQ_TESTING(port, inputInfo):
     '''
@@ -42,21 +42,37 @@ def TB_TESTING(port, inputInfo):
 
     TB_UART = UART("TB Microcontroller", port)
 
-    status['STB'] = STBCommand(TB_UART, inputInfo["stabilising_delay"]["defaultValue"], inputInfo["stabilising_delay"], inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["branch_temp"]["defaultValue"], inputInfo["branch_temp"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
+    status['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) 
 
-    time.sleep(3)
+    time.sleep(1)
 
-    status['STB1'] = STB1Command(TB_UART, inputInfo["stabilising_delay"]["defaultValue"], inputInfo["syrLen"]["defaultValue"], inputInfo["syrLen"], inputInfo["syrDia"]["defaultValue"], inputInfo["syrDia"], inputInfo["vol_inject"]["defaultValue"], inputInfo["vol_inject"], inputInfo["dyeSpeed"]["defaultValue"], inputInfo["dyeSpeed"], inputInfo["enPulse"]["defaultValue"], inputInfo["dutyCycle"]["defaultValue"], inputInfo["dutyCycle"], inputInfo["cyclePeriod"]["defaultValue"], inputInfo["cyclePeriod"])
+    status['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
 
-    time.sleep(3)
+    time.sleep(1)
+
+    status['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
+
+    time.sleep(1)
+    
+    status['STB1'] = STB1Command(TB_UART, inputInfo["syrLen"]["defaultValue"], inputInfo["syrLen"], inputInfo["syrDia"]["defaultValue"], inputInfo["syrDia"])
+
+    time.sleep(1)
+
+    status['STB3'] = STB3Command(TB_UART, inputInfo['vol_inject']['defaultValue'], inputInfo['vol_inject'], inputInfo['dyeSpeed']['defaultValue'], inputInfo['dyeSpeed'])
+
+    time.sleep(1)
+
+    status['STB4'] = STB4Command(TB_UART, inputInfo['enPulse']['defaultValue'], inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['cyclePeriod']['defaultValue'], inputInfo['cyclePeriod'])
+
+    time.sleep(1)
 
     status['RTB'] = RTBProcedure(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
+    
+    time.sleep(1)
 
-    time.sleep(3)
-    
     status['ETB1'] = ETB1Command(TB_UART) 
-    
-    time.sleep(3)
+
+    time.sleep(1)
 
     status['ETB2'] = ETB2Command(TB_UART)
 

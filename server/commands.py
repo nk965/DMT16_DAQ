@@ -7,39 +7,93 @@ from Modules import *
 
 from helpers import convert_frequency_to_clock_tick, float_to_hex_string, float_to_base_15, bool_to_hex_string, float_array_to_hex_string, linear_interpolation
 
-def STBCommand(UART, testDelay: float, testDelay_info: dict, start_y: float, start_y_info: dict, branch_temp: float, branch_temp_info: dict, trans_time: float, trans_time_info: dict):
+def ITBCommand(UART, testDelay:float, testDelay_info: dict):
 
-    hex_identifier = "01"
+    hex_identifier = "14"
 
     actualTestDelay, outTestDelay = float_to_hex_string(testDelay, testDelay_info)
 
-    actualStartY, outStartY = float_to_hex_string(start_y, start_y_info)
+    message = bytearray.fromhex(hex_identifier + outTestDelay + '0000')
 
-    actualBranch, outBranch = float_to_hex_string(branch_temp, branch_temp_info)
-
-    actualTransTime, outTransTime = float_to_hex_string(trans_time, trans_time_info)
-
-    message = bytearray.fromhex(hex_identifier + outTestDelay + outStartY + outBranch + outTransTime + '00000000')
-
-    print(f'STB Sends: {hex_identifier} {outTestDelay} {outStartY} {outBranch} {outTransTime} 00000000 in the form of {message}')
+    print(f'ITB Sends: {hex_identifier} {outTestDelay} 0000 in the form of {message}')
 
     UART.send(message)
 
-    return {"Testbed Stabilising Delay": actualTestDelay, "Initial Actuator": actualStartY, "Branch Temp": actualBranch, "Transient Exp Time": actualTransTime}
+    # time.sleep(testDelay) this should be a stabilising time
 
-def STB1Command(UART, testDelay: float, syrLen: float, syrLen_Info: dict, syrDia: float, syrDia_Info: dict, vol_inject: float, vol_inject_info: dict, dyeSpeed: float, dyeSpeed_info: dict, enPulse: bool, dutyCycle: float, dutyCycle_info: dict, cyclePeriod: float, cyclePeriod_info: dict):
+    return {"Testbed Stabilising Delay": actualTestDelay}
+
+
+def STBCommand(UART, start_y: float, start_y_info: dict, trans_time: float, trans_time_info: dict):
+
+    hex_identifier = "01"
+
+    actualStartY, outStartY = float_to_hex_string(start_y, start_y_info)
+
+    actualTransTime, outTransTime = float_to_hex_string(trans_time, trans_time_info)
+
+    message = bytearray.fromhex(hex_identifier + outStartY + outTransTime)
+
+    print(f'STB Sends: {hex_identifier} {outStartY} {outTransTime} in the form of {message}')
+
+    UART.send(message)
+
+    return {"Initial Actuator": actualStartY, "Transient Exp Time": actualTransTime}
+
+def STB2Command(UART, branch_temp: float, branch_temp_info: dict):
+
+    hex_identifier = "11"
+
+    actualBranch, outBranch = float_to_hex_string(branch_temp, branch_temp_info)
+
+    message = bytearray.fromhex(hex_identifier + outBranch + '00')
+
+    print(f'STB2 Sends: {hex_identifier} {outBranch}  00 in the form of {message}')
+
+    UART.send(message)
+
+    return {"Branch Temp": actualBranch}
+
+
+def STB1Command(UART, syrLen: float, syrLen_Info: dict, syrDia: float, syrDia_Info: dict):
 
     # note that testDelay (stabilising time) is not sent over 
 
-    hex_identifier = "00"
+    hex_identifier = "15"
 
     actualSyrLen, outSyrLen = float_to_hex_string(syrLen, syrLen_Info)
 
     actualSyrDia, outSyrDia = float_to_hex_string(syrDia, syrDia_Info)
 
+    message = bytearray.fromhex(hex_identifier + outSyrLen + outSyrDia + '00')
+
+    print(f'STB1 Sends: {hex_identifier} {outSyrLen} {outSyrDia} 00 in the form of: {message}')
+
+    UART.send(message)
+
+    return {"Syringe Length": actualSyrLen, "Syringe Diameter": actualSyrDia}
+
+def STB3Command(UART, vol_inject: float, vol_inject_info: dict, dyeSpeed: float, dyeSpeed_info: dict):
+
+    # note that testDelay (stabilising time) is not sent over 
+
+    hex_identifier = "12"
+
     actual_vol_inject, out_vol_inject = float_to_hex_string(vol_inject, vol_inject_info)
 
     actualDyeSpeed, outDyeSpeed = float_to_hex_string(dyeSpeed, dyeSpeed_info)
+
+    message = bytearray.fromhex(hex_identifier + out_vol_inject + outDyeSpeed )
+
+    print(f'STB3 Sends: {hex_identifier} {out_vol_inject} {outDyeSpeed} in the form of: {message}')
+
+    UART.send(message)
+
+    return {"Volume Injected": actual_vol_inject, "Dye Speed": actualDyeSpeed}
+
+def STB4Command(UART, enPulse: bool, dutyCycle: float, dutyCycle_info: dict, cyclePeriod: float, cyclePeriod_info: dict):
+
+    hex_identifier = "13"
 
     outEnPulse = bool_to_hex_string(enPulse)
 
@@ -47,15 +101,13 @@ def STB1Command(UART, testDelay: float, syrLen: float, syrLen_Info: dict, syrDia
 
     actualCyclePeriod, outCyclePeriod = float_to_hex_string(cyclePeriod, cyclePeriod_info)
 
-    message = bytearray.fromhex(hex_identifier + outSyrLen + outSyrDia + out_vol_inject + outDyeSpeed + outEnPulse + outDutyCycle + outCyclePeriod)
+    message = bytearray.fromhex(hex_identifier + outEnPulse + outDutyCycle + outCyclePeriod)
 
-    print(f'STB1 Sends: {hex_identifier} {outSyrLen} {outSyrDia} {out_vol_inject} {outDyeSpeed} {outEnPulse} {outDutyCycle} {outCyclePeriod} in the form of: {message}')
+    print(f'STB4 Sends: {hex_identifier} {outEnPulse} {outDutyCycle} {outCyclePeriod} in the form of: {message}')
 
     UART.send(message)
 
-    # time.sleep(testDelay) this should be a stabilising time
-
-    return {"Syringe Length": actualSyrLen, "Syringe Diameter": actualSyrDia, "Volume Injected": actual_vol_inject, "Dye Speed": actualDyeSpeed, "Enable Pulse": enPulse, "Duty Cycle": actualDutyCycle, "Cycle Period": actualCyclePeriod}
+    return {"Duty Cycle": actualDutyCycle, "Cycle Period": actualCyclePeriod}
 
 def RTBProcedure(UART, start_y, end_y, nodes, trans_time, preset_config="Linear"):
 
@@ -80,9 +132,9 @@ def RTBCommand(UART, actuator_array, times):
 
     for index in range (1, len(times)):
 
-        message = bytearray.fromhex(hex_identifier + out_actuator_pos_array[index] + "0000000000000000")
+        message = bytearray.fromhex(hex_identifier + out_actuator_pos_array[index] + "0000")
         
-        print(f'RTB Sends: {hex_identifier} {out_actuator_pos_array[index]} 0000000000000000 in the form of {message}')
+        print(f'RTB Sends: {hex_identifier} {out_actuator_pos_array[index]} 0000 in the form of {message}')
         
         UART.send(message)
 
@@ -92,9 +144,9 @@ def RTBCommand(UART, actuator_array, times):
 
 def ETB1Command(UART):
 
-    message = bytearray.fromhex("09000000000000000000")
+    message = bytearray.fromhex("09000000")
 
-    print(f'ETB1 Sends: 09000000000000000000 in the form of {message}')
+    print(f'ETB1 Sends: 09000000 in the form of {message}')
 
     UART.send(message)
 
@@ -102,9 +154,9 @@ def ETB1Command(UART):
 
 def ETB2Command(UART):
 
-    message = bytearray.fromhex("0A000000000000000000")
+    message = bytearray.fromhex("0A000000")
 
-    print(f'ETB2 Sends: 0A000000000000000000 in the form of {message}')
+    print(f'ETB2 Sends: 0A000000 in the form of {message}')
 
     UART.send(message)
 

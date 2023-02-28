@@ -126,11 +126,11 @@ def bool_to_hex_string(value: bool):
 
     if value == True:
 
-        hex_string = "0001"
+        hex_string = "01"
 
     else:
 
-        hex_string = "0000"
+        hex_string = "00"
 
     return hex_string
 
