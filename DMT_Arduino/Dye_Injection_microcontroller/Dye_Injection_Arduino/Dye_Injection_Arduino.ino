@@ -154,9 +154,9 @@ void loop()
     if (receivedData[0] == RDYECommand)
     {
 
-      digitalWrite(10, HIGH);
-      delay(100);
-      digitalWrite(10, LOW);
+      // digitalWrite(10, HIGH);
+      // delay(100);
+      // digitalWrite(10, LOW);
 
       // Extract the number of steps we have inputted from 2 bytes
       no_steps = (unsigned int)(((uint16_t)receivedData[2] << 8) | ((uint16_t)receivedData[3]));
@@ -165,14 +165,18 @@ void loop()
       speed = const_speed;
 
       // If turn mode:
-      if (receivedData[1] == 0b1110000)
+      if (receivedData[1] == 't')
       {
         // Disable pulse mode
+
+        digitalWrite(10, HIGH);
+        delay(100);
+        digitalWrite(10, LOW);
 
         pulse = 0;
       }
       // If pulse mode requested:
-      else if (receivedData[1] == 0b1110100)
+      else if (receivedData[1] == 'p')
       {
 
         digitalWrite(10, HIGH);
@@ -222,7 +226,7 @@ void loop()
       duty = (float)receivedData[1] / ((float)255);
 
       // Extract the period we have inputted from 2 bytes
-      period = (float)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2])) / ((float)100);
+      period = (float)(0b000000001111000)/float(100);
     }
     // If the EDYE command is called::
     else if (receivedData[0] == EDYECommand)
@@ -250,12 +254,12 @@ void loop()
 
   // Testing code
   
-  on_period_counter = round(period * duty * (float)clock_freq);
-  off_period_counter = round(period * (1 - duty) * (float)clock_freq);
+  // on_period_counter = round(period * duty * (float)clock_freq);
+  // off_period_counter = round(period * (1 - duty) * (float)clock_freq);
 
-  pulse = 0;
-  speed = const_speed;
-  total_steps = 600;
+  // pulse = 0;
+  // speed = const_speed;
+  // total_steps = 600;
 
   // The total number of steps gets incremented by the number of steps requested
   total_steps = total_steps + no_steps;
