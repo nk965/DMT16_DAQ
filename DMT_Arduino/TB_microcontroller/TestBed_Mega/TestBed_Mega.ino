@@ -1,28 +1,29 @@
-const int max_bytes = 4; // Max length for Arduino communication protocol 
+const int max_bytes = 4; // Max length for Arduino communication protocol
 
 // Hex Identifiers
+int ITBCommand = 0b00010100;
 int STBCommand = 0b00000001; // STB Command - Info for Testbed actuators, stabilising delay, temperatures, length of experiment
-int STB1Command = 0b00010101; // STB1 Command - Info for Dye Injection Microcontroller, runs SDYE
-int RTBCommand = 0b00000111; // RTB Command - Iteratively receives actuator input data from PC 
-int ETB1Command = 0b00001001; // ETB1 Command - Sends GP/IO to Raspberry Pi, signalling end of transient conditions
-int ETB2Command = 0b00001010; // ETB2 Command - Tells Testbed actuators to stop the flow
 int STB2Command = 0b00010001;
-int STB3Command = 0b00010010;
-int STB4Command = 0b00010011;
-int ITBCommand = 0b00010100; 
-int TestCommand = 0b00010101;
+int IDYECommand = 0b00010101;
+int IDYE2Command = 0b00010011;
+int IDYE3Command = 0b00011000;
+int RTBCommand = 0b00000111;  // RTB Command - Iteratively receives actuator input data from PC
+int ETB1Command = 0b00001001; // ETB1 Command - Sends GP/IO to Raspberry Pi, signalling end of transient conditions
+int ETB2Command = 0b00001010; // ETB2 Command - Tells Testbed actuators to stop the flow, resets Dye Injection system
+int TestCommand = 0b00110000;
 
 uint8_t receivedData[max_bytes]; // Array of length largest number of bytes recieved, typecasted to uint8_t
+uint8_t message[max_bytes]; // Array of length largest number of bytes to be sent to Mega
 
 // Initialises UART, with baud rate of 230400
 void setup()
 {
   Serial.begin(230400);  // Initialize Central PC Serial communication
   Serial1.begin(230400); // Initialise Dye Injection Serial Communication
-  pinMode(10, OUTPUT); // Initialize GPIO Output Pin for start and end of Transient Experiment
+  pinMode(10, OUTPUT);   // Initialize GPIO Output Pin for start and end of Transient Experiment
 }
 
-// Receives messages from UART, byte by byte 
+// Receives messages from UART, byte by byte
 void readData(uint8_t *data, int length)
 {
   for (int i = 0; i < length; i++)
@@ -31,55 +32,61 @@ void readData(uint8_t *data, int length)
   }
 }
 
-// Sends messages through UART
-void sendData(uint8_t* data, int dataSize) {
-  for (int i = 0; i < dataSize; i++) {
+// Sends messages through UART to Central PC
+void sendData(uint8_t *data, int dataSize)
+{
+  for (int i = 0; i < dataSize; i++)
+  {
     Serial.write(data[i]);
+    digitalWrite(10, HIGH);
+    delay(100);
+    digitalWrite(10, LOW);
   }
 }
 
-// Main loop function 
+void sendMega(uint8_t *data, int dataSize)
+{
+  for (int i = 0; i < dataSize; i++)
+  { 
+    Serial1.write(data[i]);
+    digitalWrite(10, HIGH);
+    delay(100);
+    digitalWrite(10, LOW);
+  }
+
+}
+
+// Main loop function
 void loop()
 {
 
   if (Serial.available() >= max_bytes)
   {
     readData(receivedData, max_bytes);
-    if (receivedData[0] == ITBCommand)
+    if (receivedData[0] == STBCommand)
     {
-      sendData(receivedData, max_bytes);
+      sendData(receivedData, max_bytes); // Debugging print
     }
     else if (receivedData[0] == TestCommand)
     {
-      // sendData(receivedData, max_bytes); // Debugging print
-
-      if (receivedData[1] == 'a'){
-
-        sendData(receivedData, max_bytes);
-
-      }
-
-    }
-    else if (receivedData[0] == STBCommand)
-    {
       sendData(receivedData, max_bytes); // Debugging print
+      delay(100);
+      digitalWrite(10, LOW);
+      sendMega(receivedData, max_bytes); // Sends to Arduino Mega
     }
     else if (receivedData[0] == STB2Command)
     {
-      sendData(receivedData, max_bytes);
+      sendData(receivedData, max_bytes); // Debugging print
     }
-    else if (receivedData[0] == STB1Command) // Sends SDYE (i.e., info for dye injection)
+    else if (receivedData[0] == IDYECommand)
     {
       sendData(receivedData, max_bytes); // Debugging print
-
-      // Send SDYE
-
     }
-    else if (receivedData[0] == STB3Command)
+    else if (receivedData[0] == IDYE2Command)
     {
       sendData(receivedData, max_bytes);
     }
-    else if (receivedData[0] == STB4Command)
+    else if (receivedData[0] == IDYE3Command)
     {
       sendData(receivedData, max_bytes);
     }
@@ -87,13 +94,9 @@ void loop()
     {
       if (receivedData[2] == 0b00000000)
       {
-        digitalWrite(10, HIGH);  
+        digitalWrite(10, HIGH);
       }
-      
       sendData(receivedData, max_bytes); // Debugging print
-
-      // On first iteration, sends RDYE
-
     }
     else if (receivedData[0] == ETB1Command) // ETB1 - sending GP/IO at end of experiment
     {
@@ -101,12 +104,11 @@ void loop()
       sendData(receivedData, max_bytes); // Debugging print
 
       // Send GP/IO at end of experiment
-
     }
     else if (receivedData[0] == ETB2Command) // ETB2 - tells Testbed to stop flowing
     {
+      // Send ERPI (reset Dye Injection)
       sendData(receivedData, max_bytes); // Debugging print
     }
   }
-
 }

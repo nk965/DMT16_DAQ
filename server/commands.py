@@ -5,7 +5,7 @@ List of commands from Central PC side
 
 from Modules import *
 
-from helpers import convert_frequency_to_clock_tick, float_to_hex_string, float_to_base_15, bool_to_hex_string, float_array_to_hex_string, linear_interpolation
+from helpers import convert_frequency_to_clock_tick, float_to_hex_string, float_to_base_15, bool_to_pulse_string, float_array_to_hex_string, linear_interpolation, int_to_hex_string
 
 def ITBCommand(UART, testDelay:float, testDelay_info: dict):
 
@@ -55,59 +55,64 @@ def STB2Command(UART, branch_temp: float, branch_temp_info: dict):
     return {"Branch Temp": actualBranch}
 
 
-def STB1Command(UART, syrLen: float, syrLen_Info: dict, syrDia: float, syrDia_Info: dict):
-
-    # note that testDelay (stabilising time) is not sent over 
+def IDYECommand(UART, syrDia: float, vol_inject: float, inject_time: float):
 
     hex_identifier = "15"
 
-    actualSyrLen, outSyrLen = float_to_hex_string(syrLen, syrLen_Info)
+    steps_per_rev = 200
 
-    actualSyrDia, outSyrDia = float_to_hex_string(syrDia, syrDia_Info)
+    mm_per_rev = 0.5
 
-    message = bytearray.fromhex(hex_identifier + outSyrLen + outSyrDia + '00')
+    steps_per_second = math.floor((steps_per_rev * mm_per_rev * 4 * vol_inject * 1000)/(math.pi * inject_time * syrDia**2)) # this should be an integer between 1 and 65536 TODO add error checking for this 
 
-    print(f'STB1 Sends: {hex_identifier} {outSyrLen} {outSyrDia} 00 in the form of: {message}')
+    outspeed = int_to_hex_string(steps_per_second, 16)
 
-    UART.send(message)
+    message = bytearray.fromhex(hex_identifier + outspeed)
 
-    return {"Syringe Length": actualSyrLen, "Syringe Diameter": actualSyrDia}
-
-def STB3Command(UART, vol_inject: float, vol_inject_info: dict, dyeSpeed: float, dyeSpeed_info: dict):
-
-    # note that testDelay (stabilising time) is not sent over 
-
-    hex_identifier = "12"
-
-    actual_vol_inject, out_vol_inject = float_to_hex_string(vol_inject, vol_inject_info)
-
-    actualDyeSpeed, outDyeSpeed = float_to_hex_string(dyeSpeed, dyeSpeed_info)
-
-    message = bytearray.fromhex(hex_identifier + out_vol_inject + outDyeSpeed )
-
-    print(f'STB3 Sends: {hex_identifier} {out_vol_inject} {outDyeSpeed} in the form of: {message}')
+    print(f'IDYE Sends: {hex_identifier} {outspeed} in the form of: {message}')
 
     UART.send(message)
 
-    return {"Volume Injected": actual_vol_inject, "Dye Speed": actualDyeSpeed}
+    return {"Steps Per Second (Speed)": steps_per_second, "Pulse Mode": enPulse}
 
-def STB4Command(UART, enPulse: bool, dutyCycle: float, dutyCycle_info: dict, cyclePeriod: float, cyclePeriod_info: dict):
+def IDYE2Command(UART, dutyCycle: float, dutyCycle_info: dict, cyclePeriod: float):
 
     hex_identifier = "13"
 
-    outEnPulse = bool_to_hex_string(enPulse)
-
     actualDutyCycle, outDutyCycle = float_to_hex_string(dutyCycle, dutyCycle_info)
 
-    actualCyclePeriod, outCyclePeriod = float_to_hex_string(cyclePeriod, cyclePeriod_info)
+    outCyclePeriod = int_to_hex_string(cyclePeriod*100) # encode cyclePeriod to 0.01 precision second intervals, TODO add error checking? Max cyclePeriod is 655.35
 
-    message = bytearray.fromhex(hex_identifier + outEnPulse + outDutyCycle + outCyclePeriod)
+    message = bytearray.fromhex(hex_identifier + outDutyCycle + outCyclePeriod)
 
-    print(f'STB4 Sends: {hex_identifier} {outEnPulse} {outDutyCycle} {outCyclePeriod} in the form of: {message}')
+    print(f'IDYE2 Sends: {hex_identifier} {outDutyCycle} {outCyclePeriod} in the form of: {message}')
 
     UART.send(message)
 
-    return {"Duty Cycle": actualDutyCycle, "Cycle Period": actualCyclePeriod}
+    return {"Duty Cycle": actualDutyCycle, "Cycle Period": outCyclePeriod}
+
+def IDYE3Command(UART, enPulse: bool, syrDia: float, vol_inject: float):
+
+    hex_identifier = "18"
+
+    steps_per_rev = 200
+
+    mm_per_rev = 0.5
+
+    steps = math.floor((steps_per_rev * mm_per_rev * 4 * vol_inject * 1000)/(math.pi * syrDia**2)) # this should be an integer between 1 and 65536 TODO add error checking for this 
+
+    outEnPulse = bool_to_pulse_string(enPulse)
+
+    outSteps = int_to_hex_string(steps, 16)
+
+    message = bytearray.fromhex(hex_identifier + outEnPulse + outSteps)
+
+    print(f'IDYE3 Sends: {hex_identifier} {outEnPulse} {outSteps} in the form of: {message}')
+
+    UART.send(message)
+
+    return {"Steps": steps, "Pulse Mode": enPulse}
+
 
 def RTBProcedure(UART, start_y, end_y, nodes, trans_time, preset_config="Linear"):
 
@@ -124,7 +129,7 @@ def RTBProcedure(UART, start_y, end_y, nodes, trans_time, preset_config="Linear"
 
 def TestCommand(UART):
 
-    hex_identifier = "15"
+    hex_identifier = "30"
 
     message = bytearray.fromhex(hex_identifier + "61" + "0000")
 

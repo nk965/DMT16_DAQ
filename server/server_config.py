@@ -4,14 +4,6 @@ Configuration file for sending user inputs into the microcontrollers
 """
 
 inputInfo = {
-    "syrLen": {
-        "defaultValue": 150,
-        "type": float,
-        "range": [50, 500],
-        "bits": 8,
-        "units": "mm",
-        "submission_form": "userConfig"
-    },
     "syrDia": {
         "defaultValue": 30,
         "type": float,
@@ -71,8 +63,8 @@ inputInfo = {
     "cyclePeriod": {
         "defaultValue": 1.2,
         "type": float,
-        "range": [0, 10],
-        "bits": 8,
+        "range": [0, 100],
+        "bits": 16,
         "units": "s",
         "submission_form": "userConfig"
     },
@@ -147,5 +139,13 @@ inputInfo = {
         "bits": 8,
         "units": "ml",
         "submission_form": None
+    },
+    "inject_time": {
+        "defaultValue": 50,
+        "type": float,
+        "range": [0, 480],
+        "bits": 8,
+        "units": "s",
+        "submission_form": None # TODO
     },
 }

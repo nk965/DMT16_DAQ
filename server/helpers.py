@@ -98,7 +98,9 @@ def convert_frequency_to_clock_tick(input_freq):
 
 def int_to_hex_string(n: int, bits: int) -> str:
 
-    hex_string = hex(n)[2:].zfill(bits // 4)
+    capped_no = max(0, min((16**(bits // 4) - 1), round(n)))
+
+    hex_string = hex(capped_no)[2:].zfill(bits // 4)
 
     return hex_string
 
@@ -122,15 +124,15 @@ def float_to_hex_string(value: float, info: dict) -> tuple: #TODO not maximising
 
     return actual, hex_string
 
-def bool_to_hex_string(value: bool): 
+def bool_to_pulse_string(value: bool): 
 
     if value == True:
 
-        hex_string = "01"
-
+        hex_string = "70" # ASCII representation of 'p' in hex (enables pulse mode)
+        
     else:
 
-        hex_string = "00"
+        hex_string = "74" # ASCII representation of 't' in hex (disables pulse mode)
 
     return hex_string
 
