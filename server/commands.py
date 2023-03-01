@@ -133,7 +133,7 @@ def TestCommand(UART):
 
     message = bytearray.fromhex(hex_identifier + "010101")
 
-    print(f'TestCommand Sends: {hex_identifier} + 000000 in the form of {message}')
+    print(f'TestCommand Sends: {hex_identifier} + 010101 in the form of {message}')
 
     UART.send(message)
 

@@ -71,9 +71,9 @@ void setup()
 void readData(uint8_t *data, int length)
 {
 
-  digitalWrite(10, HIGH);
-  delay(2500);
-  digitalWrite(10, LOW); 
+  // digitalWrite(10, HIGH);
+  // delay(2500);
+  // digitalWrite(10, LOW); 
 
   for (int i = 0; i < length; i++)
   {
@@ -137,6 +137,10 @@ void loop()
   if (Serial1.available() >= max_bytes)
   {
 
+    digitalWrite(10, HIGH);
+    delay(500);
+    digitalWrite(10, LOW);
+
     // Read data into the buffer - only 4 long (max_bytes = 4)
     readData(receivedData, max_bytes);
 
@@ -176,9 +180,9 @@ void loop()
     }
     else if (receivedData[0] == TestCommand)
     {
-      digitalWrite(10, HIGH);
-      delay(500);
-      digitalWrite(10, LOW);   
+      // digitalWrite(10, HIGH);
+      // delay(500);
+      // digitalWrite(10, LOW);
     }
     // If the SDYE command is called:
     else if (receivedData[0] == SDYECommand)

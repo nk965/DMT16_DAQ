@@ -38,6 +38,11 @@ void readData(uint8_t *data, int length)
 // Sends messages through UART to Central PC
 void sendData(uint8_t *data, int dataSize)
 {
+  digitalWrite(10, HIGH);
+  delay(100);
+  digitalWrite(10, LOW); 
+
+
   for (int i = 0; i < dataSize; i++)
   {
     Serial.write(data[i]);
@@ -73,9 +78,9 @@ void loop()
       // delay(100);
       // digitalWrite(10, LOW); 
 
-      // sendData(receivedData, max_bytes); // Debugging print
+      sendData(receivedData, max_bytes); // Debugging print
       
-      delay(5000);
+      delay(2500);
       sendMega(receivedData, max_bytes); // Sends to Arduino Mega
     }
     else if (receivedData[0] == STB2Command)
