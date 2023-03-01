@@ -8,7 +8,7 @@ int RDYECommand = 0b00001000;
 int SDYECommand = 0b00000010;
 int SDYE2Command = 0b00010110;
 int EDYECommand = 0b00010111;
-int TestCommand = 0b00110000;
+int TestCommand = 0b1101001;
 
 // Define pin connections
 const int dirPin = 2;
@@ -28,11 +28,11 @@ float no_turns;        // Variable for storing the number of steps requested usi
 unsigned int no_steps; // Variable to store the current number of steps
 int total_steps;       // Total number of steps issued - used in reset to turn the correct number of times backwards. In steps, so NOT revs
 float turn_counter;    // Turn counter - in REVS NOT STEPS
-float duty = 0.4;      // Duty cycle value
-float period = 0.5;    // Period of pulses - max period is around 9 seconds and a bit
+float duty = 0.2;      // Duty cycle value
+float period = 0.25;    // Period of pulses - max period is around 9 seconds and a bit
 boolean pulse = 0;     // Pulse mode: 1 = enabled, 0 = disabled
 boolean on_off = 0;    // During pulse mode: on = 1 (pulsing), off = 0 (stop)
-
+boolean toggle4 = LOW;
 // Pulse variables
 
 unsigned int on_period_counter = 0;  // Max counter val for on period before switch
@@ -44,26 +44,28 @@ void setup()
 {
   pinMode(dirPin, OUTPUT);
   myStepper.setMaxSpeed(1000);
-  Serial1.begin(230400);
+  Serial2.begin(230400);
   myStepper.setSpeed(0);
-  Serial1.flush();
+  Serial2.flush();
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(10, OUTPUT);
+  pinMode(13, OUTPUT);
 
   cli(); // stop interrupts
 
-  // set timer1 interrupt at 10kHz
-  TCCR1A = 0; // set entire TCCR1A register to 0
-  TCCR1B = 0; // same for TCCR1B
-  TCNT1 = 0;  // initialize counter value to 0
+  // set timer4 interrupt at 10kHz
+  TCCR4A = 0; // set entire TCCR1A register to 0
+  TCCR4B = 0; // same for TCCR1B
+  TCNT4 = 0;  // initialize counter value to 0
   // set compare match register for 10kHz increments
-  OCR1A = 1599; // = (16*10^6) / (Prescaler*desired_freq) - 1 (must be <65536)
+  // OCR4A = 1599/1; // = (16*10^6) / (Prescaler*desired_freq) - 1 (must be <65536)
+  OCR4A = 1599;// = (16*10^6) / (1*1024) - 1 (must be <65536)
   // turn on CTC mode
-  TCCR1B |= (1 << WGM12);
+  TCCR4B |= (1 << WGM12);
   // Set CS12 and CS10 bits for 1 prescaler
-  TCCR1B |= (1 << CS10);
+  TCCR4B |= (1 << CS10);
   // enable timer compare interrupt
-  TIMSK1 |= (1 << OCIE1A);
+  TIMSK4 |= (1 << OCIE4A);
 
   sei(); // allow interrupts
 }
@@ -77,12 +79,15 @@ void readData(uint8_t *data, int length)
 
   for (int i = 0; i < length; i++)
   {
-    data[i] = (uint8_t)Serial1.read();
+    data[i] = (uint8_t)Serial2.read();
   }
 }
 
-ISR(TIMER1_COMPA_vect)
+ISR(TIMER4_COMPA_vect)
 { // timer1 interrupt 10 kHz
+
+  // digitalWrite(13,toggle4);
+  // toggle4 = !toggle4;
 
   // If pulse mode:
   if (pulse == 1)
@@ -93,6 +98,7 @@ ISR(TIMER1_COMPA_vect)
     if (on_off)
     {
 
+      // digitalWrite(10, HIGH);
       // If the on period has not been reached:
       if (current_counter <= on_period_counter)
       {
@@ -102,7 +108,6 @@ ISR(TIMER1_COMPA_vect)
       }
       else
       {
-
         // If period has been reached, switch to off period
         on_off = 0;
         current_counter = 0;
@@ -112,6 +117,7 @@ ISR(TIMER1_COMPA_vect)
     // If not on, then must be off:
     else
     {
+      digitalWrite(10, LOW);
       // If the off period has not been reached:
       if (current_counter <= off_period_counter)
       {
@@ -134,12 +140,12 @@ void loop()
 
   // If it receives something from the serial port (which is 4 long or above):
 
-  if (Serial1.available() >= max_bytes)
+  if (Serial2.available() >= max_bytes)
   {
 
-    digitalWrite(10, HIGH);
-    delay(500);
-    digitalWrite(10, LOW);
+    // digitalWrite(10, HIGH);
+    // delay(100);
+    // digitalWrite(10, LOW);
 
     // Read data into the buffer - only 4 long (max_bytes = 4)
     readData(receivedData, max_bytes);
@@ -148,6 +154,10 @@ void loop()
     if (receivedData[0] == RDYECommand)
     {
 
+      digitalWrite(10, HIGH);
+      delay(100);
+      digitalWrite(10, LOW);
+
       // Extract the number of steps we have inputted from 2 bytes
       no_steps = (unsigned int)(((uint16_t)receivedData[2] << 8) | ((uint16_t)receivedData[3]));
 
@@ -155,14 +165,19 @@ void loop()
       speed = const_speed;
 
       // If turn mode:
-      if (receivedData[1] == 't')
+      if (receivedData[1] == 0b1110000)
       {
         // Disable pulse mode
+
         pulse = 0;
       }
       // If pulse mode requested:
-      else if (receivedData[1] == 'p')
+      else if (receivedData[1] == 0b1110100)
       {
+
+        digitalWrite(10, HIGH);
+        delay(100);
+        digitalWrite(10, LOW);
 
         // Calculate off-time:
         // On time in ms = period in seconds * duty * ticks/second = ticks
@@ -180,13 +195,17 @@ void loop()
     }
     else if (receivedData[0] == TestCommand)
     {
-      // digitalWrite(10, HIGH);
-      // delay(500);
-      // digitalWrite(10, LOW);
+      digitalWrite(10, HIGH);
+      delay(100);
+      digitalWrite(10, LOW);
     }
     // If the SDYE command is called:
     else if (receivedData[0] == SDYECommand)
     {
+
+      digitalWrite(10, HIGH);
+      delay(100);
+      digitalWrite(10, LOW);
 
       // Extract the speed we have inputted from 2 bytes
       const_speed = (int)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2]));
@@ -194,6 +213,10 @@ void loop()
     // If the SDYE2 command is called:
     else if (receivedData[0] == SDYE2Command)
     {
+
+      digitalWrite(10, HIGH);
+      delay(100);
+      digitalWrite(10, LOW);
 
       // Extract the duty value
       duty = (float)receivedData[1] / ((float)255);
@@ -204,6 +227,14 @@ void loop()
     // If the EDYE command is called::
     else if (receivedData[0] == EDYECommand)
     {
+
+      digitalWrite(10, HIGH);
+      delay(100);
+      digitalWrite(10, LOW);
+
+      // digitalWrite(10, HIGH);
+      // delay(500);
+      // digitalWrite(10, LOW);
 
       // Disable pulse mode
       pulse = 0;
@@ -216,6 +247,15 @@ void loop()
       no_steps = 0;
     }
   }
+
+  // Testing code
+  
+  on_period_counter = round(period * duty * (float)clock_freq);
+  off_period_counter = round(period * (1 - duty) * (float)clock_freq);
+
+  pulse = 0;
+  speed = const_speed;
+  total_steps = 600;
 
   // The total number of steps gets incremented by the number of steps requested
   total_steps = total_steps + no_steps;

@@ -133,7 +133,7 @@ inputInfo = {
         "submission_form": None
     },
     "vol_inject": {
-        "defaultValue": 25,
+        "defaultValue": 80,
         "type": float,
         "range": [0, 100],
         "bits": 8,
