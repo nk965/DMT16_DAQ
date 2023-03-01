@@ -37,7 +37,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "lenExperiment": {
-        "defaultValue": 10,
+        "defaultValue": 15,
         "type": float,
         "range": [0, 800],
         "bits": 16,
@@ -109,7 +109,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "trans_time": {
-        "defaultValue": 20,
+        "defaultValue": 8,
         "type": float,
         "range": [0, 800],
         "bits": 16,
@@ -117,7 +117,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "stabilising_delay": {
-        "defaultValue": 15,
+        "defaultValue": 5,
         "type": float,
         "range": [0, 2000],
         "bits": 8,
@@ -141,7 +141,7 @@ inputInfo = {
         "submission_form": None
     },
     "inject_time": {
-        "defaultValue": 50,
+        "defaultValue": 9,
         "type": float,
         "range": [0, 480],
         "bits": 8,

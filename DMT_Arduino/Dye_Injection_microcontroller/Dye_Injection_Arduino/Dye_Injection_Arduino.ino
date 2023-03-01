@@ -70,6 +70,11 @@ void setup()
 
 void readData(uint8_t *data, int length)
 {
+
+  digitalWrite(10, HIGH);
+  delay(2500);
+  digitalWrite(10, LOW); 
+
   for (int i = 0; i < length; i++)
   {
     data[i] = (uint8_t)Serial1.read();

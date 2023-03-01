@@ -67,21 +67,21 @@ def IDYECommand(UART, syrDia: float, vol_inject: float, inject_time: float):
 
     outspeed = int_to_hex_string(steps_per_second, 16)
 
-    message = bytearray.fromhex(hex_identifier + outspeed)
+    message = bytearray.fromhex(hex_identifier + outspeed + '00')
 
-    print(f'IDYE Sends: {hex_identifier} {outspeed} in the form of: {message}')
+    print(f'IDYE Sends: {hex_identifier} {outspeed} 00 in the form of: {message}')
 
     UART.send(message)
 
-    return {"Steps Per Second (Speed)": steps_per_second, "Pulse Mode": enPulse}
+    return {"Steps Per Second (Speed)": steps_per_second}
 
-def IDYE2Command(UART, dutyCycle: float, dutyCycle_info: dict, cyclePeriod: float):
+def IDYE2Command(UART, dutyCycle: float, dutyCycle_info: dict, cyclePeriod: float, cyclePeriod_info: dict):
 
     hex_identifier = "13"
 
     actualDutyCycle, outDutyCycle = float_to_hex_string(dutyCycle, dutyCycle_info)
 
-    outCyclePeriod = int_to_hex_string(cyclePeriod*100) # encode cyclePeriod to 0.01 precision second intervals, TODO add error checking? Max cyclePeriod is 655.35
+    outCyclePeriod = int_to_hex_string(cyclePeriod*100, cyclePeriod_info['bits']) # encode cyclePeriod to 0.01 precision second intervals, TODO add error checking? Max cyclePeriod is 655.35
 
     message = bytearray.fromhex(hex_identifier + outDutyCycle + outCyclePeriod)
 
@@ -129,11 +129,11 @@ def RTBProcedure(UART, start_y, end_y, nodes, trans_time, preset_config="Linear"
 
 def TestCommand(UART):
 
-    hex_identifier = "30"
+    hex_identifier = '69'
 
-    message = bytearray.fromhex(hex_identifier + "61" + "0000")
+    message = bytearray.fromhex(hex_identifier + "010101")
 
-    print(f'TestCommand Sends: {hex_identifier} in the form of {message}')
+    print(f'TestCommand Sends: {hex_identifier} + 000000 in the form of {message}')
 
     UART.send(message)
 
