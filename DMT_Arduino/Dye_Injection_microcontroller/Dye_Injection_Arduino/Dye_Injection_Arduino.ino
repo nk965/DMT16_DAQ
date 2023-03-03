@@ -24,9 +24,8 @@ int const_speed = 200; // Steps per second
 AccelStepper myStepper(motorInterfaceType, stepPin, dirPin);
 
 String input;
-float no_turns;        // Variable for storing the number of steps requested using turn or pulse command
-unsigned int no_steps; // Variable to store the current number of steps
-int total_steps;       // Total number of steps issued - used in reset to turn the correct number of times backwards. In steps, so NOT revs
+unsigned int no_steps = 0; // Variable to store the current number of steps
+unsigned int total_steps = 0;       // Total number of steps issued - used in reset to turn the correct number of times backwards. In steps, so NOT revs
 float turn_counter;    // Turn counter - in REVS NOT STEPS
 float duty = 0.2;      // Duty cycle value
 float period = 0.25;    // Period of pulses - max period is around 9 seconds and a bit
@@ -159,8 +158,8 @@ void loop()
       // digitalWrite(10, LOW);
 
       // Extract the number of steps we have inputted from 2 bytes
-      no_steps = (unsigned int)(((uint16_t)receivedData[2] << 8) | ((uint16_t)receivedData[3]));
-
+      no_steps = (((unsigned int)receivedData[2] << 8) | ((unsigned int)receivedData[3]));
+      
       // Set the speed to be whatever it currently is
       speed = const_speed;
 
@@ -212,7 +211,7 @@ void loop()
       digitalWrite(10, LOW);
 
       // Extract the speed we have inputted from 2 bytes
-      const_speed = (int)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2]));
+      const_speed = (unsigned int)(((unsigned int)receivedData[1] << 8) | ((unsigned int)receivedData[2]));
     }
     // If the SDYE2 command is called:
     else if (receivedData[0] == SDYE2Command)
@@ -226,7 +225,7 @@ void loop()
       duty = (float)receivedData[1] / ((float)255);
 
       // Extract the period we have inputted from 2 bytes
-      period = (float)(0b000000001111000)/float(100);
+      period = (float)(((unsigned int)receivedData[2] << 8) | ((unsigned int)receivedData[3]))/float(100);
     }
     // If the EDYE command is called::
     else if (receivedData[0] == EDYECommand)
@@ -259,10 +258,10 @@ void loop()
 
   // pulse = 0;
   // speed = const_speed;
-  // total_steps = 600;
 
   // The total number of steps gets incremented by the number of steps requested
   total_steps = total_steps + no_steps;
+  no_steps = 0;
 
   // Tell the stepper to move to that place
   myStepper.moveTo(total_steps);
