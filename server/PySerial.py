@@ -9,7 +9,6 @@ identifiers).
 It also deals with connecting to port and provides a method to change port during the execution of the program.
 """
 
-
 def list_ports():
     """
     Function tries and lists all available ports for connecting
@@ -130,6 +129,11 @@ class UART:
 
         self.serial_connection.write(info)
 
-        time.sleep(0.1)
+        time.sleep(0.83)
 
-        print(f'Microcontroller Sends Back: {self.serial_connection.read_all().hex()}')
+        # time.sleep(0.8) 
+
+        # read_receipt = self.serial_connection.read_all()
+
+        # print(f'{self.port_name} sends back {read_receipt}')
+

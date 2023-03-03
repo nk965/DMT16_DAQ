@@ -4,14 +4,6 @@ Configuration file for sending user inputs into the microcontrollers
 """
 
 inputInfo = {
-    "syrLen": {
-        "defaultValue": 150,
-        "type": float,
-        "range": [50, 500],
-        "bits": 8,
-        "units": "mm",
-        "submission_form": "userConfig"
-    },
     "syrDia": {
         "defaultValue": 30,
         "type": float,
@@ -45,7 +37,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "lenExperiment": {
-        "defaultValue": 10,
+        "defaultValue": 15,
         "type": float,
         "range": [0, 800],
         "bits": 16,
@@ -69,15 +61,15 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "cyclePeriod": {
-        "defaultValue": 1.2,
+        "defaultValue": 0.5,
         "type": float,
-        "range": [0, 10],
-        "bits": 8,
+        "range": [0, 100],
+        "bits": 16,
         "units": "s",
         "submission_form": "userConfig"
     },
     "dutyCycle": {
-        "defaultValue": 0.4,
+        "defaultValue": 0.30,
         "type": float,
         "range": [0, 1],
         "bits": 8,
@@ -88,7 +80,7 @@ inputInfo = {
         "defaultValue": 25,
         "type": float,
         "range": [0, 100],
-        "bits": None,
+        "bits": 8,
         "units": "%", #TODO: use units of momentum ratio?
         "submission_form": "transientInput"
     },
@@ -96,12 +88,12 @@ inputInfo = {
         "defaultValue": 55,
         "type": float,
         "range": [0, 100],
-        "bits": None,
+        "bits": 8,
         "units": "", #TODO: use units of momentum ratio?
         "submission_form": "transientInput"
     },
     "nodes": {
-        "defaultValue": 7,
+        "defaultValue": 5,
         "type": float,
         "range": [0, 500],
         "bits": None,
@@ -117,11 +109,43 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "trans_time": {
-        "defaultValue": 15,
+        "defaultValue": 4,
         "type": float,
         "range": [0, 800],
-        "bits": None,
+        "bits": 16,
         "units": "",
         "submission_form": "transientInput"
+    },
+    "stabilising_delay": {
+        "defaultValue": 5,
+        "type": float,
+        "range": [0, 2000],
+        "bits": 8,
+        "units": "s",
+        "submission_form": None
+    },
+    "branch_temp": {
+        "defaultValue": 80,
+        "type": float,
+        "range": [30, 100],
+        "bits": 16,
+        "units": "C",
+        "submission_form": None
+    },
+    "vol_inject": {
+        "defaultValue": 20,
+        "type": float,
+        "range": [0, 100],
+        "bits": 8,
+        "units": "ml",
+        "submission_form": None
+    },
+    "inject_time": {
+        "defaultValue": 5, # this was 9 
+        "type": float,
+        "range": [0, 480],
+        "bits": 8,
+        "units": "s",
+        "submission_form": None # TODO
     },
 }
