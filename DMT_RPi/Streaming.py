@@ -89,35 +89,6 @@ if __name__ == '__main__':
 
     # extracts inputs from Serial.py and from configuration file
 
-    # extracts user inputs from text file
-
-    x = []
-    file_in = open('SRPI.txt', 'r')
-    for line in file_in.readlines():
-        x.append(float(line))
-    file_in.close()
-
-    sampling_interval_ms, recording_period, polling_interval = x[0], x[1], x[2]
-
-    # defining array to be populated with LoggingUnit objects
-
-    loggers = []
-
-    # initialises and starts the TC08 loggers (LED to blink green)
-
-    for name, logger_info in USBTC08_CONFIG.items():
-        loggers.append(LoggingUnit(logger_info, name,
-                       sampling_interval_ms, recording_period))
-
-    # creates array of polling intervals to loop through 
-
-    polling_period = getPolling_Period(recording_period, polling_interval)
-
-    # non time sensitive setting of buffers 
-
-    for logger in loggers:
-        logger.setBuffers(polling_period)
-
     # runs unit and time stamps are marked in method
 
     for logger in loggers:

@@ -81,7 +81,7 @@ def SRPI_Read(UART):
         list: list of hex identifier and sampling interval in ms
     """   
 
-    hex_identifier = UART[0]
+    hex_identifier_1 = UART[0]
 
     sampling_interval_hex = UART[1]
 
@@ -89,7 +89,7 @@ def SRPI_Read(UART):
 
     sampling_interval_ms = convert_to_ms(decoded_sampling_interval)
 
-    message = {"hex_identifier": hex_identifier, "sampling_interval": sampling_interval_ms}
+    message = {"hex_identifier_1": hex_identifier_1, "sampling_interval": sampling_interval_ms}
 
     return message
 
@@ -102,7 +102,7 @@ def SRPI2_Read(UART):
         list: list of hex identifier and length of experiment in s
     """   
 
-    hex_identifier = UART[0]
+    hex_identifier_2 = UART[0]
 
     lenExperiment = UART[1] + UART [2]
 
@@ -110,7 +110,7 @@ def SRPI2_Read(UART):
 
     lenExperiment_s = convert_to_s(decoded_lenExperiment)
 
-    message = {"hex_identifier": hex_identifier, "Length of Experiment": lenExperiment_s}
+    message = {"hex_identifier_2": hex_identifier_2, "Length of Experiment": lenExperiment_s}
 
     return message
 
@@ -196,7 +196,8 @@ if __name__ == '__main__':
                     for line in property_list:
                         f.write(line)
                         f.write('\n')
-                
+                    f.close()
+
                 counter +=1
 
             if UART_messages[0] == "10":
@@ -207,15 +208,11 @@ if __name__ == '__main__':
                 
                 property_list = [str(lenExperiment_s)] 
 
-
-
                 with open('SRPI.txt', 'a') as f:
                     for line in property_list:
                         f.write(line)
-                        f.write('\n')       
+                        f.write('\n')
+                    f.close()       
                 
                 counter += 1
-
-            else:
-                print("Wrong")
 
