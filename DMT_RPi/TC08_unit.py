@@ -56,6 +56,8 @@ class LoggingUnit:
 
             if self.config[channel]["ENABLE"] == True:
 
+                print(self.config[channel])
+
                 # looks up type of sensor
                 input_type = INPUT_TYPES[self.config[channel]['SENSOR_TYPE']]
 

@@ -1,194 +1,151 @@
 """
 @author: Nicholas Kwok, Pike Amornchat
 Main script for communicating with microcontrollers
+hello
 """
 
-import time
+from Modules import *
 
-from PySerial import UART
+from PySerial import UART, list_ports
 from server_config import inputInfo
+from commands import STBCommand, SDAQCommand, SDAQ2Command, ETB1Command, ETB2Command, EDAQCommand, RTBProcedure, ITBCommand, STB2Command, IDYECommand, IDYE2Command, IDYE3Command, TestCommand
 
-import numpy as np
-import matplotlib.pyplot as plt
+def DAQ_TESTING(port, inputInfo):
+    '''
+    Benchscale Test
+    '''
 
+    status = {}
 
-def base_15_protocol_convert(num):
+    DAQ_UART = UART("DAQ Microcontroller", port) # check this, optionally, specify the port number
 
-    def numberToBase(n, b):
-        if n == 0:
-            return [0]
-        digits = []
-        while n:
-            digits.append(int(n % b))
-            n //= b
-        return digits[::-1]
+    status['SDAQ'] = SDAQCommand(DAQ_UART, inputInfo['PIVfreq']['defaultValue'], inputInfo["Datafreq"]["defaultValue"],
+                                 inputInfo["PIVfreq"], inputInfo["Datafreq"])  # TODO replace the second and third arguments with actual values from user input
 
-    bases = {
-        "0": "0",
-        "1": "1",
-        "2": "2",
-        "3": "3",
-        "4": "4",
-        "5": "5",
-        "6": "6",
-        "7": "7",
-        "8": "8",
-        "9": "9",
-        "10": "A",
-        "11": "B",
-        "12": "C",
-        "13": "D",
-        "14": "E",
-        "15": "F"
-    }
+    status['SDAQ2'] = SDAQ2Command(DAQ_UART, inputInfo["lenExperiment"]['defaultValue'], inputInfo["lenExperiment"])
 
-    # Temporary array converted to base 15 in numbers
-    temp = numberToBase(num, 15)
-    final = ""  # The send string
+    time.sleep(inputInfo['lenExperiment']['defaultValue'])
 
-    for i in range(len(temp) - 1, -1, -2):  # Add 1 to pad to hex
-        temp[i] = temp[i] + 1
+    status['EDAQ'] = EDAQCommand(DAQ_UART)
 
-    for i in temp:  # Convert to hex string + concatenate
-        final = final + bases[str(i)]
+    return status
 
-    if len(final) % 2 == 1:  # Pad 0 if need be
-        final = "0" + final
+def TB_TESTING(port, inputInfo):
+    '''
+    Benchscale Test
+    '''
 
-    return final
+    status = {}
 
-def convert_frequency_to_clock_tick(input_freq):
+    TB_UART = UART("TB Microcontroller", port)
 
-    prescaler = 332  # Hardcoded prescaler - numerically optimized by Desmos
-    clock_speed = 84*10**6  # STM32F407 TIM6 clock speed
-    # The number of ticks converted into an integer
-    no_ticks = int(np.round(clock_speed/(prescaler*input_freq)))
-    # The actual frequency using the number of ticks
-    actual_freq = clock_speed/(prescaler*no_ticks)
+    # status['TestCommand'] = TestCommand(TB_UART)
 
-    hex_ticks = base_15_protocol_convert(no_ticks)
+    status['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) # TODO ask Pike if this is necessary 
+
+    status['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
+
+    status['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
+
+    status['IDYE'] = IDYECommand(TB_UART, inputInfo['syrDia']['defaultValue'], inputInfo['vol_inject']['defaultValue'], inputInfo['inject_time']['defaultValue'], inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['enPulse'])
+
+    status['IDYE2'] = IDYE2Command(TB_UART, inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['cyclePeriod']['defaultValue'], inputInfo['cyclePeriod'])
+
+    status['IDYE3'] = IDYE3Command(TB_UART, inputInfo['enPulse']['defaultValue'], inputInfo['syrDia']['defaultValue'], inputInfo['vol_inject']['defaultValue'])
+
+    time.sleep(0.5*(inputInfo['inject_time']['defaultValue'] - inputInfo['trans_time']['defaultValue']))
+
+    time.sleep(inputInfo['inject_time']['defaultValue']) # TEMPORARY
+
+    status['RTB'] = RTBProcedure(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
+
+    status['ETB1'] = ETB1Command(TB_UART) 
+
+    time.sleep(0.5*(inputInfo['inject_time']['defaultValue'] - inputInfo['trans_time']['defaultValue']))
+
+    status['ETB2'] = ETB2Command(TB_UART)
+
+    return status
+
+def process(DAQ_port, TB_port, inputs, info): 
+
+    status = {}
+
+    TB_UART = UART("TB Microcontroller", TB_port)
+    DAQ_UART = UART("DAQ Microcontroller", DAQ_port)
+
+    status['ITB'] = ITBCommand(TB_UART, inputs["stabilising_delay"], info['stabilising_delay']) 
+
+    status['STB'] = STBCommand(TB_UART, inputs["start_y"], info["start_y"], inputs["trans_time"], info["trans_time"])
+
+    status['STB2'] = STB2Command(TB_UART, inputs['branch_temp'], info['branch_temp'])
+
+    status['IDYE'] = IDYECommand(TB_UART, inputs['syrDia'], inputs['vol_inject'], inputs['inject_time'], inputs['dutyCycle'], info['dutyCycle'], inputs['enPulse'])
+
+    status['IDYE2'] = IDYE2Command(TB_UART, inputs['dutyCycle'], info['dutyCycle'], inputs['cyclePeriod'], info['cyclePeriod'])
+
+    time.sleep(inputs["stabilising_delay"])
+
+    status['SDAQ'] = SDAQCommand(DAQ_UART, inputs["PIVfreq"], inputs["Datafreq"], info["PIVfreq"], info["Datafreq"]) 
+
+    time.sleep(1)
+
+    status['SDAQ2'] = SDAQ2Command(DAQ_UART, inputs["lenExperiment"], info["lenExperiment"]) 
+
+    time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
+
+    status['IDYE3'] = IDYE3Command(TB_UART, inputs['enPulse'], inputs['syrDia'], inputs['vol_inject'])
+
+    time.sleep(0.5*(inputs['inject_time'] - inputs['trans_time']))
     
+    status['RTB'] = RTBProcedure(TB_UART, inputs["start_y"], inputs["end_y"], inputs["nodes"], inputs["trans_time"], inputs["presetConfig"])
 
-    return actual_freq, hex_ticks
-
-def float_to_hex_string(value: float, info: dict) -> tuple:
-
-    min_input, max_input = info["range"][0], info["range"][1]
-
-    max_output = 15**(info["bits"] // 4) - 1
-
-    min_output = 0
-
-    scaled = (((value - min_input) / (max_input - min_input))
-              * (max_output - min_output)) + min_output
-
-    rounded = round(scaled)
-
-    actual = (((rounded - min_output) * (max_input - min_input)) /
-              (max_output - min_output)) + min_input
-
-    return actual, base_15_protocol_convert(rounded)
-
-def STBCommand(testDelay: float):
-
-    # TODO finish STB Command
-
-    time.sleep(testDelay)
-
-    return {"Testbed Delay": testDelay}
-
-def ETB1Command(UART):
-
-    message = bytearray.fromhex("09")
-
-    read_receipt = UART.send(1, message)
-
-    return {"ETB1 Output": read_receipt}
-
-def ETB2Command(UART):
-
-    message = bytearray.fromhex("0A")
-
-    read_receipt = UART.send(1, message)
-
-    return {"ETB2 Output": read_receipt}
-
-def EDAQCommand(UART):
-
-    message = bytearray.fromhex("0B010101")
-
-    print(f'EDAQ Sends: 0B010101')
-
-    read_receipt = UART.send(0, message)
-
-    UART.close_port(0) # Close UART to DAQ Microcontroller (port 0)
-
-    return {"EDAQ Output": read_receipt}
-
-def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_info: dict, Datafreq_info: dict):
-
-    UART.connect_port(0)  # Connect through UART to DAQ (port 0)
-
-    hex_identifier = "03"  # Command specific hex identifier - check documentation for detail
-
-    actualPIV, outPIVticks = convert_frequency_to_clock_tick(PIVfreq_val)
-
-    actualDatafreq, outDatafreq = float_to_hex_string(Datafreq_val, Datafreq_info)
-
-    print(f'SDAQ Sends: {hex_identifier} {outPIVticks} {outDatafreq}')
-
-    message = bytearray.fromhex(hex_identifier + outPIVticks + outDatafreq)
+    status['ETB1'] = ETB1Command(TB_UART) 
     
-    UART.send(0, message)
+    time.sleep(0.5*(inputs['inject_time'] - inputs['trans_time']))  
 
-    return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV, "PIV Ticks": actualPIV}
+    status['ETB2'] = ETB2Command(TB_UART)
 
-def SDAQ2Command(UART, LenExperiment, LenExperimentInfo):
+    time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
 
-    hex_identifier = "0F"
+    status['EDAQ'] = EDAQCommand(DAQ_UART)
 
-    actualLen, outLen = float_to_hex_string(LenExperiment, LenExperimentInfo)
+    return status
 
-    print(f'SDAQ2 Sends: {hex_identifier} {outLen} 01')
+def run(inputs=None):
 
-    message = bytearray.fromhex(hex_identifier + outLen + "01")
+    if inputs is None:
+        inputs = {key: inputInfo[key]["defaultValue"] for key in inputInfo}
 
-    UART.send(0, message)
+    ports_available = list_ports()
 
-    return {"Length of Experiment": actualLen}
+    for port, index in enumerate(ports_available):
+        print(f'SELECTION {index}: {port}')
 
+    DAQ_port_index = int(input("Choose DAQ port selection number input should be an integer: "))
+    TB_port_index = int(input("Choose TB port selection number input should be an integer: "))
+
+    return process(ports_available[DAQ_port_index], ports_available[TB_port_index], inputs, inputInfo)
 
 if __name__ == "__main__":
 
     '''
-    FOR TESTING ONLY -  in the future, a function will be called from this script in server.py
+    FOR TESTING ONLY -  in the future, a process() will be called from this script in server.py
 
     TODO code functionality to use default values in a "debug" mode
 
     '''
-
-    status = {}
-    process = UART() # initialise both UART ports
     
-    # status["STB"] = STBCommand()
+    ports_available = list_ports()
 
-    status['SDAQ'] = SDAQCommand(process, 10, inputInfo["Datafreq"]["defaultValue"],
-                                 inputInfo["PIVfreq"], inputInfo["Datafreq"])  # TODO replace the second and third arguments with actual values from user input
+    for port, index in enumerate(ports_available):
+        print(f'SELECTION {index}: {port}')
 
-    status['SDAQ2'] = SDAQ2Command(process, inputInfo["lenExperiment"]['defaultValue'], inputInfo["lenExperiment"])
+    # DAQ_port_index = int(input("Choose DAQ port selection number input should be an integer: "))
+    # TB_port_index = int(input("Choose TB port selection number input should be an integer: "))
 
-    time.sleep(0.1)
-    
-    # status['EBT1'] = ETB1Command(process)
+    # print(TB_TESTING(ports_available[TB_port_index], inputInfo))
 
-    time.sleep(3)
+    # print(DAQ_TESTING(ports_available[DAQ_port_index], inputInfo))
+    print(run())
 
-    status['SDAQ'] = SDAQCommand(process, 5, inputInfo["Datafreq"]["defaultValue"],
-                                 inputInfo["PIVfreq"], inputInfo["Datafreq"])
-
-    # status['EBT2'] = ETB2Command(process)
-
-    time.sleep(3)
-    status['EDAQ'] = EDAQCommand(process)
-    
-    print(status)

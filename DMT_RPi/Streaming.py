@@ -9,13 +9,11 @@ from TC08_unit import LoggingUnit
 @author: Nicholas Kwok
 This script performs streaming mode for a specified recording period, polling interval and sampling interval (ms).
 It initialises the LoggingUnit object per logger used. 
-
 """
 
 def getPolling_Period(recording_period, polling_interval):
 
     """obtains an array of polling intervals
-
     Returns:
         array: array of duration of time.sleep
     """    
@@ -59,12 +57,16 @@ def plot_data(logger_data):
         plt.show()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    # extracts user inputs from text file
 
-    # extracts user inputs from configuration file
+    x = []
+    file_in = open('SRPI.txt', 'r')
+    for line in file_in.readlines():
+        x.append(float(line))
+    file_in.close()
 
-    recording_period, polling_interval, sampling_interval_ms = EXPERIMENT_CONFIG[
-        'recording_period'], EXPERIMENT_CONFIG['polling_interval'], EXPERIMENT_CONFIG['sampling_interval_ms']
+    sampling_interval_ms, recording_period, polling_interval = x[0], x[1], x[2]
 
     # defining array to be populated with LoggingUnit objects
 
@@ -75,7 +77,7 @@ if __name__ == "__main__":
     for name, logger_info in USBTC08_CONFIG.items():
         loggers.append(LoggingUnit(logger_info, name,
                        sampling_interval_ms, recording_period))
-    
+
     # creates array of polling intervals to loop through 
 
     polling_period = getPolling_Period(recording_period, polling_interval)
@@ -84,7 +86,9 @@ if __name__ == "__main__":
 
     for logger in loggers:
         logger.setBuffers(polling_period)
-    
+
+    # extracts inputs from Serial.py and from configuration file
+
     # runs unit and time stamps are marked in method
 
     for logger in loggers:
@@ -109,4 +113,3 @@ if __name__ == "__main__":
         logger_data.append(logger.grabData())
 
     plot_data(logger_data)
-

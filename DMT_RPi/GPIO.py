@@ -2,7 +2,6 @@
 import sys
 from datetime import datetime, date
 import time
-import numpy as np
 import csv
 import pigpio  # Library for high speed gpio
 
@@ -43,7 +42,7 @@ def procedure(GPIO, level, tick):
    
       diff = pigpio.tickDiff(last[GPIO], tick)
    
-      py_data.append([GPIO, level, tick, diff])
+      py_data.append([GPIO, level, tick, diff, str(datetime.now())])
    
       # print("G={} l={} t={} d={}".format(GPIO, level, tick, diff)) - Debug Printing - IGNORE
    
@@ -52,11 +51,19 @@ def procedure(GPIO, level, tick):
 
 if __name__ == '__main__':
 
+   x = []
+   file_in = open('SRPI.txt', 'r')
+   for line in file_in.readlines():
+      x.append(float(line))
+   file_in.close()
+
+   recording_period = x[1]
+  
    last = [None]*32
 
    cb = []  # Documented Standard for library and pi.callback()
    
-   py_data = [['GPIO', 'State', 'Tick', 'Diff']]  # Titles
+   py_data = [['GPIO', 'State', 'Tick', 'Diff', 'Time']]  # Titles
 
    pi = pigpio.pi()  # Connects to Local Pi
 
@@ -75,42 +82,36 @@ if __name__ == '__main__':
       for i in sys.argv[1:]:
    
          pins.append(int(i))  # For running code on multiple systems - IGNORE
-
+      
    for pin in pins:
-   
-      # Calls function once event change is detected on pin g
-   
+      
+         # Calls function once event change is detected on pin g
+      
       cb.append(pi.callback(pin, pigpio.EITHER_EDGE, procedure))
 
    # Closing Procedure
 
-   try:
+time.sleep(recording_period)
+print("\nTidying up")
 
-      while True:
+with open('time_GPIO' + str(date.today()) + '.csv', 'a+', newline='') as csvfile:  # Writing Data into .csv
 
-         time.sleep(60) # Runs Indefinitely
+   writer = csv.writer(csvfile)
 
-   except KeyboardInterrupt: # Until Keyboard Interrupt
+   for i in py_data:
 
-      print("\nTidying up")
+      # Setting each column for the csv writer
+      
+      py_gpio = i[0]
+      py_state = i[1]
+      py_tick = i[2]
+      py_diff = i[3]
+      py_time = i[4]
 
-      with open('time_GPIO' + str(date.today()) + '.csv', 'a+', newline='') as csvfile:  # Writing Data into .csv
+      writer.writerow([py_gpio, py_state, py_tick, py_diff, py_time])  # Writing one row at a time
 
-         writer = csv.writer(csvfile)
+for c in cb:
 
-         for i in py_data:
+   c.cancel()
 
-            # Setting each column for the csv writer
-            
-            py_gpio = i[0]
-            py_state = i[1]
-            py_tick = i[2]
-            py_diff = i[3]
-
-            writer.writerow([py_gpio, py_state, py_tick, py_diff])  # Writing one row at a time
-
-      for c in cb:
-
-         c.cancel()
-
-   pi.stop()
+pi.stop()
