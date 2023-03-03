@@ -129,7 +129,7 @@ class UART:
 
         self.serial_connection.write(info)
 
-        time.sleep(0.83)
+        time.sleep(1)
 
         # time.sleep(0.8) 
 

@@ -88,6 +88,8 @@ def process(DAQ_port, TB_port, inputs, info):
 
     status['SDAQ'] = SDAQCommand(DAQ_UART, inputs["PIVfreq"], inputs["Datafreq"], info["PIVfreq"], info["Datafreq"]) 
 
+    time.sleep(1)
+
     status['SDAQ2'] = SDAQ2Command(DAQ_UART, inputs["lenExperiment"], info["lenExperiment"]) 
 
     time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
@@ -139,11 +141,11 @@ if __name__ == "__main__":
     for port, index in enumerate(ports_available):
         print(f'SELECTION {index}: {port}')
 
-    DAQ_port_index = int(input("Choose DAQ port selection number input should be an integer: "))
-    TB_port_index = int(input("Choose TB port selection number input should be an integer: "))
+    # DAQ_port_index = int(input("Choose DAQ port selection number input should be an integer: "))
+    # TB_port_index = int(input("Choose TB port selection number input should be an integer: "))
 
-    print(TB_TESTING(ports_available[TB_port_index], inputInfo))
+    # print(TB_TESTING(ports_available[TB_port_index], inputInfo))
 
     # print(DAQ_TESTING(ports_available[DAQ_port_index], inputInfo))
-    # print(run())
+    print(run())
 
