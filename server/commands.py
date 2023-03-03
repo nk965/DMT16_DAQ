@@ -55,7 +55,7 @@ def STB2Command(UART, branch_temp: float, branch_temp_info: dict):
     return {"Branch Temp": actualBranch}
 
 
-def IDYECommand(UART, syrDia: float, vol_inject: float, inject_time: float):
+def IDYECommand(UART, syrDia: float, vol_inject: float, inject_time: float, dutyCycle: float, dutyCycle_info: dict, enPulse: bool):
 
     hex_identifier = "15"
 
@@ -63,7 +63,15 @@ def IDYECommand(UART, syrDia: float, vol_inject: float, inject_time: float):
 
     mm_per_rev = 0.5
 
-    steps_per_second = math.floor((steps_per_rev * mm_per_rev * 4 * vol_inject * 1000)/(math.pi * inject_time * syrDia**2)) # this should be an integer between 1 and 65536 TODO add error checking for this 
+    if enPulse: 
+
+        actualDutyCycle, outDutyCycle = float_to_hex_string(dutyCycle, dutyCycle_info)
+
+        steps_per_second = math.floor((steps_per_rev * mm_per_rev * 4 * vol_inject * 1000)/(math.pi * inject_time * actualDutyCycle * syrDia**2)) # this should be an integer between 1 and 65536 TODO add error checking for this 
+
+    else:
+
+        steps_per_second = math.floor((steps_per_rev * mm_per_rev * 4 * vol_inject * 1000)/(math.pi * inject_time * syrDia**2)) # this should be an integer between 1 and 65536 TODO add error checking for this 
 
     outspeed = int_to_hex_string(steps_per_second, 16) # steps per second is 100
 
@@ -102,6 +110,11 @@ def IDYE3Command(UART, enPulse: bool, syrDia: float, vol_inject: float):
     steps = math.floor((steps_per_rev * mm_per_rev * 4 * vol_inject * 1000)/(math.pi * syrDia**2)) # this should be an integer between 1 and 65536 TODO add error checking for this 
 
     outEnPulse = bool_to_pulse_string(enPulse)
+
+    if enPulse: 
+
+        outSteps = int_to_hex_string(steps,16)
+
 
     outSteps = int_to_hex_string(steps, 16) # TODO UNHARD CODE THIS 
 

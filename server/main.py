@@ -47,7 +47,7 @@ def TB_TESTING(port, inputInfo):
 
     status['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
 
-    status['IDYE'] = IDYECommand(TB_UART, inputInfo['syrDia']['defaultValue'], inputInfo['vol_inject']['defaultValue'], inputInfo['inject_time']['defaultValue'])
+    status['IDYE'] = IDYECommand(TB_UART, inputInfo['syrDia']['defaultValue'], inputInfo['vol_inject']['defaultValue'], inputInfo['inject_time']['defaultValue'], inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['enPulse'])
 
     status['IDYE2'] = IDYE2Command(TB_UART, inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['cyclePeriod']['defaultValue'], inputInfo['cyclePeriod'])
 
@@ -80,7 +80,7 @@ def process(DAQ_port, TB_port, inputs, info):
 
     status['STB2'] = STB2Command(TB_UART, inputs['branch_temp'], info['branch_temp'])
 
-    status['IDYE'] = IDYECommand(TB_UART, inputs['syrDia'], inputs['vol_inject'], inputs['inject_time'])
+    status['IDYE'] = IDYECommand(TB_UART, inputs['syrDia'], inputs['vol_inject'], inputs['inject_time'], inputs['dutyCycle'], info['dutyCycle'], inputs['enPulse'])
 
     status['IDYE2'] = IDYE2Command(TB_UART, inputs['dutyCycle'], info['dutyCycle'], inputs['cyclePeriod'], info['cyclePeriod'])
 

@@ -69,7 +69,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "dutyCycle": {
-        "defaultValue": 0.20,
+        "defaultValue": 0.30,
         "type": float,
         "range": [0, 1],
         "bits": 8,
