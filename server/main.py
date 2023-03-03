@@ -59,7 +59,7 @@ def TB_TESTING(port, inputInfo):
 
     status['RTB'] = RTBProcedure(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
 
-    # status['ETB1'] = ETB1Command(TB_UART) 
+    status['ETB1'] = ETB1Command(TB_UART) 
 
     time.sleep(0.5*(inputInfo['inject_time']['defaultValue'] - inputInfo['trans_time']['defaultValue']))
 

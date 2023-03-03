@@ -160,9 +160,16 @@ def RTBCommand(UART, actuator_array, times):
 
     actual_actuator_pos_array, out_actuator_pos_array = float_array_to_hex_string(actuator_array, info)
 
-    for index in range (1, len(times)):
+    for index in range(1, len(times)):
 
-        padding = "0100" if index != 1 else "0000"
+        if index == 1:
+            padding = "0000"
+
+        elif index == len(times) - 1:
+            padding = "0003"
+
+        else: 
+            padding = "0001"
 
         message = bytearray.fromhex(hex_identifier + out_actuator_pos_array[index] + padding)
         

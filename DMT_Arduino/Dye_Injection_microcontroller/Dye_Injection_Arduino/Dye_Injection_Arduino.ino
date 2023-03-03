@@ -52,6 +52,7 @@ void setup()
   myStepper.setSpeed(0);
   Serial1.flush();
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(7, OUTPUT); // GP/IO for RDYE and EDYE
   pinMode(10, OUTPUT); // If it receives the RIGHT commands (reads the identifier)
   pinMode(12, OUTPUT); // If the serial buffer flushes
   pinMode(13, OUTPUT); // If it receives ANYTHING
@@ -78,10 +79,6 @@ void setup()
 
 void readData(uint8_t *data, int length)
 {
-
-  // digitalWrite(10, HIGH);
-  // delay(2500);
-  // digitalWrite(10, LOW); 
 
   for (int i = 0; i < length; i++)
   {
@@ -157,7 +154,7 @@ void loop()
         digitalWrite(12, LOW);
         
         readData(temp_buffer, (int)Serial1.available());
-        
+
         Serial1.flush();
         start_timer_flush = 0;
         timeout_counter = 0;
@@ -196,9 +193,9 @@ void loop()
       {
         // Disable pulse mode
 
-        // digitalWrite(10, HIGH);
-        // delay(100);
-        // digitalWrite(10, LOW);
+        digitalWrite(10, HIGH);
+        delay(100);
+        digitalWrite(10, LOW);
 
         pulse = 0;
       }
@@ -206,9 +203,9 @@ void loop()
       else if (receivedData[1] == 'p')
       {
 
-        // digitalWrite(10, HIGH);
-        // delay(100);
-        // digitalWrite(10, LOW);
+        digitalWrite(10, HIGH);
+        delay(100);
+        digitalWrite(10, LOW);
 
         // Calculate off-time:
         // On time in ms = period in seconds * duty * ticks/second = ticks
@@ -223,12 +220,15 @@ void loop()
         // Enable pulse mode
         pulse = 1;
       }
+
+      digitalWrite(7, HIGH); // GP/IO high to siginify the start of dye injection
+
     }
     else if (receivedData[0] == TestCommand)
     {
-      digitalWrite(10, HIGH);
-      delay(100);
-      digitalWrite(10, LOW);
+      // digitalWrite(10, HIGH);
+      // delay(100);
+      // digitalWrite(10, LOW);
     }
     // If the SDYE command is called:
     else if (receivedData[0] == SDYECommand)
@@ -261,10 +261,6 @@ void loop()
       digitalWrite(10, HIGH);
       delay(100);
       digitalWrite(10, LOW);
-
-      // digitalWrite(10, HIGH);
-      // delay(500);
-      // digitalWrite(10, LOW);
 
       // Disable pulse mode
       pulse = 0;
@@ -327,5 +323,8 @@ void loop()
     }
 
     // If not, leave it alone
+  }
+  if (abs(myStepper.distanceToGo()) == 0){
+    digitalWrite(7, LOW); // GP/IO low to siginify the end of dye injection
   }
 }

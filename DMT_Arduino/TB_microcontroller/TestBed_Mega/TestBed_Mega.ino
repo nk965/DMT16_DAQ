@@ -23,7 +23,8 @@ void setup()
 {
   Serial.begin(230400);  // Initialize Central PC Serial communication
   Serial1.begin(230400); // Initialise Dye Injection Serial Communication
-  pinMode(10, OUTPUT);   // Initialize GPIO Output Pin for start and end of Transient Experiment
+  pinMode(10, OUTPUT);   // Debug Send LED
+  pinMode(13, OUTPUT); // Initialize GPIO Output Pin for start and end of Transient Experiment (first and end RTB)
 }
 
 // Receives messages from UART, byte by byte
@@ -52,9 +53,9 @@ void sendMega(uint8_t *data, int dataSize)
     Serial1.write(data[i]);
   }
 
-  digitalWrite(10, HIGH);
-  delay(100);
-  digitalWrite(10, LOW); 
+  // digitalWrite(10, HIGH);
+  // delay(100);
+  // digitalWrite(10, LOW); 
 }
 
 // Main loop function
@@ -125,10 +126,16 @@ void loop()
     }
     else if (receivedData[0] == RTBCommand) // RTB - 2 byte has actuator position, first iteration sends RDYE
     {
-      // if (receivedData[2] == 0b00000000)
-      // {
-      //   digitalWrite(10, HIGH);
-      // }
+      if (receivedData[3] == 0b00000000)
+      {
+        digitalWrite(13, HIGH);
+      }
+
+      else if (receivedData[3] == 0b00000011)
+      {
+        digitalWrite(13, LOW);
+      }
+
       sendData(receivedData, max_bytes); // Debugging print
     }
     else if (receivedData[0] == ETB1Command) // ETB1 - sending GP/IO at end of experiment

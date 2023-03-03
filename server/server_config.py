@@ -109,7 +109,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "trans_time": {
-        "defaultValue": 8,
+        "defaultValue": 4,
         "type": float,
         "range": [0, 800],
         "bits": 16,
@@ -141,7 +141,7 @@ inputInfo = {
         "submission_form": None
     },
     "inject_time": {
-        "defaultValue": 9, # this was 9 
+        "defaultValue": 5, # this was 9 
         "type": float,
         "range": [0, 480],
         "bits": 8,

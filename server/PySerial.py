@@ -127,13 +127,13 @@ class UART:
         :return: what it sent
         """
 
-        time.sleep(1)
-
         self.serial_connection.write(info)
 
-        time.sleep(1) 
+        time.sleep(0.83)
 
-        read_receipt = self.serial_connection.read_all()
+        # time.sleep(0.8) 
 
-        print(f'{self.port_name} sends back {read_receipt}')
+        # read_receipt = self.serial_connection.read_all()
+
+        # print(f'{self.port_name} sends back {read_receipt}')
 
