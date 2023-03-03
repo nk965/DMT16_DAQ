@@ -65,7 +65,7 @@ def IDYECommand(UART, syrDia: float, vol_inject: float, inject_time: float):
 
     steps_per_second = math.floor((steps_per_rev * mm_per_rev * 4 * vol_inject * 1000)/(math.pi * inject_time * syrDia**2)) # this should be an integer between 1 and 65536 TODO add error checking for this 
 
-    outspeed = int_to_hex_string(steps_per_second, 16)
+    outspeed = int_to_hex_string(steps_per_second, 16) # steps per second is 100
 
     message = bytearray.fromhex(hex_identifier + outspeed + '00')
 
@@ -79,7 +79,7 @@ def IDYE2Command(UART, dutyCycle: float, dutyCycle_info: dict, cyclePeriod: floa
 
     hex_identifier = "13"
 
-    actualDutyCycle, outDutyCycle = float_to_hex_string(dutyCycle, dutyCycle_info)
+    actualDutyCycle, outDutyCycle = float_to_hex_string(dutyCycle, dutyCycle_info) # TODO HARD CODE THIS 
 
     outCyclePeriod = int_to_hex_string(cyclePeriod*100, cyclePeriod_info['bits']) # encode cyclePeriod to 0.01 precision second intervals, TODO add error checking? Max cyclePeriod is 655.35
 
@@ -103,9 +103,9 @@ def IDYE3Command(UART, enPulse: bool, syrDia: float, vol_inject: float):
 
     outEnPulse = bool_to_pulse_string(enPulse)
 
-    outSteps = int_to_hex_string(steps, 16)
+    outSteps = int_to_hex_string(steps, 16) # TODO UNHARD CODE THIS 
 
-    message = bytearray.fromhex(hex_identifier + outEnPulse + outSteps)
+    message = bytearray.fromhex(hex_identifier + outEnPulse + outSteps) 
 
     print(f'IDYE3 Sends: {hex_identifier} {outEnPulse} {outSteps} in the form of: {message}')
 

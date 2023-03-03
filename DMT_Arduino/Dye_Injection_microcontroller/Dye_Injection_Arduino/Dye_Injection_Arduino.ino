@@ -39,16 +39,23 @@ unsigned int off_period_counter = 0; // Max counter val for off period before sw
 unsigned int current_counter = 0;    // Current value of counter - incremented by timer
 unsigned int clock_freq = 10000;     // 10 kHz interrupt
 
+unsigned int timeout_val = 5000;
+unsigned int timeout_counter = 0;
+boolean start_timer_flush = 0;
+uint8_t temp_buffer[4];
+
 void setup()
 {
   pinMode(dirPin, OUTPUT);
   myStepper.setMaxSpeed(1000);
-  Serial2.begin(230400);
+  Serial1.begin(230400);
   myStepper.setSpeed(0);
-  Serial2.flush();
+  Serial1.flush();
   pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(10, OUTPUT);
-  pinMode(13, OUTPUT);
+  pinMode(10, OUTPUT); // If it receives the RIGHT commands (reads the identifier)
+  pinMode(12, OUTPUT); // If the serial buffer flushes
+  pinMode(13, OUTPUT); // If it receives ANYTHING
+
 
   cli(); // stop interrupts
 
@@ -78,16 +85,16 @@ void readData(uint8_t *data, int length)
 
   for (int i = 0; i < length; i++)
   {
-    data[i] = (uint8_t)Serial2.read();
+    data[i] = (uint8_t)Serial1.read();
   }
 }
 
 ISR(TIMER4_COMPA_vect)
 { // timer1 interrupt 10 kHz
 
-  // digitalWrite(13,toggle4);
-  // toggle4 = !toggle4;
-
+  if (start_timer_flush == 1){
+    timeout_counter++;
+  }
   // If pulse mode:
   if (pulse == 1)
   {
@@ -116,7 +123,7 @@ ISR(TIMER4_COMPA_vect)
     // If not on, then must be off:
     else
     {
-      digitalWrite(10, LOW);
+
       // If the off period has not been reached:
       if (current_counter <= off_period_counter)
       {
@@ -138,13 +145,34 @@ void loop()
 {
 
   // If it receives something from the serial port (which is 4 long or above):
+  if ((Serial1.available() < max_bytes) && ((Serial1.available() > 0))){
+    if (start_timer_flush == 0){
+      start_timer_flush = 1;
+    }
+    else{
+      if (timeout_counter >= timeout_val){
 
-  if (Serial2.available() >= max_bytes)
+        digitalWrite(12, HIGH);
+        delay(100);
+        digitalWrite(12, LOW);
+        
+        readData(temp_buffer, (int)Serial1.available());
+        
+        Serial1.flush();
+        start_timer_flush = 0;
+        timeout_counter = 0;
+      }
+    }
+    
+    
+  }
+
+  if (Serial1.available() >= max_bytes)
   {
 
-    // digitalWrite(10, HIGH);
-    // delay(100);
-    // digitalWrite(10, LOW);
+    digitalWrite(13, HIGH);
+    delay(100);
+    digitalWrite(13, LOW);
 
     // Read data into the buffer - only 4 long (max_bytes = 4)
     readData(receivedData, max_bytes);
@@ -153,13 +181,13 @@ void loop()
     if (receivedData[0] == RDYECommand)
     {
 
-      // digitalWrite(10, HIGH);
-      // delay(100);
-      // digitalWrite(10, LOW);
+      digitalWrite(10, HIGH);
+      delay(100);
+      digitalWrite(10, LOW);
 
       // Extract the number of steps we have inputted from 2 bytes
       no_steps = (((unsigned int)receivedData[2] << 8) | ((unsigned int)receivedData[3]));
-      
+
       // Set the speed to be whatever it currently is
       speed = const_speed;
 
@@ -168,9 +196,9 @@ void loop()
       {
         // Disable pulse mode
 
-        digitalWrite(10, HIGH);
-        delay(100);
-        digitalWrite(10, LOW);
+        // digitalWrite(10, HIGH);
+        // delay(100);
+        // digitalWrite(10, LOW);
 
         pulse = 0;
       }
@@ -178,9 +206,9 @@ void loop()
       else if (receivedData[1] == 'p')
       {
 
-        digitalWrite(10, HIGH);
-        delay(100);
-        digitalWrite(10, LOW);
+        // digitalWrite(10, HIGH);
+        // delay(100);
+        // digitalWrite(10, LOW);
 
         // Calculate off-time:
         // On time in ms = period in seconds * duty * ticks/second = ticks
@@ -230,7 +258,6 @@ void loop()
     // If the EDYE command is called::
     else if (receivedData[0] == EDYECommand)
     {
-
       digitalWrite(10, HIGH);
       delay(100);
       digitalWrite(10, LOW);
@@ -249,15 +276,27 @@ void loop()
       total_steps = 0;
       no_steps = 0;
     }
+    else{
+        Serial1.flush();
+    }
+
+    start_timer_flush = 0;
+    timeout_counter = 0;
+
   }
 
   // Testing code
+
+  // digitalWrite(11, HIGH);
+  // delay(1000);
+  // digitalWrite(11, LOW);
   
   // on_period_counter = round(period * duty * (float)clock_freq);
   // off_period_counter = round(period * (1 - duty) * (float)clock_freq);
 
-  // pulse = 0;
+  // pulse = 1;
   // speed = const_speed;
+  // total_steps = 200;
 
   // The total number of steps gets incremented by the number of steps requested
   total_steps = total_steps + no_steps;

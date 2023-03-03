@@ -61,7 +61,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "cyclePeriod": {
-        "defaultValue": 1.2,
+        "defaultValue": 0.5,
         "type": float,
         "range": [0, 100],
         "bits": 16,
@@ -69,7 +69,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "dutyCycle": {
-        "defaultValue": 0.4,
+        "defaultValue": 0.20,
         "type": float,
         "range": [0, 1],
         "bits": 8,
@@ -133,7 +133,7 @@ inputInfo = {
         "submission_form": None
     },
     "vol_inject": {
-        "defaultValue": 80,
+        "defaultValue": 20,
         "type": float,
         "range": [0, 100],
         "bits": 8,
@@ -141,7 +141,7 @@ inputInfo = {
         "submission_form": None
     },
     "inject_time": {
-        "defaultValue": 9,
+        "defaultValue": 9, # this was 9 
         "type": float,
         "range": [0, 480],
         "bits": 8,

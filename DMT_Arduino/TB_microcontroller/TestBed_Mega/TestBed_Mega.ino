@@ -46,10 +46,15 @@ void sendData(uint8_t *data, int dataSize)
 
 void sendMega(uint8_t *data, int dataSize)
 {
+
   for (int i = 0; i < dataSize; i++)
   {
     Serial1.write(data[i]);
   }
+
+  digitalWrite(10, HIGH);
+  delay(100);
+  digitalWrite(10, LOW); 
 }
 
 // Main loop function
@@ -69,9 +74,6 @@ void loop()
     }
     else if (receivedData[0] == TestCommand)
     {
-      digitalWrite(10, HIGH);
-      delay(100);
-      digitalWrite(10, LOW); 
 
       sendData(receivedData, max_bytes); // Debugging print
       
@@ -81,6 +83,7 @@ void loop()
     }
     else if (receivedData[0] == STB2Command)
     { 
+
       sendData(receivedData, max_bytes); // Debugging print
     }
     else if (receivedData[0] == IDYECommand)
@@ -118,6 +121,7 @@ void loop()
       // digitalWrite(10, HIGH);  GP/IO - Jimmy to configure correct pin
 
       sendMega(RDYEmessage, max_bytes);
+
     }
     else if (receivedData[0] == RTBCommand) // RTB - 2 byte has actuator position, first iteration sends RDYE
     {
@@ -143,6 +147,8 @@ void loop()
       EDYEmessage[3] = 0b00000000;
 
       // digitalWrite(10, LOW);  GP/IO - Jimmy to configure correct pin
+
+      Serial1.flush();
 
       sendMega(EDYEmessage, max_bytes);
     }
