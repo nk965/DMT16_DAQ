@@ -126,11 +126,13 @@ void loop()
     }
     else if (receivedData[0] == RTBCommand) // RTB - 2 byte has actuator position, first iteration sends RDYE
     {
+
+      // If the padding is 00, then it is the first RTB command
       if (receivedData[3] == 0b00000000)
       {
         digitalWrite(13, HIGH);
       }
-
+      // If the padding is 03, then it is the last RTB command
       else if (receivedData[3] == 0b00000011)
       {
         digitalWrite(13, LOW);

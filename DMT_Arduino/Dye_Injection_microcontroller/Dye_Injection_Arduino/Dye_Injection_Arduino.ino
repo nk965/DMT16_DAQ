@@ -39,19 +39,19 @@ unsigned int off_period_counter = 0; // Max counter val for off period before sw
 unsigned int current_counter = 0;    // Current value of counter - incremented by timer
 unsigned int clock_freq = 10000;     // 10 kHz interrupt
 
-unsigned int timeout_val = 5000;
-unsigned int timeout_counter = 0;
-boolean start_timer_flush = 0;
-uint8_t temp_buffer[4];
+unsigned int timeout_val = 5000; // Timer value = 0.5 seconds (10 kHz interrupt)
+unsigned int timeout_counter = 0; // Counter for 0.5 seconds
+boolean start_timer_flush = 0; // Start timer flag
+uint8_t temp_buffer[4]; // Temporary buffer for reading serial data to clear erroneous stuff
 
 void setup()
 {
-  pinMode(dirPin, OUTPUT);
-  myStepper.setMaxSpeed(1000);
-  Serial1.begin(230400);
-  myStepper.setSpeed(0);
-  Serial1.flush();
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(dirPin, OUTPUT); // Direction pin for stepper motor
+  myStepper.setMaxSpeed(1000); // Set the maximum speed of the stepper
+  Serial1.begin(230400); // Start Serial1 UART
+  myStepper.setSpeed(0); // Set the initial speed of the stepper to 0
+  Serial1.flush(); // Flush the UART terminal for extra safety
+  pinMode(LED_BUILTIN, OUTPUT); // Setup for built in LED on board
   pinMode(7, OUTPUT); // GP/IO for RDYE and EDYE
   pinMode(10, OUTPUT); // If it receives the RIGHT commands (reads the identifier)
   pinMode(12, OUTPUT); // If the serial buffer flushes
@@ -77,21 +77,30 @@ void setup()
   sei(); // allow interrupts
 }
 
+// Function for reading data
 void readData(uint8_t *data, int length)
 {
 
+  // Read data serially however many times specified
   for (int i = 0; i < length; i++)
   {
     data[i] = (uint8_t)Serial1.read();
   }
 }
 
+// Interrupt service routine (ISR) for timer4
 ISR(TIMER4_COMPA_vect)
-{ // timer1 interrupt 10 kHz
+{ // timer4 interrupt 10 kHz
 
+  // If the buffer flush flag is triggered:
   if (start_timer_flush == 1){
+
+    // Increment the counter
     timeout_counter++;
   }
+
+  // Below is the main code for pulsing:
+
   // If pulse mode:
   if (pulse == 1)
   {
@@ -141,21 +150,35 @@ ISR(TIMER4_COMPA_vect)
 void loop()
 {
 
-  // If it receives something from the serial port (which is 4 long or above):
+  // Code to detect random voltage spikes as UART
+  // If there is between 1 and 3 bits in the serial buffer:
   if ((Serial1.available() < max_bytes) && ((Serial1.available() > 0))){
+
+    // If the timer for the flush hasn't been triggered yet:
     if (start_timer_flush == 0){
+
+      //Start timing
       start_timer_flush = 1;
     }
-    else{
-      if (timeout_counter >= timeout_val){
 
+    // If it has been triggered:
+    else{
+
+      // If the timeout counter has been reached:
+      if (timeout_counter >= timeout_val){
+        
+        // Debug pin - shows that memory has been reset
         digitalWrite(12, HIGH);
         delay(100);
         digitalWrite(12, LOW);
         
+        // Read this junk data into the buffer - does nothing other than force clear the buffer
         readData(temp_buffer, (int)Serial1.available());
 
+        // Just in case, clear the UART buffer (this is not what clears it apparently)
         Serial1.flush();
+
+        // Reset the flush counters
         start_timer_flush = 0;
         timeout_counter = 0;
       }
@@ -164,6 +187,7 @@ void loop()
     
   }
 
+  // If it receives something from the serial port (which is 4 long or above):
   if (Serial1.available() >= max_bytes)
   {
 
@@ -293,6 +317,8 @@ void loop()
   // pulse = 1;
   // speed = const_speed;
   // total_steps = 200;
+
+  // End of testing code
 
   // The total number of steps gets incremented by the number of steps requested
   total_steps = total_steps + no_steps;
