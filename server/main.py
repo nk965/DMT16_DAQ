@@ -39,8 +39,6 @@ def TB_TESTING(port, inputInfo):
 
     TB_UART = UART("TB Microcontroller", port)
 
-    # status['TestCommand'] = TestCommand(TB_UART)
-
     status['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) # TODO ask Pike if this is necessary 
 
     status['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
@@ -125,7 +123,9 @@ def run(inputs=None):
     DAQ_port_index = int(input("Choose DAQ port selection number input should be an integer: "))
     TB_port_index = int(input("Choose TB port selection number input should be an integer: "))
 
-    return process(ports_available[DAQ_port_index], ports_available[TB_port_index], inputs, inputInfo)
+    log = process(ports_available[DAQ_port_index], ports_available[TB_port_index], inputs, inputInfo)
+
+    print(log)
 
 if __name__ == "__main__":
 
@@ -136,16 +136,9 @@ if __name__ == "__main__":
 
     '''
     
-    ports_available = list_ports()
-
-    for port, index in enumerate(ports_available):
-        print(f'SELECTION {index}: {port}')
-
-    # DAQ_port_index = int(input("Choose DAQ port selection number input should be an integer: "))
-    # TB_port_index = int(input("Choose TB port selection number input should be an integer: "))
-
     # print(TB_TESTING(ports_available[TB_port_index], inputInfo))
 
     # print(DAQ_TESTING(ports_available[DAQ_port_index], inputInfo))
-    print(run())
+
+    run()
 

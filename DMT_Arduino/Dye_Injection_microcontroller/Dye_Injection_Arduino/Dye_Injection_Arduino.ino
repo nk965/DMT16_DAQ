@@ -305,7 +305,7 @@ void loop()
 
   }
 
-  // Testing code
+  // Start of testing code
 
   // digitalWrite(11, HIGH);
   // delay(1000);
