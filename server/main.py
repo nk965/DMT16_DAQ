@@ -8,7 +8,7 @@ from Modules import *
 
 from PySerial import UART, list_ports
 from server_config import inputInfo
-from commands import STBCommand, SDAQCommand, SDAQ2Command, ETB1Command, ETB2Command, EDAQCommand, RTBProcedure, ITBCommand, STB2Command, IDYECommand, IDYE2Command, IDYE3Command, TestCommand
+from commands import STBCommand, SDAQCommand, SDAQ2Command, ETB1Command, ETB2Command, EDAQCommand, RTBProcedure, ITBCommand, STB2Command, IDYECommand, IDYE2Command, IDYE3Command
 
 def DAQ_TESTING(port, inputInfo):
     '''
