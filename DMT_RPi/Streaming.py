@@ -66,7 +66,7 @@ if __name__ == '__main__':
         x.append(float(line))
     file_in.close()
 
-    sampling_interval_ms, recording_period, polling_interval = x[0], x[1], x[2]
+    sampling_interval_ms, polling_interval, recording_period = x[0], x[1], x[2]
 
     # defining array to be populated with LoggingUnit objects
 

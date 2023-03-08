@@ -22,6 +22,8 @@ def DAQ_TESTING(port, inputInfo):
     status['SDAQ'] = SDAQCommand(DAQ_UART, inputInfo['PIVfreq']['defaultValue'], inputInfo["Datafreq"]["defaultValue"],
                                  inputInfo["PIVfreq"], inputInfo["Datafreq"])  # TODO replace the second and third arguments with actual values from user input
 
+    time.sleep(1)
+    
     status['SDAQ2'] = SDAQ2Command(DAQ_UART, inputInfo["lenExperiment"]['defaultValue'], inputInfo["lenExperiment"])
 
     time.sleep(inputInfo['lenExperiment']['defaultValue'])
@@ -89,6 +91,8 @@ def process(DAQ_port, TB_port, inputs, info):
     time.sleep(1)
 
     status['SDAQ2'] = SDAQ2Command(DAQ_UART, inputs["lenExperiment"], info["lenExperiment"]) 
+
+    time.sleep(15)
 
     time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
 

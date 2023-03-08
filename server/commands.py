@@ -235,7 +235,7 @@ def SDAQ2Command(UART, LenExperiment, LenExperimentInfo):
 
     hex_identifier = "0F"
 
-    actualLen, outLen = float_to_base_15(LenExperiment, LenExperimentInfo)
+    actualLen, outLen = float_to_base_15(LenExperiment+30, LenExperimentInfo)
 
     print(f'SDAQ2 Sends: {hex_identifier} {outLen} 01')
 
