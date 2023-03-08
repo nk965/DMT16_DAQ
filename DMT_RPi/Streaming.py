@@ -60,13 +60,15 @@ def plot_data(logger_data):
 if __name__ == '__main__':
     # extracts user inputs from text file
 
-    x = []
-    file_in = open('SRPI.txt', 'r')
-    for line in file_in.readlines():
-        x.append(float(line))
-    file_in.close()
+    # x = []
+    # file_in = open('SRPI.txt', 'r')
+    # for line in file_in.readlines():
+    #     x.append(float(line))
+    # file_in.close()
 
-    sampling_interval_ms, polling_interval, recording_period = x[0], x[1], x[2]
+    # sampling_interval_ms, polling_interval, recording_period = x[0], x[1], x[2]
+
+    sampling_interval_ms, polling_interval, recording_period = 500, 3, 10
 
     # defining array to be populated with LoggingUnit objects
 
