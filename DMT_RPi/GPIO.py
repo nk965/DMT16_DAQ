@@ -57,7 +57,7 @@ if __name__ == '__main__':
       x.append(float(line))
    file_in.close()
 
-   recording_period = x[1]
+   recording_period = x[2]
   
    last = [None]*32
 

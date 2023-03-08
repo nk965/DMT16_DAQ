@@ -139,10 +139,18 @@ if __name__ == "__main__":
     TODO code functionality to use default values in a "debug" mode
 
     '''
+
+    ports_available = list_ports()
+
+    for port, index in enumerate(ports_available):
+        print(f'SELECTION {index}: {port}')
+
+    #DAQ_port_index = int(input("Choose DAQ port selection number input should be an integer: "))
+    #TB_port_index = int(input("Choose TB port selection number input should be an integer: "))
     
     # print(TB_TESTING(ports_available[TB_port_index], inputInfo))
 
-    # print(DAQ_TESTING(ports_available[DAQ_port_index], inputInfo))
+    #print(DAQ_TESTING(ports_available[DAQ_port_index], inputInfo))
 
-    run()
+    print(run())
 
