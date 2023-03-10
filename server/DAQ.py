@@ -126,22 +126,19 @@ def run(DAQ_port, TB_port, inputs=None):
 if __name__ == "__main__":
 
     '''
-    FOR TESTING ONLY -  in the future, a process() will be called from this script in server.py
-
-    TODO code functionality to use default values in a "debug" mode
-
+    FOR DEBUGGING - USE JAVASCRIPT GUI 
     '''
 
     ports_available = list_ports()
 
     for port, index in enumerate(ports_available):
-        print(f'SELECTION {index}: {port}')
+        print(f'SELECTION {port}: {index}')
 
-    DAQ_port_index = int(input("Choose DAQ port selection number input should be an integer: "))
-    TB_port_index = int(input("Choose TB port selection number input should be an integer: "))
+    DAQ_port_index = int(input("Choose DAQ port selection number (input should be an integer): "))
+    TB_port_index = int(input("Choose TB port selection number (input should be an integer): "))
 
-    # logs = TB_TESTING(ports_available[TB_port_index], inputInfo)
-    # logs = DAQ_TESTING(ports_available[DAQ_port_index], inputInfo)
+    # logs = TB_TESTING(ports_available[TB_port_index], inputInfo) # Benchscale Test for TB system
+    # logs = DAQ_TESTING(ports_available[DAQ_port_index], inputInfo) # Benchscale Test for DAQ system
 
     logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
 
