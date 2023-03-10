@@ -15,113 +15,113 @@ def DAQ_TESTING(port, inputInfo):
     Benchscale Test
     '''
 
-    status = {}
+    logs = {}
 
     DAQ_UART = UART("DAQ Microcontroller", port) # check this, optionally, specify the port number
 
-    status['SDAQ'] = SDAQCommand(DAQ_UART, inputInfo['PIVfreq']['defaultValue'], inputInfo["Datafreq"]["defaultValue"],
+    logs['SDAQ'] = SDAQCommand(DAQ_UART, inputInfo['PIVfreq']['defaultValue'], inputInfo["Datafreq"]["defaultValue"],
                                  inputInfo["PIVfreq"], inputInfo["Datafreq"])  # TODO replace the second and third arguments with actual values from user input
 
     time.sleep(1)
     
-    status['SDAQ2'] = SDAQ2Command(DAQ_UART, inputInfo["lenExperiment"]['defaultValue'], inputInfo["lenExperiment"])
+    logs['SDAQ2'] = SDAQ2Command(DAQ_UART, inputInfo["lenExperiment"]['defaultValue'], inputInfo["lenExperiment"])
 
     time.sleep(inputInfo['lenExperiment']['defaultValue'])
 
-    status['EDAQ'] = EDAQCommand(DAQ_UART)
+    logs['EDAQ'] = EDAQCommand(DAQ_UART)
 
-    return status
+    return logs
 
 def TB_TESTING(port, inputInfo):
     '''
     Benchscale Test
     '''
 
-    status = {}
+    logs = {}
 
     TB_UART = UART("TB Microcontroller", port)
 
-    status['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) # TODO ask Pike if this is necessary 
+    logs['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) # TODO ask Pike if this is necessary 
 
-    status['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
+    logs['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
 
-    status['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
+    logs['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
 
-    status['IDYE'] = IDYECommand(TB_UART, inputInfo['syrDia']['defaultValue'], inputInfo['vol_inject']['defaultValue'], inputInfo['inject_time']['defaultValue'], inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['enPulse'])
+    logs['IDYE'] = IDYECommand(TB_UART, inputInfo['syrDia']['defaultValue'], inputInfo['vol_inject']['defaultValue'], inputInfo['inject_time']['defaultValue'], inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['enPulse'])
 
-    status['IDYE2'] = IDYE2Command(TB_UART, inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['cyclePeriod']['defaultValue'], inputInfo['cyclePeriod'])
+    logs['IDYE2'] = IDYE2Command(TB_UART, inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['cyclePeriod']['defaultValue'], inputInfo['cyclePeriod'])
 
-    status['IDYE3'] = IDYE3Command(TB_UART, inputInfo['enPulse']['defaultValue'], inputInfo['syrDia']['defaultValue'], inputInfo['vol_inject']['defaultValue'])
+    logs['IDYE3'] = IDYE3Command(TB_UART, inputInfo['enPulse']['defaultValue'], inputInfo['syrDia']['defaultValue'], inputInfo['vol_inject']['defaultValue'])
 
     time.sleep(0.5*(inputInfo['inject_time']['defaultValue'] - inputInfo['trans_time']['defaultValue']))
 
     time.sleep(inputInfo['inject_time']['defaultValue']) # TEMPORARY
 
-    status['RTB'] = RTBProcedure(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
+    logs['RTB'] = RTBProcedure(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
 
-    status['ETB1'] = ETB1Command(TB_UART) 
+    logs['ETB1'] = ETB1Command(TB_UART) 
 
     time.sleep(0.5*(inputInfo['inject_time']['defaultValue'] - inputInfo['trans_time']['defaultValue']))
 
-    status['ETB2'] = ETB2Command(TB_UART)
+    logs['ETB2'] = ETB2Command(TB_UART)
 
-    return status
+    return logs
 
 def process(DAQ_port, TB_port, inputs, info): 
 
-    status = {}
+    logs = {}
 
     TB_UART = UART("TB Microcontroller", TB_port)
     DAQ_UART = UART("DAQ Microcontroller", DAQ_port)
 
-    status['ITB'] = ITBCommand(TB_UART, inputs["stabilising_delay"], info['stabilising_delay']) 
+    logs['ITB'] = ITBCommand(TB_UART, inputs["stabilising_delay"], info['stabilising_delay']) 
 
-    status['STB'] = STBCommand(TB_UART, inputs["start_y"], info["start_y"], inputs["trans_time"], info["trans_time"])
+    logs['STB'] = STBCommand(TB_UART, inputs["start_y"], info["start_y"], inputs["trans_time"], info["trans_time"])
 
-    status['STB2'] = STB2Command(TB_UART, inputs['branch_temp'], info['branch_temp'])
+    logs['STB2'] = STB2Command(TB_UART, inputs['branch_temp'], info['branch_temp'])
 
-    status['IDYE'] = IDYECommand(TB_UART, inputs['syrDia'], inputs['vol_inject'], inputs['inject_time'], inputs['dutyCycle'], info['dutyCycle'], inputs['enPulse'])
+    logs['IDYE'] = IDYECommand(TB_UART, inputs['syrDia'], inputs['vol_inject'], inputs['inject_time'], inputs['dutyCycle'], info['dutyCycle'], inputs['enPulse'])
 
-    status['IDYE2'] = IDYE2Command(TB_UART, inputs['dutyCycle'], info['dutyCycle'], inputs['cyclePeriod'], info['cyclePeriod'])
+    logs['IDYE2'] = IDYE2Command(TB_UART, inputs['dutyCycle'], info['dutyCycle'], inputs['cyclePeriod'], info['cyclePeriod'])
 
     time.sleep(inputs["stabilising_delay"])
 
-    status['SDAQ'] = SDAQCommand(DAQ_UART, inputs["PIVfreq"], inputs["Datafreq"], info["PIVfreq"], info["Datafreq"]) 
+    logs['SDAQ'] = SDAQCommand(DAQ_UART, inputs["PIVfreq"], inputs["Datafreq"], info["PIVfreq"], info["Datafreq"]) 
 
     time.sleep(1)
 
-    status['SDAQ2'] = SDAQ2Command(DAQ_UART, inputs["lenExperiment"], info["lenExperiment"]) 
+    logs['SDAQ2'] = SDAQ2Command(DAQ_UART, inputs["lenExperiment"], info["lenExperiment"]) 
 
     time.sleep(15)
 
     time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
 
-    status['IDYE3'] = IDYE3Command(TB_UART, inputs['enPulse'], inputs['syrDia'], inputs['vol_inject'])
+    logs['IDYE3'] = IDYE3Command(TB_UART, inputs['enPulse'], inputs['syrDia'], inputs['vol_inject'])
 
     time.sleep(0.5*(inputs['inject_time'] - inputs['trans_time']))
     
-    status['RTB'] = RTBProcedure(TB_UART, inputs["start_y"], inputs["end_y"], inputs["nodes"], inputs["trans_time"], inputs["presetConfig"])
+    logs['RTB'] = RTBProcedure(TB_UART, inputs["start_y"], inputs["end_y"], inputs["nodes"], inputs["trans_time"], inputs["presetConfig"])
 
-    status['ETB1'] = ETB1Command(TB_UART) 
+    logs['ETB1'] = ETB1Command(TB_UART) 
     
     time.sleep(0.5*(inputs['inject_time'] - inputs['trans_time']))  
 
-    status['ETB2'] = ETB2Command(TB_UART)
+    logs['ETB2'] = ETB2Command(TB_UART)
 
     time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
 
-    status['EDAQ'] = EDAQCommand(DAQ_UART)
+    logs['EDAQ'] = EDAQCommand(DAQ_UART)
 
-    return status
+    return logs
 
 def run(DAQ_port, TB_port, inputs=None):
 
     if inputs is None:
         inputs = {key: inputInfo[key]["defaultValue"] for key in inputInfo}
 
-    log = process(DAQ_port, TB_port, inputs, inputInfo)
+    system_logs = process(DAQ_port, TB_port, inputs, inputInfo)
 
-    return log
+    return system_logs
 
 if __name__ == "__main__":
 
