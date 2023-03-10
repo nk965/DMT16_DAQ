@@ -29,10 +29,12 @@ def cleanInputs(dictionary):
 @app.route('/inputs', methods=['GET', 'POST'])
 def inputs():
     
-    content = request.json.get('body')
-    print(content)
+    # content = request.json.get('body')
+    # print(content)
 
-    return jsonify({'message': 'Success', 'data': content})
+    print("Hello World")
+
+    return {'message': 'Success', 'data': '1§'}
 
 
 if __name__ == '__main__':
