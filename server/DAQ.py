@@ -10,7 +10,7 @@ from PySerial import UART, list_ports
 from server_config import inputInfo
 from commands import STBCommand, SDAQCommand, SDAQ2Command, ETB1Command, ETB2Command, EDAQCommand, RTBProcedure, ITBCommand, STB2Command, IDYECommand, IDYE2Command, IDYE3Command
 
-def DAQ_TESTING(port, inputInfo):
+def DAQ_TESTING(port: str, inputInfo):
     '''
     Benchscale Test
     '''
@@ -32,7 +32,7 @@ def DAQ_TESTING(port, inputInfo):
 
     return logs
 
-def TB_TESTING(port, inputInfo):
+def TB_TESTING(port: str, inputInfo):
     '''
     Benchscale Test
     '''
@@ -67,7 +67,7 @@ def TB_TESTING(port, inputInfo):
 
     return logs
 
-def process(DAQ_port, TB_port, inputs, info): 
+def process(DAQ_port: str, TB_port: str, inputs, info): 
 
     logs = {}
 
@@ -114,7 +114,7 @@ def process(DAQ_port, TB_port, inputs, info):
 
     return logs
 
-def run(DAQ_port, TB_port, inputs=None):
+def run(DAQ_port: str, TB_port: str, inputs=None):
 
     if inputs is None:
         inputs = {key: inputInfo[key]["defaultValue"] for key in inputInfo}
