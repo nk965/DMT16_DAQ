@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
+from DAQ import run, DAQ_TESTING, TB_TESTING
 
 app = Flask(__name__)
 
@@ -29,9 +30,6 @@ def cleanInputs(dictionary):
 @app.route('/inputs', methods=['GET', 'POST'])
 def inputs():
     
-    # content = request.json.get('body')
-    # print(content)
-
     print("Hello World")
 
     return {'message': 'Success', 'data': '1§'}
