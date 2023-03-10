@@ -1,4 +1,5 @@
 from flask import Flask, request
+import json
 from DAQ import run, DAQ_TESTING, TB_TESTING
 
 app = Flask(__name__)
@@ -29,8 +30,35 @@ def cleanInputs(dictionary):
 
 @app.route('/inputs', methods=['GET', 'POST'])
 def inputs():
-    
-    print("Hello World")
+
+    if request.method == 'POST':
+        print("POST")
+        byte_string = request.data
+
+        data_str = byte_string.decode('utf-8')
+
+        params_dict = json.loads(data_str)
+
+        print(params_dict)
+
+        # object_methods = [method_name for method_name in dir(request)
+        #           if callable(getattr(request, method_name))]
+
+        # print(object_methods)
+
+        # print(request.get_json())
+
+        # req_data = request.get_json()
+
+        # print(req_data)
+
+    if request.method == 'GET':
+
+        print("GET")
+
+        # req_data = request.get_json()
+
+        # print(req_data)
 
     return {'message': 'Success', 'data': '1§'}
 

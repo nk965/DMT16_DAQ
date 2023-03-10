@@ -22,12 +22,14 @@ export default function Dashboard() {
 
   const postResult = (result) => {
     console.log(result);
+    let test = {type: 'Hello'}
+    console.log(test)
 
     fetch('http://127.0.0.1:5000/inputs', {
       credentials: 'same-origin',
       'Content-Type': 'application/json',
       method: "POST",
-      body: {"result": result}
+      body: JSON.stringify(result)
     })
     .then(response => response.json())
     .then(data => console.log(data))
