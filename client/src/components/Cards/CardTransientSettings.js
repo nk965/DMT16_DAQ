@@ -8,7 +8,6 @@ import CardStopStart from "components/Cards/CardStopStart.js";
 export default function CardTransientSettings() {
   const [transientInput, setTransInput] = useState({
     // default values
-    type: "transientInput",
     start_y: 25,
     end_y: 55,
     nodes: 7,
@@ -29,7 +28,12 @@ export default function CardTransientSettings() {
       body: JSON.stringify(inputs),
     })
       .then((response) => response.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        if (data.message) {
+          alert(data.message);
+        }
+        console.log(data);
+      })
       .catch((error) => console.log(error));
   };
 

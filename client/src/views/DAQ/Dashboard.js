@@ -8,7 +8,6 @@ import CardStopStart from "components/Cards/CardStopStart.js";
 export default function Dashboard() {
   const [userInput, setUserInput] = useState({
     // default values
-    type: "userConfig-Custom",
     DAQ_port: "COM7",
     TB_port: "COM8",
     vol_inject: 30,
@@ -34,7 +33,12 @@ export default function Dashboard() {
       body: JSON.stringify(inputs),
     })
       .then((response) => response.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        if (data.message) {
+          alert(data.message);
+        }
+        console.log(data);
+      })
       .catch((error) => console.log(error));
   };
 
@@ -47,7 +51,12 @@ export default function Dashboard() {
       body: JSON.stringify({'Status': "Start" }),
     })
       .then((response) => response.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        if (data.message) {
+          alert(data.message);
+        }
+        console.log(data);
+      })
       .catch((error) => console.log(error));
   };
 

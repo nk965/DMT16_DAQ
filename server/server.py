@@ -37,7 +37,7 @@ def StartExperiment():
 
     # print(logs)
 
-    return {'message': "Experiment Started"}
+    return {'message': f"Experiment Started with {inputs}"}
 
 @app.route('/LoadTransConfig', methods=['POST'])
 def LoadTransConfig():
