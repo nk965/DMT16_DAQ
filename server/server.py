@@ -34,13 +34,13 @@ def StartExperiment():
 
         inputs = userConfig | transientInput
 
-        # logs = run(inputs['DAQ_port'], inputs['TB_port'], inputs)
+        logs = run(inputs['DAQ_port'], inputs['TB_port'], inputs)
 
-        print(inputs)
+        # print(inputs)
 
         # print(logs)
 
-    return {'message': f"Experiment Started with {inputs}"}
+    return {'message': {'inputs': f"Experiment Started with {inputs}", 'logs': logs}}
 
 @app.route('/RefreshTransConfig', methods=['GET'])
 def RefreshTransConfig():
