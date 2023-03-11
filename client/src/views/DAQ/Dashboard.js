@@ -225,8 +225,8 @@ export default function Dashboard() {
                         Duty Cycle (%)
                       </label>
                       <input
-                        type="number"
-                        name="dyeSpeed"
+                        type="text"
+                        name="dutyCycle"
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                         value={userInput.dutyCycle}
                         onChange={handleChange}
@@ -243,7 +243,7 @@ export default function Dashboard() {
                       </label>
                       <input
                         type="number"
-                        name="dyeSpeed"
+                        name="cyclePeriod"
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                         value={userInput.cyclePeriod}
                         onChange={handleChange}
@@ -317,7 +317,7 @@ export default function Dashboard() {
                       </label>
                       <input
                         type="text"
-                        name="lenExperiment"
+                        name="trans_time"
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                         value={userInput.trans_time}
                         onChange={handleChange}

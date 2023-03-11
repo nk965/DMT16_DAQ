@@ -9,33 +9,35 @@ app = Flask(__name__)
 @app.route('/StartExperiment', methods=['POST'])
 def StartExperiment():
 
-    userConfig = globals().get('userConfig')
+    if request.methods == 'POST':
 
-    transientInput = globals().get('transientInput')
+        userConfig = globals().get('userConfig')
 
-    if userConfig is None:
+        transientInput = globals().get('transientInput')
 
-        default_userConfig = {key: value["defaultValue"] for key, value in inputInfo.items() if value.get("submission_form") == "userConfig"}
+        if userConfig is None:
 
-        globals()['userConfig'] = default_userConfig
+            default_userConfig = {key: value["defaultValue"] for key, value in inputInfo.items() if value.get("submission_form") == "userConfig"}
 
-        return {'message': 'User Configuration Not found! Loading Defaults'}
+            globals()['userConfig'] = default_userConfig
 
-    if transientInput is None:
+            return {'message': 'User Configuration Not found! Loading Defaults'}
 
-        default_transientInput = {key: value["defaultValue"] for key, value in inputInfo.items() if value.get("submission_form") == "transientInput"}
+        if transientInput is None:
 
-        globals()['transientInput'] = default_transientInput
+            default_transientInput = {key: value["defaultValue"] for key, value in inputInfo.items() if value.get("submission_form") == "transientInput"}
 
-        return {'message': 'Transient Configuration Not Found! Loading Defaults'}
+            globals()['transientInput'] = default_transientInput
 
-    inputs = userConfig | transientInput
+            return {'message': 'Transient Configuration Not Found! Loading Defaults'}
 
-    # logs = run(inputs['DAQ_port'], inputs['TB_port'], inputs)
+        inputs = userConfig | transientInput
 
-    print(inputs)
+        # logs = run(inputs['DAQ_port'], inputs['TB_port'], inputs)
 
-    # print(logs)
+        print(inputs)
+
+        # print(logs)
 
     return {'message': f"Experiment Started with {inputs}"}
 
@@ -60,13 +62,15 @@ def RefreshTransConfig():
 
         globals()['transientInput'] = default_transientInput
 
-    graph_info = userConfig | transientInput
+    graph_info = globals()['userConfig'] | globals()['transientInput']
 
-    if graph_info['preset_config'] == "Linear":
+    print(graph_info)
+
+    if graph_info['presetConfig'] == "Linear":
 
         labels, values = linear_interpolation(graph_info['start_y'], graph_info['end_y'], graph_info['nodes'], graph_info['trans_time'])
 
-    return {'message': {'labels': labels, 'values': values}}
+    return {'message': {'labels': labels.tolist(), 'values': values.tolist()}}
 
 
 @app.route('/LoadTransConfig', methods=['POST'])
