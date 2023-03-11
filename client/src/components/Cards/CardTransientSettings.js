@@ -18,6 +18,11 @@ export default function CardTransientSettings() {
     console.log(result);
   };
 
+  const getTransConfig = (transientInput) => {
+    console.log("debug")
+
+  }
+
   const postTransConfig = (inputs) => {
     console.log("Transient Config");
 
@@ -59,6 +64,11 @@ export default function CardTransientSettings() {
     postTransConfig(transientInput); // TODO: instead of Transient logging, change func to POST
   };
 
+  const handleRefreshTransConfig = (event) => {
+    event.preventDefault();
+    getTransConfig(transientInput);    
+  };
+
   return (
     <>
       <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0">
@@ -70,7 +80,7 @@ export default function CardTransientSettings() {
           </div>
         </div>
         <div className="flex-auto px-4 lg:px-10"></div>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleRefreshTransConfig}>
           <button className="w-full px-4 py-2">
             <CardStopStart
               statTitle="Refresh"

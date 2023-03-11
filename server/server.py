@@ -1,6 +1,6 @@
 from flask import Flask, request
 import json
-from helpers import cleanInputs
+from helpers import cleanInputs, linear_interpolation
 from DAQ import run, DAQ_TESTING, TB_TESTING
 from server_config import inputInfo
 
@@ -38,6 +38,36 @@ def StartExperiment():
     # print(logs)
 
     return {'message': f"Experiment Started with {inputs}"}
+
+@app.route('/RefreshTransConfig', methods=['GET'])
+def RefreshTransConfig():
+
+    userConfig = globals().get('userConfig')
+
+    transientInput = globals().get('transientInput')
+
+    if userConfig is None:
+
+        userConfig_trans_time = {'trans_time': inputInfo['trans_time']['defaultValue']}
+
+        globals()['userConfig'] = userConfig_trans_time
+
+        return {'message': 'Transient Time Not Loaded! Loading Defaults'}
+
+    if transientInput is None:
+
+        default_transientInput = {key: value["defaultValue"] for key, value in inputInfo.items() if value.get("submission_form") == "transientInput"}
+
+        globals()['transientInput'] = default_transientInput
+
+    graph_info = userConfig | transientInput
+
+    if graph_info['preset_config'] == "Linear":
+
+        labels, values = linear_interpolation(graph_info['start_y'], graph_info['end_y'], graph_info['nodes'], graph_info['trans_time'])
+
+    return {'message': {'labels': labels, 'values': values}}
+
 
 @app.route('/LoadTransConfig', methods=['POST'])
 def LoadTransConfig():
