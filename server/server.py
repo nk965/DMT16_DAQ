@@ -3,6 +3,7 @@ import json
 import numpy as np
 from helpers import cleanInputs, linear_interpolation
 from DAQ import run, DAQ_TESTING, TB_TESTING
+from PySerial import list_ports
 from server_config import inputInfo
 
 app = Flask(__name__)
@@ -10,35 +11,33 @@ app = Flask(__name__)
 @app.route('/StartExperiment', methods=['POST', 'GET'])
 def StartExperiment():
 
-    if request.methods == 'POST':
+    userConfig = globals().get('userConfig')
 
-        userConfig = globals().get('userConfig')
+    transientInput = globals().get('transientInput')
 
-        transientInput = globals().get('transientInput')
+    if userConfig is None:
 
-        if userConfig is None:
+        default_userConfig = {key: value["defaultValue"] for key, value in inputInfo.items() if value.get("submission_form") == "userConfig"}
 
-            default_userConfig = {key: value["defaultValue"] for key, value in inputInfo.items() if value.get("submission_form") == "userConfig"}
+        globals()['userConfig'] = default_userConfig
 
-            globals()['userConfig'] = default_userConfig
+        return {'message': 'User Configuration Not found! Loading Defaults'}
 
-            return {'message': 'User Configuration Not found! Loading Defaults'}
+    if transientInput is None:
 
-        if transientInput is None:
+        default_transientInput = {key: value["defaultValue"] for key, value in inputInfo.items() if value.get("submission_form") == "transientInput"}
 
-            default_transientInput = {key: value["defaultValue"] for key, value in inputInfo.items() if value.get("submission_form") == "transientInput"}
+        globals()['transientInput'] = default_transientInput
 
-            globals()['transientInput'] = default_transientInput
+        return {'message': 'Transient Configuration Not Found! Loading Defaults'}
 
-            return {'message': 'Transient Configuration Not Found! Loading Defaults'}
+    inputs = userConfig | transientInput
 
-        inputs = userConfig | transientInput
+    logs = run(inputs['DAQ_port'], inputs['TB_port'], inputs)
 
-        logs = run(inputs['DAQ_port'], inputs['TB_port'], inputs)
+    # print(inputs)
 
-        # print(inputs)
-
-        # print(logs)
+    # print(logs)
 
     return {'message': {'inputs': f"Experiment Started with {inputs}", 'logs': logs}}
 
@@ -76,6 +75,17 @@ def RefreshTransConfig():
 
     return jsonify({'message': 'Configuration Not Found'})
 
+@app.route('/FindPorts', methods=['GET'])
+def FindPorts():
+
+    ports_available = list_ports()
+
+    ports = {}
+
+    for port, index in enumerate(ports_available):
+        ports[index] = port
+
+    return ports
 
 @app.route('/LoadTransConfig', methods=['POST'])
 def LoadTransConfig():

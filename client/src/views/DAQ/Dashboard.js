@@ -25,7 +25,6 @@ export default function Dashboard() {
   });
 
   const postUserConfig = (inputs) => {
-
     fetch("http://127.0.0.1:5000/LoadUserConfig", {
       credentials: "same-origin",
       "Content-Type": "application/json",
@@ -43,12 +42,11 @@ export default function Dashboard() {
   };
 
   const postStart = () => {
-
     fetch("http://127.0.0.1:5000/StartExperiment", {
       credentials: "same-origin",
       "Content-Type": "application/json",
       method: "POST",
-      body: JSON.stringify({'Status': "Start" }),
+      body: JSON.stringify({ Status: "Start" }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -72,6 +70,19 @@ export default function Dashboard() {
     }
   };
 
+  const getPorts = () => {
+    console.log("Test")
+
+    fetch("http://127.0.0.1:5000/FindPorts")
+      .then((response) => response.json())
+      .then((data) => {
+        alert(JSON.stringify(data, null, 2));
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   const handleLoadUserConfig = (event) => {
     event.preventDefault();
     postUserConfig(userInput);
@@ -80,6 +91,11 @@ export default function Dashboard() {
   const handleStartExperiment = (event) => {
     event.preventDefault();
     postStart();
+  };
+
+  const handlePortRequest = (event) => {
+    event.preventDefault();
+    getPorts();
   };
 
   return (
@@ -93,11 +109,20 @@ export default function Dashboard() {
           />
         </button>
       </form>
+      <form onSubmit={handlePortRequest}>
+        <button className="w-full px-4 py-2">
+          <CardStopStart
+            statTitle="Find Serial Ports"
+            color="bg-lightBlue-400"
+            accent="active:bg-LightBlue-600"
+          />
+        </button>
+      </form>
       <form onSubmit={handleLoadUserConfig}>
         <button className="w-full px-4 py-4">
           <CardStopStart
             statTitle="Load User Configuration"
-            color="bg-lightBlue-500"
+            color="bg-lightBlue-400"
             accent="active:bg-lightBlue-600"
           />
         </button>
@@ -109,12 +134,6 @@ export default function Dashboard() {
                   <h6 className="text-blueGray-700 text-xl font-bold">
                     User Configuration
                   </h6>
-                  <button
-                    className="bg-lightBlue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
-                    type="button"
-                  >
-                    Docs
-                  </button>
                 </div>
               </div>
               <div className="flex-auto px-4 lg:px-10 py-10 pt-0">

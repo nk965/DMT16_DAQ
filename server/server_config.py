@@ -4,6 +4,14 @@ Configuration file for sending user inputs into the microcontrollers
 """
 
 inputInfo = {
+    "DAQ_port": {
+        "defaultValue": "COM7",
+        "submission_form": "userConfig"
+    },
+    "TB_port": {
+        "defaultValue": "COM8",
+        "submission_form": "userConfig"
+    },
     "syrDia": {
         "defaultValue": 30,
         "type": float,

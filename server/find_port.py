@@ -2,7 +2,7 @@ from PySerial import list_ports
 
 def find_ports():
 
-    ports_available = list_ports()
+    ports_available = list_ports() 
 
     for port, index in enumerate(ports_available):
         print(f'SELECTION {port}: {index}')
