@@ -7,7 +7,7 @@ from server_config import inputInfo
 
 app = Flask(__name__)
 
-@app.route('/StartExperiment', methods=['POST'])
+@app.route('/StartExperiment', methods=['POST', 'GET'])
 def StartExperiment():
 
     if request.methods == 'POST':
