@@ -14,15 +14,6 @@ export default function CardTransientSettings() {
     presetConfig: "Linear",
   });
 
-  const postResult = (result) => {
-    console.log(result);
-  };
-
-  const getTransConfig = (transientInput) => {
-    console.log("debug")
-
-  }
-
   const postTransConfig = (inputs) => {
     console.log("Transient Config");
 
@@ -54,19 +45,9 @@ export default function CardTransientSettings() {
     }
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    postResult(transientInput); // TODO: instead of Transient logging, change func to POST
-  };
-
   const handleLoadTransConfig = (event) => {
     event.preventDefault();
     postTransConfig(transientInput); // TODO: instead of Transient logging, change func to POST
-  };
-
-  const handleRefreshTransConfig = (event) => {
-    event.preventDefault();
-    getTransConfig(transientInput);    
   };
 
   return (
@@ -80,15 +61,6 @@ export default function CardTransientSettings() {
           </div>
         </div>
         <div className="flex-auto px-4 lg:px-10"></div>
-        <form onSubmit={handleRefreshTransConfig}>
-          <button className="w-full px-4 py-2">
-            <CardStopStart
-              statTitle="Refresh"
-              color="bg-purple-200"
-              accent="active:bg-purple-500"
-            />
-          </button>
-        </form>
         <form onSubmit={handleLoadTransConfig}>
           <button className="w-full px-4 py-2">
             <CardStopStart
@@ -106,6 +78,7 @@ export default function CardTransientSettings() {
                 </label>
                 <input
                   type="number"
+                  name="start_y"
                   className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   value={transientInput.start_y}
                   onChange={handleChange}
@@ -119,6 +92,7 @@ export default function CardTransientSettings() {
                 </label>
                 <input
                   type="number"
+                  name="end_y"
                   className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   value={transientInput.end_y}
                   onChange={handleChange}
@@ -132,6 +106,7 @@ export default function CardTransientSettings() {
                 </label>
                 <input
                   type="number"
+                  name="nodes"
                   className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   value={transientInput.nodes}
                   onChange={handleChange}
@@ -148,6 +123,7 @@ export default function CardTransientSettings() {
                 </label>
                 <select
                   className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                  name="presetConfig"
                   value={transientInput.presetConfig}
                   onChange={handleChange}
                 >

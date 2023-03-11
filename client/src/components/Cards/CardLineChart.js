@@ -1,8 +1,51 @@
 import React from "react";
 import Chart from "chart.js";
 
+import { useState, useEffect } from "react";
+
 export default function CardLineChart() {
-  React.useEffect(() => {
+
+  const [data, setData] = useState({ labels: [], datasets: [] }); 
+
+  const handleRefreshClick = () => {
+
+    console.log("Hello")
+
+    fetch("http://127.0.0.1:5000/RefreshTransConfig")
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data); // Log the data
+      setData({
+        labels: data.message.labels,
+        datasets: [
+          {
+            label: "Branch Pipe Valve",
+            backgroundColor: "#4c51bf",
+            borderColor: "#4c51bf",
+            data: data.message.values,
+            fill: false,
+          },
+        ],
+      });
+    });
+};
+
+  useEffect(() => {
+
+    fetch('http://127.0.0.1:5000/RefreshTransConfig')
+      .then(response => response.json())
+      .then(data => setData({
+        labels: data.message.labels,
+        datasets: [{
+          label: "Branch Pipe Valve",
+          backgroundColor: "#4c51bf",
+          borderColor: "#4c51bf",
+          data: data.message.values,
+          fill: false,
+        }]
+      }));
+
+
     var config = {
       type: "line",
       data: {
@@ -96,6 +139,11 @@ export default function CardLineChart() {
                 Configure Transient Input
               </h6>
               <h2 className="text-white text-xl font-semibold">Flow Actuator Valve</h2>
+            </div>
+            <div className="relative w-full max-w-full flex-grow flex-1 text-right">
+              <button onClick={handleRefreshClick} className="bg-white text-gray-800 active:bg-gray-100 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md transition duration-300 ease-in-out outline-none focus:outline-none mr-2 mb-1">
+                Refresh
+              </button>
             </div>
           </div>
         </div>

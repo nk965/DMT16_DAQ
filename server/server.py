@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import json
 from helpers import cleanInputs, linear_interpolation
 from DAQ import run, DAQ_TESTING, TB_TESTING
@@ -64,13 +64,15 @@ def RefreshTransConfig():
 
     graph_info = globals()['userConfig'] | globals()['transientInput']
 
-    print(graph_info)
-
     if graph_info['presetConfig'] == "Linear":
 
         labels, values = linear_interpolation(graph_info['start_y'], graph_info['end_y'], graph_info['nodes'], graph_info['trans_time'])
 
-    return {'message': {'labels': labels.tolist(), 'values': values.tolist()}}
+        print(values)
+
+        return jsonify({'message': {'labels': labels.tolist(), 'values': values.tolist()}})
+
+    return jsonify({'message': 'hello from python'})
 
 
 @app.route('/LoadTransConfig', methods=['POST'])
