@@ -70,6 +70,8 @@ def RefreshTransConfig():
 
         print(values)
 
+        
+
         return jsonify({'message': {'labels': labels.tolist(), 'values': values.tolist()}})
 
     return jsonify({'message': 'hello from python'})
