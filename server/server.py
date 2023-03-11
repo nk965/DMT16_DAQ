@@ -1,45 +1,108 @@
-from flask import Flask, request, json
-from flask_cors import CORS
+from flask import Flask, request, jsonify
+import json
+import numpy as np
+from helpers import cleanInputs, linear_interpolation
+from DAQ import run, DAQ_TESTING, TB_TESTING
+from server_config import inputInfo
 
 app = Flask(__name__)
-CORS(app)
 
-def cleanInputs(dictionary):
+@app.route('/StartExperiment', methods=['POST'])
+def StartExperiment():
 
-    convertedConfig = {}
+    if request.methods == 'POST':
 
-    for key, value in dictionary.items():
+        userConfig = globals().get('userConfig')
 
-        if value.isdigit():
+        transientInput = globals().get('transientInput')
 
-            convertedConfig[key] = float(value)
+        if userConfig is None:
 
-        elif value.lower() == "true":
+            default_userConfig = {key: value["defaultValue"] for key, value in inputInfo.items() if value.get("submission_form") == "userConfig"}
 
-            convertedConfig[key] = True
+            globals()['userConfig'] = default_userConfig
 
-        elif value.lower() == "false":
+            return {'message': 'User Configuration Not found! Loading Defaults'}
 
-            convertedConfig[key] = False
+        if transientInput is None:
 
-        else:
+            default_transientInput = {key: value["defaultValue"] for key, value in inputInfo.items() if value.get("submission_form") == "transientInput"}
 
-            convertedConfig[key] = value
+            globals()['transientInput'] = default_transientInput
 
-    return convertedConfig
+            return {'message': 'Transient Configuration Not Found! Loading Defaults'}
 
-@app.route('/inputs', methods=['GET', 'POST'])
-def inputs():
-    response = flask.jsonify({'some': 'data'})
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    
-    return {"data": ["Member1", "Member2", "Member3"]}
+        inputs = userConfig | transientInput
 
-@app.route('/inputs/userConfig', methods=['POST'])
-def userConfig():
-    request_data = json.load(request.data)
-    request_data.headers.add('Access-Control-Allow-Origin', '*')
-    print(request_data)
+        logs = run(inputs['DAQ_port'], inputs['TB_port'], inputs)
+
+        # print(inputs)
+
+        # print(logs)
+
+    return {'message': {'inputs': f"Experiment Started with {inputs}", 'logs': logs}}
+
+@app.route('/RefreshTransConfig', methods=['GET'])
+def RefreshTransConfig():
+
+    userConfig = globals().get('userConfig')
+
+    transientInput = globals().get('transientInput')
+
+    if userConfig is None:
+
+        userConfig_trans_time = {'trans_time': inputInfo['trans_time']['defaultValue']}
+
+        globals()['userConfig'] = userConfig_trans_time
+
+        return {'message': 'Transient Time Not Loaded! Loading Defaults'}
+
+    if transientInput is None:
+
+        default_transientInput = {key: value["defaultValue"] for key, value in inputInfo.items() if value.get("submission_form") == "transientInput"}
+
+        globals()['transientInput'] = default_transientInput
+
+    graph_info = globals()['userConfig'] | globals()['transientInput']
+
+    if graph_info['presetConfig'] == "Linear":
+
+        labels, values = linear_interpolation(graph_info['start_y'], graph_info['end_y'], graph_info['nodes'], graph_info['trans_time'])
+
+        labels = np.round(labels, decimals=3)
+        values = np.round(values, decimals=3)
+
+        return jsonify({'message': {'labels': labels.tolist(), 'values': values.tolist()}})
+
+    return jsonify({'message': 'Configuration Not Found'})
+
+
+@app.route('/LoadTransConfig', methods=['POST'])
+def LoadTransConfig():
+
+    byte_string = request.data
+
+    data_str = byte_string.decode('utf-8')
+
+    transientInput = json.loads(data_str)
+
+    globals()['transientInput'] = cleanInputs(transientInput)
+
+    return {'message': 'Custom Transient Configuration Loaded'}
+
+@app.route('/LoadUserConfig', methods=['POST'])
+def LoadUserConfig():
+
+    byte_string = request.data
+
+    data_str = byte_string.decode('utf-8')
+
+    userConfig = json.loads(data_str)
+
+    globals()['userConfig'] = cleanInputs(userConfig)
+
+    return {'message': 'Custom User Configuration Loaded'}
 
 if __name__ == '__main__':
+    
     app.run(debug=True)

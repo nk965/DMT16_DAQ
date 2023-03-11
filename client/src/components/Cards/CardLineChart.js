@@ -1,22 +1,66 @@
 import React from "react";
 import Chart from "chart.js";
 
+import { useState, useEffect, useRef } from "react";
+
 export default function CardLineChart() {
-  React.useEffect(() => {
-    var config = {
-      type: "line",
-      data: {
-        labels: [1, 2, 3, 4, 5, 6, 7],
-        datasets: [
-          {
-            label: "Branch Pipe Valve",
-            backgroundColor: "#4c51bf",
-            borderColor: "#4c51bf",
-            data: [25, 30, 35, 40, 45, 50, 55],
-            fill: false,
-          },
-        ],
+  const [data, setData] = useState({
+    labels: [1, 2, 3, 4, 5, 6, 7],
+    datasets: [
+      {
+        label: "Branch Pipe Valve",
+        backgroundColor: "#4c51bf",
+        borderColor: "#4c51bf",
+        data: [25, 30, 35, 40, 45, 50, 55],
+        fill: false,
       },
+    ],
+  });
+
+  const [chartConfig, setChartConfig] = useState(null);
+
+  const handleRefreshClick = () => {
+
+    fetch("http://127.0.0.1:5000/RefreshTransConfig")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data); // Log the data
+        setData({
+          labels: data.message.labels,
+          datasets: [
+            {
+              label: "Branch Pipe Valve",
+              backgroundColor: "#4c51bf",
+              borderColor: "#4c51bf",
+              data: data.message.values,
+              fill: false,
+            },
+          ],
+        });
+      });
+  };
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/RefreshTransConfig")
+      .then((response) => response.json())
+      .then((data) =>
+        setData({
+          labels: data.message.labels,
+          datasets: [
+            {
+              label: "Branch Pipe Valve",
+              backgroundColor: "#4c51bf",
+              borderColor: "#4c51bf",
+              data: data.message.values,
+              fill: false,
+            },
+          ],
+        }),
+      );
+
+    const config = {
+      type: "line",
+      data: data,
       options: {
         maintainAspectRatio: false,
         responsive: true,
@@ -83,9 +127,99 @@ export default function CardLineChart() {
         },
       },
     };
-    var ctx = document.getElementById("line-chart").getContext("2d");
-    window.myLine = new Chart(ctx, config);
+    setChartConfig(config);
   }, []);
+
+  useEffect(() => {
+    if (chartConfig) {
+      var ctx = document.getElementById("line-chart").getContext("2d");
+      window.myLine = new Chart(ctx, chartConfig);
+    }
+  }, [chartConfig]);
+
+  // update chart data when data changes
+  useEffect(() => {
+    if (chartConfig) {
+      setChartConfig({
+        ...chartConfig,
+        data: data,
+      });
+    }
+  }, [data]);
+
+  useEffect(() => {
+    const newConfig = {
+      type: "line",
+      data: data,
+      options: {
+        maintainAspectRatio: false,
+        responsive: true,
+        legend: {
+          labels: {
+            fontColor: "white",
+          },
+          align: "end",
+          position: "bottom",
+        },
+        tooltips: {
+          mode: "index",
+          intersect: false,
+        },
+        hover: {
+          mode: "nearest",
+          intersect: true,
+        },
+        scales: {
+          xAxes: [
+            {
+              ticks: {
+                fontColor: "rgba(255,255,255,.7)",
+              },
+              display: true,
+              scaleLabel: {
+                display: false,
+                labelString: "Month",
+                fontColor: "white",
+              },
+              gridLines: {
+                display: false,
+                borderDash: [2],
+                borderDashOffset: [2],
+                color: "rgba(33, 37, 41, 0.3)",
+                zeroLineColor: "rgba(0, 0, 0, 0)",
+                zeroLineBorderDash: [2],
+                zeroLineBorderDashOffset: [2],
+              },
+            },
+          ],
+          yAxes: [
+            {
+              ticks: {
+                fontColor: "rgba(255,255,255,.7)",
+              },
+              display: true,
+              scaleLabel: {
+                display: false,
+                labelString: "Value",
+                fontColor: "white",
+              },
+              gridLines: {
+                borderDash: [3],
+                borderDashOffset: [3],
+                drawBorder: false,
+                color: "rgba(255, 255, 255, 0.15)",
+                zeroLineColor: "rgba(33, 37, 41, 0)",
+                zeroLineBorderDash: [2],
+                zeroLineBorderDashOffset: [2],
+              },
+            },
+          ],
+        },
+      },
+    };
+    setChartConfig(newConfig);
+  }, [data]);
+
   return (
     <>
       <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded bg-blueGray-700">
@@ -95,7 +229,17 @@ export default function CardLineChart() {
               <h6 className="uppercase text-blueGray-100 mb-1 text-xs font-semibold">
                 Configure Transient Input
               </h6>
-              <h2 className="text-white text-xl font-semibold">Flow Actuator Valve</h2>
+              <h2 className="text-white text-xl font-semibold">
+                Flow Actuator Valve
+              </h2>
+            </div>
+            <div className="relative w-full max-w-full flex-grow flex-1 text-right">
+              <button
+                onClick={handleRefreshClick}
+                className="bg-white text-gray-800 active:bg-gray-100 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md transition duration-300 ease-in-out outline-none focus:outline-none mr-2 mb-1"
+              >
+                Refresh
+              </button>
             </div>
           </div>
         </div>
