@@ -51,7 +51,7 @@ export default function Dashboard() {
       .then((response) => response.json())
       .then((data) => {
         if (data.message) {
-          alert(data.message);
+          alert(JSON.stringify(data.message, null, 2));
         }
         console.log(data);
       })
