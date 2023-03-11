@@ -2,6 +2,7 @@ from flask import Flask, request
 import json
 from helpers import cleanInputs
 from DAQ import run, DAQ_TESTING, TB_TESTING
+from server_config import inputInfo
 
 app = Flask(__name__)
 
@@ -13,18 +14,25 @@ def StartExperiment():
     transientInput = globals().get('transientInput')
 
     if userConfig is None:
-        # Handle case where user config is not present
+
+        default_userConfig = {key: value["defaultValue"] for key, value in inputInfo.items() if value.get("submission_form") == "userConfig"}
+
+        globals()['userConfig'] = default_userConfig
+
         return {'message': 'User Configuration Not found! Loading Defaults'}
 
     if transientInput is None:
 
-        
+        default_transientInput = {key: value["defaultValue"] for key, value in inputInfo.items() if value.get("submission_form") == "transientInput"}
+
+        globals()['transientInput'] = default_transientInput
 
         return {'message': 'Transient Configuration Not Found! Loading Defaults'}
 
     inputs = userConfig | transientInput
 
     run(inputs['DAQ_port'], inputs['TB_port'], inputs)
+    
     print(run)
 
     return {'message': "Experiment Started"}
@@ -38,7 +46,7 @@ def LoadTransConfig():
 
     transientInput = json.loads(data_str)
 
-    globals()['transientInput'] = transientInput
+    globals()['transientInput'] = cleanInputs(transientInput)
 
     return {'message': 'Custom Transient Configuration Loaded'}
 
@@ -51,9 +59,10 @@ def LoadUserConfig():
 
     userConfig = json.loads(data_str)
 
-    globals()['userConfig'] = userConfig
+    globals()['userConfig'] = cleanInputs(userConfig)
 
     return {'message': 'Custom User Configuration Loaded'}
 
 if __name__ == '__main__':
+    
     app.run(debug=True)
