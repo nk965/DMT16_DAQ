@@ -31,9 +31,11 @@ def StartExperiment():
 
     inputs = userConfig | transientInput
 
-    run(inputs['DAQ_port'], inputs['TB_port'], inputs)
-    
-    print(run)
+    # logs = run(inputs['DAQ_port'], inputs['TB_port'], inputs)
+
+    print(inputs)
+
+    # print(logs)
 
     return {'message': "Experiment Started"}
 
