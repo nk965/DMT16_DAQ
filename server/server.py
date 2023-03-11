@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import json
+import numpy as np
 from helpers import cleanInputs, linear_interpolation
 from DAQ import run, DAQ_TESTING, TB_TESTING
 from server_config import inputInfo
@@ -68,13 +69,12 @@ def RefreshTransConfig():
 
         labels, values = linear_interpolation(graph_info['start_y'], graph_info['end_y'], graph_info['nodes'], graph_info['trans_time'])
 
-        print(values)
-
-        
+        labels = np.round(labels, decimals=3)
+        values = np.round(values, decimals=3)
 
         return jsonify({'message': {'labels': labels.tolist(), 'values': values.tolist()}})
 
-    return jsonify({'message': 'hello from python'})
+    return jsonify({'message': 'Configuration Not Found'})
 
 
 @app.route('/LoadTransConfig', methods=['POST'])
