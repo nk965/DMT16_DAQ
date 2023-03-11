@@ -1,67 +1,59 @@
 from flask import Flask, request
 import json
+from helpers import cleanInputs
 from DAQ import run, DAQ_TESTING, TB_TESTING
 
 app = Flask(__name__)
 
-def cleanInputs(dictionary):
+@app.route('/StartExperiment', methods=['POST'])
+def StartExperiment():
 
-    convertedConfig = {}
+    userConfig = globals().get('userConfig')
 
-    for key, value in dictionary.items():
+    transientInput = globals().get('transientInput')
 
-        if value.isdigit():
+    if userConfig is None:
+        # Handle case where user config is not present
+        return {'message': 'User Configuration Not found! Loading Defaults'}
 
-            convertedConfig[key] = float(value)
+    if transientInput is None:
 
-        elif value.lower() == "true":
+        
 
-            convertedConfig[key] = True
+        return {'message': 'Transient Configuration Not Found! Loading Defaults'}
 
-        elif value.lower() == "false":
+    inputs = userConfig | transientInput
 
-            convertedConfig[key] = False
+    run(inputs['DAQ_port'], inputs['TB_port'], inputs)
+    print(run)
 
-        else:
+    return {'message': "Experiment Started"}
 
-            convertedConfig[key] = value
+@app.route('/LoadTransConfig', methods=['POST'])
+def LoadTransConfig():
 
-    return convertedConfig
+    byte_string = request.data
 
-@app.route('/inputs', methods=['GET', 'POST'])
-def inputs():
+    data_str = byte_string.decode('utf-8')
 
-    if request.method == 'POST':
-        print("POST")
-        byte_string = request.data
+    transientInput = json.loads(data_str)
 
-        data_str = byte_string.decode('utf-8')
+    globals()['transientInput'] = transientInput
 
-        params_dict = json.loads(data_str)
+    return {'message': 'Custom Transient Configuration Loaded'}
 
-        print(params_dict)
+@app.route('/LoadUserConfig', methods=['POST'])
+def LoadUserConfig():
 
-        # object_methods = [method_name for method_name in dir(request)
-        #           if callable(getattr(request, method_name))]
+    byte_string = request.data
 
-        # print(object_methods)
+    data_str = byte_string.decode('utf-8')
 
-        # print(request.get_json())
+    userConfig = json.loads(data_str)
 
-        # req_data = request.get_json()
+    globals()['userConfig'] = userConfig
 
-        # print(req_data)
-
-    if request.method == 'GET':
-
-        print("GET")
-
-        # req_data = request.get_json()
-
-        # print(req_data)
-
-    return {'message': 'Success', 'data': '1§'}
-
+    return {'message': 'Custom User Configuration Loaded'}
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -114,7 +114,7 @@ inputInfo = {
         "range": [0, 800],
         "bits": 16,
         "units": "",
-        "submission_form": "transientInput"
+        "submission_form": "userConfig"
     },
     "stabilising_delay": {
         "defaultValue": 5,
@@ -122,15 +122,15 @@ inputInfo = {
         "range": [0, 2000],
         "bits": 8,
         "units": "s",
-        "submission_form": None
+        "submission_form": "userConfig"
     },
     "branch_temp": {
-        "defaultValue": 80,
+        "defaultValue": 60,
         "type": float,
         "range": [30, 100],
         "bits": 16,
         "units": "C",
-        "submission_form": None
+        "submission_form": "userConfig"
     },
     "vol_inject": {
         "defaultValue": 30,
@@ -138,7 +138,7 @@ inputInfo = {
         "range": [0, 100],
         "bits": 8,
         "units": "ml",
-        "submission_form": None
+        "submission_form": "userConfig"
     },
     "inject_time": {
         "defaultValue": 15, # this was 9 
@@ -146,6 +146,6 @@ inputInfo = {
         "range": [0, 480],
         "bits": 8,
         "units": "s",
-        "submission_form": None # TODO
+        "submission_form": "userConfig"
     },
 }

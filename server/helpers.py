@@ -174,3 +174,27 @@ def float_array_to_hex_string(arr: np.ndarray, info: dict) -> np.ndarray:
     hex_string_array = hex_func(int_array)
 
     return actual_array, hex_string_array
+
+def cleanInputs(dictionary):
+
+    convertedConfig = {}
+
+    for key, value in dictionary.items():
+
+        if value.isdigit():
+
+            convertedConfig[key] = float(value)
+
+        elif value.lower() == "true":
+
+            convertedConfig[key] = True
+
+        elif value.lower() == "false":
+
+            convertedConfig[key] = False
+
+        else:
+
+            convertedConfig[key] = value
+
+    return convertedConfig
