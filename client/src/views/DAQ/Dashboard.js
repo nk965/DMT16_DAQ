@@ -42,6 +42,9 @@ export default function Dashboard() {
   };
 
   const postStart = () => {
+
+    alert("Attempting to Start Experiment...")
+
     fetch("http://127.0.0.1:5000/StartExperiment", {
       credentials: "same-origin",
       "Content-Type": "application/json",
@@ -55,7 +58,7 @@ export default function Dashboard() {
         }
         console.log(data);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => alert(error));
   };
 
   const handleChange = (event) => {

@@ -7,3 +7,4 @@ RemoteSystemsTempFiles/
 *.launch
 *.ioc
 Debug/
+.DS_Store

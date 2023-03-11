@@ -6,6 +6,7 @@
 
 # pycharm files
 .idea/
+.DS_Store
 
 # SDK download warning file
 .sdkwarning
