@@ -4,7 +4,16 @@ Main script for communicating with microcontrollers
 hello
 """
 
-from Modules import *
+import os
+import sys
+import glob
+import serial
+import numpy as np
+import time
+import collections
+import random
+import datetime
+import math
 
 from PySerial import UART, list_ports
 from server_config import inputInfo
