@@ -3,7 +3,16 @@
 List of commands from Central PC side
 """
 
-from Modules import *
+import os
+import sys
+import glob
+import serial
+import numpy as np
+import time
+import collections
+import random
+import datetime
+import math
 
 from helpers import convert_frequency_to_clock_tick, float_to_hex_string, float_to_base_15, bool_to_pulse_string, float_array_to_hex_string, linear_interpolation, int_to_hex_string
 
