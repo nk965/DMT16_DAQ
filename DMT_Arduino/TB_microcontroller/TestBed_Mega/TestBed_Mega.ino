@@ -234,6 +234,8 @@ void loop()
     // Convert the pulse counts into a speed value
     measured_speed = ((float)sensor_pulse_counter*(float)timer_speed/(float)1530);
 
+    sensor_pulse_counter = 0;
+
     // Work out the error to put into the PID controller
     error = requested_speed - measured_speed;
 
@@ -290,6 +292,5 @@ void loop()
     
     // Reset the pulse timers and don't calculate the value again until the value is read
       calculate_PID_vals = 0;
-      sensor_pulse_counter = 0;
   }
 }
