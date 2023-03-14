@@ -66,7 +66,7 @@ void setup()
   TCNT4 = 0;  // initialize counter value to 0
   // set compare match register for 10kHz increments
   // OCR4A = 1599/1; // = (16*10^6) / (Prescaler*desired_freq) - 1 (must be <65536)
-  OCR4A = 1599;// = (16*10^6) / (1*1024) - 1 (must be <65536)
+  OCR4A = 1599;// = (16*10^6) / (1*10000) - 1 (must be <65536)
   // turn on CTC mode
   TCCR4B |= (1 << WGM12);
   // Set CS12 and CS10 bits for 1 prescaler
