@@ -1,3 +1,5 @@
+#include <AccelStepper.h>
+
 const int max_bytes = 4; // Max length for Arduino communication protocol
 
 // Hex Identifiers - always at the first byte of each transmission
@@ -17,13 +19,61 @@ uint8_t SDYE2message[max_bytes]; // Sends info to dye injection microcontroller,
 uint8_t RDYEmessage[max_bytes]; // Sends info to dye injection microcontroller, (starts, pulse mode + steps)
 uint8_t EDYEmessage[max_bytes]; // Sends info to dye injection microcontroller, (resets dye injection)
 
+// Define pin connections
+const int dirPin = 2;
+const int stepPin = 3;
+const int steps_per_rev = 200; // Steps per revolution
+int current_speed = 0;         // The speed variable used to set stuff - there are 2 variables because this allows the motor to remember the speed after reset
+int requested_speed = 0; // Steps per second
+const byte interruptPin = 20; // Pin change interrupt pin
+
+// Define motor interface type
+#define motorInterfaceType 1
+
+// Creates an instance of a stepper motor
+AccelStepper myStepper(motorInterfaceType, stepPin, dirPin);
+
 // Initialises UART, with baud rate of 230400
 void setup()
 {
+  pinMode(dirPin, OUTPUT); // Direction pin for stepper motor
+  myStepper.setMaxSpeed(1000); // Set the maximum speed of the stepper
+  myStepper.setSpeed(0); // Set the initial speed of the stepper to 0
+
   Serial.begin(230400);  // Initialize Central PC Serial communication
   Serial1.begin(230400); // Initialise Dye Injection Serial Communication
   pinMode(10, OUTPUT);   // Debug Send LED
   pinMode(13, OUTPUT); // Initialize GPIO Output Pin for start and end of Transient Experiment (first and end RTB)
+
+  pinMode(interruptPin, INPUT_PULLUP); // Configure pin 20 to be an interrupt pin
+  attachInterrupt(digitalPinToInterrupt(interruptPin), measure_speed, CHANGE); // 
+
+  cli(); // stop interrupts
+
+  // set timer4 interrupt at 1kHz
+  TCCR4A = 0; // set entire TCCR1A register to 0
+  TCCR4B = 0; // same for TCCR1B
+  TCNT4 = 0;  // initialize counter value to 0
+  // set compare match register for 1kHz increments
+  OCR4A = 15999;// = (16*10^6) / (1*1000) - 1 (must be <65536)
+  // turn on CTC mode
+  TCCR4B |= (1 << WGM12);
+  // Set CS12 and CS10 bits for 1 prescaler
+  TCCR4B |= (1 << CS10);
+  // enable timer compare interrupt
+  TIMSK4 |= (1 << OCIE4A);
+
+  sei(); // allow interrupts
+}
+
+// Interrupt service routine (ISR) for timer4
+ISR(TIMER4_COMPA_vect)
+{ // timer4 interrupt 1 kHz
+  
+}
+
+void measure_speed() {
+  
 }
 
 // Receives messages from UART, byte by byte
