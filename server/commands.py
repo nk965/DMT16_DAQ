@@ -154,7 +154,7 @@ def TestCommand(UART):
 
 def RTBCommand(UART, actuator_array, times):
 
-    info = {"range": [np.min(actuator_array), np.max(actuator_array)], "bits": 8}
+    info = {"range": [np.min(actuator_array), np.max(actuator_array)], "bits": 16}
 
     hex_identifier = "07"
 
@@ -162,14 +162,13 @@ def RTBCommand(UART, actuator_array, times):
 
     for index in range(1, len(times)):
 
-        if index == 1:
-            padding = "0000"
+        # toggle padding
 
-        elif index == len(times) - 1:
-            padding = "0003"
+        if index % 2 == 0:
+            padding = "01"
 
-        else: 
-            padding = "0001"
+        else:
+            padding = "00"
 
         message = bytearray.fromhex(hex_identifier + out_actuator_pos_array[index] + padding)
         
