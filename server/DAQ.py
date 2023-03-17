@@ -137,10 +137,10 @@ if __name__ == "__main__":
     DAQ_port_index = int(input("Choose DAQ port selection number (input should be an integer): "))
     TB_port_index = int(input("Choose TB port selection number (input should be an integer): "))
 
-    # logs = TB_TESTING(ports_available[TB_port_index], inputInfo) # Benchscale Test for TB system
+    logs = TB_TESTING(ports_available[TB_port_index], inputInfo) # Benchscale Test for TB system
     # logs = DAQ_TESTING(ports_available[DAQ_port_index], inputInfo) # Benchscale Test for DAQ system
 
-    logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
+    # logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
 
     print(logs)
 

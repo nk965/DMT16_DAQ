@@ -93,7 +93,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "end_y": {
-        "defaultValue": 55,
+        "defaultValue": 190,
         "type": float,
         "range": [0, 100],
         "bits": 8,
@@ -101,7 +101,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "nodes": {
-        "defaultValue": 5,
+        "defaultValue": 10,
         "type": float,
         "range": [0, 500],
         "bits": None,
