@@ -27,6 +27,7 @@ const byte mechanical_stop_pin = 21; // Mechanical stop switch
 
 // Other variables
 const int steps_per_rev = 200; // Steps per revolution
+<<<<<<< HEAD
 const unsigned int timer_speed = 10; // 5 Hz timer
 const int motor_speed = 1000;
 double measured_speed = 0; // The speed measured (Y)
@@ -36,6 +37,17 @@ double current_total_steps = 0;
 double next_total_steps = 0;
 double error = 0; // E = U-Y in control system
 long current_distance = 0; // Current position of the motor
+=======
+const unsigned int timer_speed = 5; // 5 Hz timer
+const unsigned int motor_speed = 1000;
+int transient_input; 
+float measured_speed = 0; // The speed measured (Y)
+float requested_speed = 0; // U in the control system
+float after_PID_speed = 0; // K(U-Y) in the control system
+float current_total_steps = 0;
+float next_total_steps = 0;
+float error = 0; // E = U-Y in control system
+>>>>>>> d4c70546b444772488acab596b469171f60cad3b
 
 // PID Characteristics
 double PID_input_buffer[3] = {0,0,0}; // Buffer for bilinear multistep transfer function
@@ -200,20 +212,27 @@ void loop()
     }
     else if (receivedData[0] == RTBCommand) // RTB - 2 byte has actuator position, first iteration sends RDYE
     {
-      // If the padding is 00, then it is the first RTB command
+      // If the padding is 00, LED is HIGH showing RTB command
       if (receivedData[3] == 0b00000000)
       {
         digitalWrite(13, HIGH);
+
+        transient_input = (((unsigned int)receivedData[1] << 8) | ((unsigned int)receivedData[2]));
+
       }
-      // If the padding is 03, then it is the last RTB command
-      else if (receivedData[3] == 0b00000011)
+      // If the padding is 01, LED is LOW showing another RTB command
+      else if (receivedData[3] == 0b00000001)
       {
         digitalWrite(13, LOW);
+
+        transient_input = (((unsigned int)receivedData[1] << 8) | ((unsigned int)receivedData[2]));
+
       }
       sendData(receivedData, max_bytes); // Debugging print
     }
     else if (receivedData[0] == ETB1Command)
     {
+      digitalWrite(13, LOW);
       sendData(receivedData, max_bytes); // Debugging print
     }
     else if (receivedData[0] == ETB2Command) // ETB2 - tells Testbed to stop flowing
