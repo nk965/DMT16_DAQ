@@ -27,22 +27,22 @@ const byte mechanical_stop_pin = 21; // Mechanical stop switch
 
 // Other variables
 const int steps_per_rev = 200; // Steps per revolution
-const unsigned int timer_speed = 5; // 5 Hz timer
-const unsigned int motor_speed = 1000;
-float measured_speed = 0; // The speed measured (Y)
-float requested_speed = 0; // U in the control system
-float after_PID_speed = 0; // K(U-Y) in the control system
-float current_total_steps = 0;
-float next_total_steps = 0;
-float error = 0; // E = U-Y in control system
+const unsigned int timer_speed = 10; // 5 Hz timer
+const int motor_speed = 1000;
+double measured_speed = 0; // The speed measured (Y)
+double requested_speed = 0; // U in the control system (mL/s)
+double after_PID_speed = 0; // K(U-Y) in the control system
+double current_total_steps = 0;
+double next_total_steps = 0;
+double error = 0; // E = U-Y in control system
+long current_distance = 0; // Current position of the motor
 
 // PID Characteristics
-float PID_input_buffer[3] = {0,0,0}; // Buffer for bilinear multistep transfer function
-float PID_output_buffer[3] = {0,0,0}; // Output buffer
-float Kp = 10;
-float Ki = 5;
-float Kd = 2;
-
+double PID_input_buffer[3] = {0,0,0}; // Buffer for bilinear multistep transfer function
+double PID_output_buffer[3] = {0,0,0}; // Output buffer
+double Kp = 2;
+double Ki = 0;
+double Kd = 0;
 
 // Define motor interface type
 #define motorInterfaceType 1
@@ -56,6 +56,7 @@ void setup()
   pinMode(dirPin, OUTPUT); // Direction pin for stepper motor
   myStepper.setMaxSpeed(2000); // Set the maximum speed of the stepper
   myStepper.setSpeed(0); // Set the initial speed of the stepper to 0
+  myStepper.moveTo(0);
 
   Serial.begin(230400);  // Initialize Central PC Serial communication
   Serial1.begin(230400); // Initialise Dye Injection Serial Communication
@@ -74,7 +75,7 @@ void setup()
   TCCR4B = 0; // same for TCCR1B
   TCNT4 = 0;  // initialize counter value to 0
   // set compare match register for 1kHz increments
-  OCR4A = 49999;// = (16*10^6) / (5*64) - 1 (must be <65536)
+  OCR4A = 24999;// = (16*10^6) / (5*64) - 1 (must be <65536)
   // turn on CTC mode
   TCCR4B |= (1 << WGM12);
   // Set CS12 and CS10 bits for 1 prescaler
@@ -85,11 +86,15 @@ void setup()
   sei(); // allow interrupts
 }
 
-
+// Flags and globals for interrupts
 boolean time_start = 0;
 unsigned int sensor_pulse_counter = 0;
 boolean calculate_PID_vals = 1;
 boolean stop_flag = 0;
+
+// Triangular wave test code
+int sign = 1;
+int interval = 10;
 
 // Interrupt service routine (ISR) for timer4
 ISR(TIMER4_COMPA_vect)
@@ -231,8 +236,21 @@ void loop()
 
   if (calculate_PID_vals == 1){
 
-    // Convert the pulse counts into a speed value
-    measured_speed = ((float)sensor_pulse_counter*(float)timer_speed/(float)1530);
+    // Convert the pulse counts into a speed value (mL/s)
+    measured_speed = ((double)sensor_pulse_counter*(double)timer_speed/(double)1530)*(double)(1000);
+
+    Serial.println(measured_speed);
+
+    // Triangular wave test code
+    
+    // if ((int)requested_speed > 199){
+    //   sign = -1;
+    // }
+    // else if ((int)requested_speed < -199){
+    //   sign = 1;
+    // }
+    
+    // requested_speed = requested_speed + sign*interval;
 
     sensor_pulse_counter = 0;
 
@@ -248,49 +266,55 @@ void loop()
     PID_output_buffer[0] = PID_output_buffer[1];
     PID_output_buffer[1] = PID_output_buffer[2];
     PID_output_buffer[2] = PID_output_buffer[0] + 
-                            (Kp + Ki/(2*(float)timer_speed)+2*Kd*(float)timer_speed)*PID_input_buffer[2]
-                          + (Ki/(float)timer_speed - 4*Kd*(float)timer_speed)*PID_input_buffer[1]
-                          + (-Kp + Ki/(2*(float)timer_speed)+2*Kd*(float)timer_speed)*PID_input_buffer[0];
+                            (Kp + Ki/(2*(double)timer_speed)+2*Kd*(double)timer_speed)*PID_input_buffer[2]
+                          + (Ki/(double)timer_speed - 4*Kd*(double)timer_speed)*PID_input_buffer[1]
+                          + (-Kp + Ki/(2*(double)timer_speed)+2*Kd*(double)timer_speed)*PID_input_buffer[0];
     
     // The new volumetric flow rate is recorded:
     after_PID_speed = PID_output_buffer[2];
 
     // Update the current total motor displacement
-    current_total_steps = next_total_steps;
+    current_total_steps = next_total_steps; // 99
 
     // Calculate the motor displacement with a calibration number (think of it as Kp2)
-    next_total_steps = (100*after_PID_speed); // Calibration
+    next_total_steps = (1*after_PID_speed); // Calibration //100
 
-    // Set the destination for the motor to move
-    myStepper.moveTo(next_total_steps);
-
-    // If the motor has not hit the mechanical switch:
-    if (stop_flag == 0){
-
-      // If the next requested displacement is less than the current one, the motor has to switch directions
-      if (next_total_steps < current_total_steps){
-        if (abs(myStepper.distanceToGo()) > 0){
-          // Set the speed to what we want and keep running - negative sign is for negative turns
-          myStepper.setSpeed(-motor_speed);
-          myStepper.run();
-        }
-      }
-      // Positive increase in displacement - can go forwards
-      else{
-        if (abs(myStepper.distanceToGo()) > 0){
-          // Set the speed to what we want and keep running - positive sign for forwards
-          myStepper.setSpeed(motor_speed);
-          myStepper.run();
-        }
-      }
-    }
-    // If the motor has hit the mechanical switch then:
-    else{
-      // Stop the motor until the mechanical switch is unpressed
-      myStepper.stop();
-    }
+    // Serial.println(myStepper.distanceToGo());
     
     // Reset the pulse timers and don't calculate the value again until the value is read
       calculate_PID_vals = 0;
   }
+
+    // If the motor has not hit the mechanical switch:
+    if (stop_flag == 0){
+
+      // Set the destination for the motor to move
+      myStepper.moveTo((long)(next_total_steps));
+
+      // Work out where the motor currently is
+      current_distance = myStepper.currentPosition();
+
+      // If it is going the wrong way:
+      
+      if (current_distance < (long)next_total_steps){
+
+        // Turn the other way
+
+        myStepper.setSpeed(motor_speed);
+        myStepper.run();
+      }
+
+      // Otherwise turn the other other way
+      else if (current_distance > (long)next_total_steps){
+
+        myStepper.setSpeed(-motor_speed);
+        myStepper.run();
+      }
+      else{
+
+        // If it hs reached its destination then stop
+        myStepper.setSpeed(0);
+        myStepper.stop();
+      }
+    }
 }
