@@ -27,7 +27,7 @@ const byte mechanical_stop_pin = 21; // Mechanical stop switch
 
 // Other variables
 const int steps_per_rev = 200; // Steps per revolution
-<<<<<<< HEAD
+int transient_input; // requested speed (RTB)
 const unsigned int timer_speed = 10; // 5 Hz timer
 const int motor_speed = 1000;
 double measured_speed = 0; // The speed measured (Y)
@@ -37,17 +37,6 @@ double current_total_steps = 0;
 double next_total_steps = 0;
 double error = 0; // E = U-Y in control system
 long current_distance = 0; // Current position of the motor
-=======
-const unsigned int timer_speed = 5; // 5 Hz timer
-const unsigned int motor_speed = 1000;
-int transient_input; 
-float measured_speed = 0; // The speed measured (Y)
-float requested_speed = 0; // U in the control system
-float after_PID_speed = 0; // K(U-Y) in the control system
-float current_total_steps = 0;
-float next_total_steps = 0;
-float error = 0; // E = U-Y in control system
->>>>>>> d4c70546b444772488acab596b469171f60cad3b
 
 // PID Characteristics
 double PID_input_buffer[3] = {0,0,0}; // Buffer for bilinear multistep transfer function
