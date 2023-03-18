@@ -20,6 +20,8 @@ uint8_t RDYEmessage[max_bytes];  // Sends info to dye injection microcontroller,
 uint8_t EDYEmessage[max_bytes];  // Sends info to dye injection microcontroller, (resets dye injection)
 
 // Define pin connections
+#define left_contact_pin 14
+#define right_contact_pin 15
 const int dirPin = 2;
 const int stepPin = 3;
 const byte interruptPin = 20;        // Pin change interrupt pin
@@ -52,6 +54,17 @@ double Kp = 2;
 double Ki = 0;
 double Kd = 0;
 
+// Flags and globals for interrupts
+boolean time_start = 0;
+unsigned int sensor_pulse_counter = 0;
+boolean calculate_PID_vals = 1;
+boolean left_stop_flag = 0;
+boolean right_stop_flag = 0;
+boolean current_direction = 0; // 0 = left, 1 = right
+boolean master_stop_flag = 0;
+boolean left_detected = 0;
+boolean right_detected = 0;
+
 // Define motor interface type
 #define motorInterfaceType 1
 
@@ -75,6 +88,40 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(interruptPin), record_pulse, CHANGE); // Configure EXT1 with ISR record pulse to trigger upon pin change
   pinMode(mechanical_stop_pin, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(mechanical_stop_pin), mechanical_stop, CHANGE); // Configure EXT1 with ISR record pulse to trigger
+  pinMode(left_contact_pin, INPUT); // Setup the left contact switch reading pin
+  pinMode(right_contact_pin, INPUT); // Setup the right contact switch reading pin
+
+  // Preliminary read, so that in the setup before any commands are called it cannot self-destruct (basically a forced interrupt)
+
+  left_detected = digitalRead(left_contact_pin);
+  right_detected = digitalRead(right_contact_pin);
+
+  // If it has hit the left wall:
+  if ((left_detected == 1) && (right_detected == 0)){
+
+    // Stop it from going left any further
+        left_stop_flag = 1;
+
+        // Stop the stepper's current run command immediately - next iteration it won't be called again
+        myStepper.stop();
+  }
+  // If it has hit the right wall:
+  else if ((right_detected == 1) && (left_detected == 0)){
+
+    // Stop it from going right any further
+    right_stop_flag = 1;
+
+    // Stop the stepper's current run command immediately - next iteration it won't be called again
+    myStepper.stop();
+  }
+  // Otherwise, it is currently not hitting anything.
+  else{
+
+    // Reset the stop flags so that it is free to move in both directions again
+    left_stop_flag = 0;
+    right_stop_flag = 0;
+  }
+  
 
   cli(); // stop interrupts
 
@@ -94,15 +141,6 @@ void setup()
   sei(); // allow interrupts
 }
 
-// Flags and globals for interrupts
-boolean time_start = 0;
-unsigned int sensor_pulse_counter = 0;
-boolean calculate_PID_vals = 1;
-boolean left_stop_flag = 0;
-boolean right_stop_flag = 0;
-boolean current_direction = 0; // 0 = left, 1 = right
-boolean master_stop_flag = 0;
-
 // Triangular wave test code
 int sign = 1;
 int interval = 10;
@@ -119,39 +157,40 @@ void record_pulse()
   sensor_pulse_counter++;
 }
 
+
 void mechanical_stop()
 {
-  // If the motor is still fully enabled upon interrupt:
-  if ((left_stop_flag == 0) && (right_stop_flag == 0)){
 
-    // If going left upon interrupt:
-    if (current_direction == 0){
+  // Read the state of the contact switches
+  left_detected = digitalRead(left_contact_pin);
+  right_detected = digitalRead(right_contact_pin);
 
-      // Stop it from going left any further
-      left_stop_flag = 1;
-      
-      // Stop the stepper's current run command immediately - next iteration it won't be called again
-      myStepper.stop();
+  // If it has hit the left wall:
+  if ((left_detected == 1) && (right_detected == 0)){
 
-    }
-    // If going right upon interrupt:
-    else{
-        // Stop it from going right any further
-      right_stop_flag = 1;
+    // Stop it from going left any further
+        left_stop_flag = 1;
 
-      // Stop the stepper's current run command immediately - next iteration it won't be called again
-      myStepper.stop();
-
-    }
+        // Stop the stepper's current run command immediately - next iteration it won't be called again
+        myStepper.stop();
   }
-  // If it has turned away from the button:
+  // If it has hit the right wall:
+  else if ((right_detected == 1) && (left_detected == 0)){
+
+    // Stop it from going right any further
+    right_stop_flag = 1;
+
+    // Stop the stepper's current run command immediately - next iteration it won't be called again
+    myStepper.stop();
+  }
+  // Otherwise, it is currently not hitting anything.
   else{
 
-    // Re-enable the flags so that the motor spins freely again
+    // Reset the stop flags so that it is free to move in both directions again
     left_stop_flag = 0;
     right_stop_flag = 0;
-
   }
+  
 }
 
 // Receives messages from UART, byte by byte

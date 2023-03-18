@@ -11,6 +11,8 @@ int EDYECommand = 0b00010111;
 int TestCommand = 0b1101001;
 
 // Define pin connections
+#define back_contact_pin 14
+#define front_contact_pin 15
 const int dirPin = 2;
 const int stepPin = 3;
 const byte mechanical_stop_pin = 21; // Mechanical stop switch
@@ -51,6 +53,8 @@ boolean backwards_stop_flag = 0;
 boolean forwards_stop_flag = 0;
 boolean current_direction = 1; // 0 = left, 1 = right
 boolean master_stop_flag = 0;
+boolean back_detected = 0;
+boolean front_detected = 0;
 
 void setup()
 {
@@ -64,12 +68,59 @@ void setup()
   pinMode(10, OUTPUT); // If it receives the RIGHT commands (reads the identifier)
   pinMode(12, OUTPUT); // If the serial buffer flushes
   pinMode(13, OUTPUT); // If it receives ANYTHING
+  pinMode(back_contact_pin, INPUT); // Setup the back contact switch reading pin
+  pinMode(front_contact_pin, INPUT); // Setup the front contact switch reading pin
+
+  // Preliminary read, so that in the setup before any commands are called it cannot self-destruct (basically a forced interrupt)
+
+  back_detected = digitalRead(back_contact_pin);
+  front_detected = digitalRead(front_contact_pin);
+
+  // If it has hit the back wall:
+  if ((back_detected == 1) && (front_detected == 0)){
+    // Stop it from going back any further
+        backwards_stop_flag = 1;
+
+        // Reset the stop point
+        backwards_stop_steps = myStepper.currentPosition();
+
+        // Set the total displacement to wherever it stopped
+        total_steps = backwards_stop_steps;
+
+        // Reset the moveto command so that it doesn't want to go over anymore
+        myStepper.moveTo(total_steps);
+        
+        // Stop the stepper's current run command immediately - next iteration it won't be called again
+        myStepper.stop();
+  }
+  // If it has hit the front wall:
+  else if ((front_detected == 1) && (back_detected == 0)){
+    // Stop it from going forwards any further
+    forwards_stop_flag = 1;
+
+    // Reset the stop point
+    forwards_stop_steps = myStepper.currentPosition();
+
+    // Set the total displacement to wherever it stopped
+    total_steps = forwards_stop_steps;
+
+    // Reset the moveto command so that it doesn't want to go over anymore
+    myStepper.moveTo(total_steps);
+
+    // Stop the stepper's current run command immediately - next iteration it won't be called again
+    myStepper.stop();
+  }
+  // Otherwise, it is currently not hitting anything.
+  else{
+
+    // Reset the stop flags so that it is free to move in both directions again
+    backwards_stop_flag = 0;
+    forwards_stop_flag = 0;
+  }
 
   // Mechanical stop interrupt
   pinMode(mechanical_stop_pin, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(mechanical_stop_pin), mechanical_stop, CHANGE); // Configure EXT1 with ISR record pulse to trigger
-
-
 
   cli(); // stop interrupts
 
@@ -103,55 +154,53 @@ void readData(uint8_t *data, int length)
 
 void mechanical_stop()
 {
-  // If the motor is still fully enabled upon interrupt:
-  if ((backwards_stop_flag == 0) && (forwards_stop_flag == 0)){
 
-    // If going left upon interrupt:
-    if (current_direction == 0){
+  // Read the state of the contact switches
+  back_detected = digitalRead(back_contact_pin);
+  front_detected = digitalRead(front_contact_pin);
 
-      // Stop it from going left any further
-      backwards_stop_flag = 1;
+  // If it has hit the back wall:
+  if ((back_detected == 1) && (front_detected == 0)){
+    // Stop it from going back any further
+        backwards_stop_flag = 1;
 
-      // Reset the stop point
-      backwards_stop_steps = myStepper.currentPosition();
+        // Reset the stop point
+        backwards_stop_steps = myStepper.currentPosition();
 
-      // Set the total displacement to wherever it stopped
-      total_steps = backwards_stop_steps;
+        // Set the total displacement to wherever it stopped
+        total_steps = backwards_stop_steps;
 
-      // Reset the moveto command so that it doesn't want to go over anymore
-      myStepper.moveTo(total_steps);
-      
-      // Stop the stepper's current run command immediately - next iteration it won't be called again
-      myStepper.stop();
-
-    }
-    // If going right upon interrupt:
-    else{
-        // Stop it from going right any further
-      forwards_stop_flag = 1;
-
-      // Reset the stop point
-      forwards_stop_steps = myStepper.currentPosition();
-
-      // Set the total displacement to wherever it stopped
-      total_steps = forwards_stop_steps;
-
-      // Reset the moveto command so that it doesn't want to go over anymore
-      myStepper.moveTo(total_steps);
-
-      // Stop the stepper's current run command immediately - next iteration it won't be called again
-      myStepper.stop();
-
-    }
+        // Reset the moveto command so that it doesn't want to go over anymore
+        myStepper.moveTo(total_steps);
+        
+        // Stop the stepper's current run command immediately - next iteration it won't be called again
+        myStepper.stop();
   }
-  // If it has turned away from the button:
+  // If it has hit the front wall:
+  else if ((front_detected == 1) && (back_detected == 0)){
+    // Stop it from going forwards any further
+    forwards_stop_flag = 1;
+
+    // Reset the stop point
+    forwards_stop_steps = myStepper.currentPosition();
+
+    // Set the total displacement to wherever it stopped
+    total_steps = forwards_stop_steps;
+
+    // Reset the moveto command so that it doesn't want to go over anymore
+    myStepper.moveTo(total_steps);
+
+    // Stop the stepper's current run command immediately - next iteration it won't be called again
+    myStepper.stop();
+  }
+  // Otherwise, it is currently not hitting anything.
   else{
 
-    // Re-enable the flags so that the motor spins freely again
+    // Reset the stop flags so that it is free to move in both directions again
     backwards_stop_flag = 0;
     forwards_stop_flag = 0;
-
   }
+  
 }
 
 
