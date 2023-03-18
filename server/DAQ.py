@@ -114,6 +114,16 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
 
     return logs
 
+def resetDyeInjection(TB_port: str):
+
+    logs = {}
+
+    TB_UART = UART("TB Microcontroller", TB_port)
+
+    logs['ETB2'] = ETB2Command(TB_UART)
+
+    return logs
+
 def run(DAQ_port: str, TB_port: str, inputs=None):
 
     if inputs is None:
