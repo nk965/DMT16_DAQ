@@ -98,7 +98,10 @@ void setup()
 boolean time_start = 0;
 unsigned int sensor_pulse_counter = 0;
 boolean calculate_PID_vals = 1;
-boolean stop_flag = 0;
+boolean left_stop_flag = 0;
+boolean right_stop_flag = 0;
+boolean current_direction = 0; // 0 = left, 1 = right
+boolean master_stop_flag = 0;
 
 // Triangular wave test code
 int sign = 1;
@@ -118,7 +121,37 @@ void record_pulse()
 
 void mechanical_stop()
 {
-  stop_flag = !stop_flag;
+  // If the motor is still fully enabled upon interrupt:
+  if ((left_stop_flag == 0) && (right_stop_flag == 0)){
+
+    // If going left upon interrupt:
+    if (current_direction == 0){
+
+      // Stop it from going left any further
+      left_stop_flag = 1;
+      
+      // Stop the stepper's current run command immediately - next iteration it won't be called again
+      myStepper.stop();
+
+    }
+    // If going right upon interrupt:
+    else{
+        // Stop it from going right any further
+      right_stop_flag = 1;
+
+      // Stop the stepper's current run command immediately - next iteration it won't be called again
+      myStepper.stop();
+
+    }
+  }
+  // If it has turned away from the button:
+  else{
+
+    // Re-enable the flags so that the motor spins freely again
+    left_stop_flag = 0;
+    right_stop_flag = 0;
+
+  }
 }
 
 // Receives messages from UART, byte by byte
@@ -217,105 +250,6 @@ void loop()
       // Set the remaining bytes of the union to 0 (assuming a big-endian system)
       converter.bytes[0] = converter.bytes[1] = converter.bytes[2] = converter.bytes[3] = converter.bytes[4] = converter.bytes[5] = 0;
 
-      // requested_speed = converter.value;
-
-      // Start of PID loop
-
-      while (true)
-      {
-
-        if (calculate_PID_vals == 1)
-        {
-
-          sendData(receivedData, max_bytes);
-
-          // requested_speed = 10;
-
-          //     // Triangular wave test code
-
-          if ((int)requested_speed > 199)
-          {
-            sign = -1;
-          }
-          else if ((int)requested_speed < -199)
-          {
-            sign = 1;
-          }
-
-          requested_speed = requested_speed + sign * interval;
-
-          // Convert the pulse counts into a speed value (mL/s)
-          measured_speed = ((double)sensor_pulse_counter * (double)timer_speed / (double)1530) * (double)(1000);
-
-          sensor_pulse_counter = 0;
-
-          // Work out the error to put into the PID controller
-          error = requested_speed - measured_speed;
-
-          // Update input buffer
-          PID_input_buffer[0] = PID_input_buffer[1];
-          PID_input_buffer[1] = PID_input_buffer[2];
-          PID_input_buffer[2] = error;
-
-          // Put it through a digital PID controller
-          PID_output_buffer[0] = PID_output_buffer[1];
-          PID_output_buffer[1] = PID_output_buffer[2];
-          PID_output_buffer[2] = PID_output_buffer[0] +
-                                 (Kp + Ki / (2 * (double)timer_speed) + 2 * Kd * (double)timer_speed) * PID_input_buffer[2] + (Ki / (double)timer_speed - 4 * Kd * (double)timer_speed) * PID_input_buffer[1] + (-Kp + Ki / (2 * (double)timer_speed) + 2 * Kd * (double)timer_speed) * PID_input_buffer[0];
-
-          // The new volumetric flow rate is recorded:
-          after_PID_speed = PID_output_buffer[2];
-
-          // Update the current total motor displacement
-          current_total_steps = next_total_steps; // 99
-
-          // Calculate the motor displacement with a calibration number (think of it as Kp2)
-          next_total_steps = (1 * after_PID_speed); // Calibration //100
-
-          // Serial.println(myStepper.distanceToGo());
-
-          // Reset the pulse timers and don't calculate the value again until the value is read
-          calculate_PID_vals = 0;
-        }
-
-        // If the motor has not hit the mechanical switch:
-        if (stop_flag == 0)
-        {
-
-          // Set the destination for the motor to move
-          myStepper.moveTo((long)(next_total_steps));
-
-          // Work out where the motor currently is
-          current_distance = myStepper.currentPosition();
-
-          // If it is going the wrong way:
-
-          if (current_distance < (long)next_total_steps)
-          {
-
-            // Turn the other way
-
-            myStepper.setSpeed(motor_speed);
-            myStepper.run();
-          }
-
-          // Otherwise turn the other other way
-          else if (current_distance > (long)next_total_steps)
-          {
-
-            myStepper.setSpeed(-motor_speed);
-            myStepper.run();
-          }
-          else
-          {
-
-            // If it hs reached its destination then stop
-            myStepper.setSpeed(0);
-            myStepper.stop();
-          }
-        }
-      }
-
       // If the padding is 00, LED is HIGH showing RTB command
       if (receivedData[3] == 0b00000000)
       {
@@ -332,7 +266,7 @@ void loop()
     {
       digitalWrite(13, LOW);
       sendData(receivedData, max_bytes); // Debugging print
-      stop_flag = 0;
+      master_stop_flag = 1;
     }
     else if (receivedData[0] == ETB2Command) // ETB2 - tells Testbed to stop flowing
     {
@@ -400,40 +334,49 @@ void loop()
     calculate_PID_vals = 0;
   }
 
-  // If the motor has not hit the mechanical switch:
-  if (stop_flag == 0)
-  {
-
+  if (master_stop_flag == 0){
     // Set the destination for the motor to move
-    myStepper.moveTo((long)(next_total_steps));
+      myStepper.moveTo((long)(next_total_steps));
 
-    // Work out where the motor currently is
-    current_distance = myStepper.currentPosition();
+      // Work out where the motor currently is
+      current_distance = myStepper.currentPosition();
 
-    // If it is going the wrong way:
+      // If it is going the wrong way (left):
 
     if (current_distance < (long)next_total_steps)
     {
 
-      // Turn the other way
+      // Turn the other way if the mechanical switch has not been hit
+      if (left_stop_flag == 0){
 
-      myStepper.setSpeed(motor_speed);
-      myStepper.run();
+        myStepper.setSpeed(motor_speed);
+        myStepper.run();
+      }
     }
 
     // Otherwise turn the other other way
     else if (current_distance > (long)next_total_steps)
     {
 
-      myStepper.setSpeed(-motor_speed);
-      myStepper.run();
+      // Turn the other way if the mechanical switch has not been hit
+      if (right_stop_flag == 0){
+
+        myStepper.setSpeed(-motor_speed);
+        myStepper.run();
+      }
     }
     else
     {
-
       // If it hs reached its destination then stop
       myStepper.setSpeed(0);
       myStepper.stop();
     }
   }
+  else{
+
+    // If master stop has been called:
+      myStepper.setSpeed(0);
+      myStepper.stop();    
+  }
+
 }
