@@ -13,6 +13,7 @@ int TestCommand = 0b1101001;
 // Define pin connections
 const int dirPin = 2;
 const int stepPin = 3;
+const byte mechanical_stop_pin = 21; // Mechanical stop switch
 // const int steps_per_rev = 200; // Steps per revolution
 int speed = 0;         // The speed variable used to set stuff - there are 2 variables because this allows the motor to remember the speed after reset
 int const_speed = 200; // Steps per second
@@ -63,6 +64,11 @@ void setup()
   pinMode(10, OUTPUT); // If it receives the RIGHT commands (reads the identifier)
   pinMode(12, OUTPUT); // If the serial buffer flushes
   pinMode(13, OUTPUT); // If it receives ANYTHING
+
+  // Mechanical stop interrupt
+  pinMode(mechanical_stop_pin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(mechanical_stop_pin), mechanical_stop, CHANGE); // Configure EXT1 with ISR record pulse to trigger
+
 
 
   cli(); // stop interrupts
