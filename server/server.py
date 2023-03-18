@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import json
 import numpy as np
 from helpers import cleanInputs, linear_interpolation
-from DAQ import run, DAQ_TESTING, TB_TESTING
+from DAQ import run, resetDyeInjection, DAQ_TESTING, TB_TESTING
 from PySerial import list_ports
 from server_config import inputInfo
 
@@ -40,6 +40,26 @@ def StartExperiment():
     # print(logs)
 
     return {'message': {'inputs': f"Experiment Started with {inputs}", 'logs': logs}}
+
+@app.route('/ResetDyeInjection', methods=['POST'])
+def ResetDyeInjection():
+    
+    userConfig = globals().get('userConfig')
+
+    if userConfig is None:
+
+        default_userConfig = {key: value["defaultValue"] for key, value in inputInfo.items() if value.get("submission_form") == "userConfig"}
+
+        globals()['userConfig'] = default_userConfig
+
+        return {'message': 'User Configuration Not found! Loading Defaults'}
+
+    inputs = userConfig
+
+    logs = resetDyeInjection(inputs['TB_port'])
+
+    return {'message': {'logs': logs}}
+
 
 @app.route('/RefreshTransConfig', methods=['GET'])
 def RefreshTransConfig():
