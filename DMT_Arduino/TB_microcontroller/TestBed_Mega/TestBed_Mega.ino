@@ -86,7 +86,7 @@ void setup()
 
   pinMode(interruptPin, INPUT_PULLUP);                                        // Configure pin 20 to be an interrupt pin
   attachInterrupt(digitalPinToInterrupt(interruptPin), record_pulse, CHANGE); // Configure EXT1 with ISR record pulse to trigger upon pin change
-  pinMode(mechanical_stop_pin, INPUT_PULLUP);
+  pinMode(mechanical_stop_pin, INPUT);
   attachInterrupt(digitalPinToInterrupt(mechanical_stop_pin), mechanical_stop, CHANGE); // Configure EXT1 with ISR record pulse to trigger
   pinMode(left_contact_pin, INPUT); // Setup the left contact switch reading pin
   pinMode(right_contact_pin, INPUT); // Setup the right contact switch reading pin
@@ -100,10 +100,10 @@ void setup()
   if ((left_detected == 1) && (right_detected == 0)){
 
     // Stop it from going left any further
-        left_stop_flag = 1;
+    left_stop_flag = 1;
 
-        // Stop the stepper's current run command immediately - next iteration it won't be called again
-        myStepper.stop();
+    // Stop the stepper's current run command immediately - next iteration it won't be called again
+    // myStepper.stop();
   }
   // If it has hit the right wall:
   else if ((right_detected == 1) && (left_detected == 0)){
@@ -112,7 +112,7 @@ void setup()
     right_stop_flag = 1;
 
     // Stop the stepper's current run command immediately - next iteration it won't be called again
-    myStepper.stop();
+    // myStepper.stop();
   }
   // Otherwise, it is currently not hitting anything.
   else{
@@ -165,6 +165,9 @@ void mechanical_stop()
   left_detected = digitalRead(left_contact_pin);
   right_detected = digitalRead(right_contact_pin);
 
+  Serial.println(left_detected);
+  Serial.println(right_detected);
+
   // If it has hit the left wall:
   if ((left_detected == 1) && (right_detected == 0)){
 
@@ -172,6 +175,7 @@ void mechanical_stop()
         left_stop_flag = 1;
 
         // Stop the stepper's current run command immediately - next iteration it won't be called again
+        myStepper.setSpeed(0);
         myStepper.stop();
   }
   // If it has hit the right wall:
@@ -181,11 +185,12 @@ void mechanical_stop()
     right_stop_flag = 1;
 
     // Stop the stepper's current run command immediately - next iteration it won't be called again
+    myStepper.setSpeed(0);
     myStepper.stop();
   }
   // Otherwise, it is currently not hitting anything.
   else{
-
+    
     // Reset the stop flags so that it is free to move in both directions again
     left_stop_flag = 0;
     right_stop_flag = 0;
@@ -243,8 +248,7 @@ void loop()
 
       requested_speed = (((double)receivedData[1])/double(256)) * double(100);
 
-      Serial.println(requested_speed);
-
+      // Serial.println(requested_speed);
 
     }
     else if (receivedData[0] == STB2Command) // 2nd byte: branch pipe temperature
@@ -336,14 +340,14 @@ void loop()
 
     // Triangular wave test code
 
-    // if ((int)requested_speed > 199){
-    //   sign = -1;
-    // }
-    // else if ((int)requested_speed < -199){
-    //   sign = 1;
-    // }
+    if ((int)requested_speed > 199){
+      sign = -1;
+    }
+    else if ((int)requested_speed < -199){
+      sign = 1;
+    }
 
-    // requested_speed = requested_speed + sign*interval;
+    requested_speed = requested_speed + sign*interval;
 
     sensor_pulse_counter = 0;
 
