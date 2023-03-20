@@ -53,9 +53,10 @@ def TB_TESTING(port: str, inputInfo):
 
     logs['IDYE3'] = IDYE3Command(TB_UART, inputInfo['enPulse']['defaultValue'], inputInfo['syrDia']['defaultValue'], inputInfo['vol_inject']['defaultValue'])
 
-    time.sleep(0.5*(inputInfo['inject_time']['defaultValue'] - inputInfo['trans_time']['defaultValue']))
+    # time.sleep(0.5*(inputInfo['inject_time']['defaultValue'] - inputInfo['trans_time']['defaultValue']))
+    time.sleep(3)
 
-    time.sleep(inputInfo['inject_time']['defaultValue']) # TEMPORARY
+    # time.sleep(inputInfo['inject_time']['defaultValue']) # TEMPORARY
 
     logs['RTB'] = RTBProcedure(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
 

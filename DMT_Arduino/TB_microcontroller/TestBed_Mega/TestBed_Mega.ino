@@ -45,7 +45,7 @@ union
   double value;
 } converter;
 
-double requested_speed = 0; // U in the control system (mL/s)
+double requested_speed; // U in the control system (mL/s)
 
 // PID Characteristics
 double PID_input_buffer[3] = {0, 0, 0};  // Buffer for bilinear multistep transfer function
@@ -239,7 +239,13 @@ void loop()
     }
     else if (receivedData[0] == STBCommand) // 2nd byte: initial actuator input, 3rd + 4th byte: time duration
     {
-      sendData(receivedData, max_bytes); // Debugging print
+      // sendData(receivedData, max_bytes); // Debugging print
+
+      requested_speed = (((double)receivedData[1])/double(256)) * double(100);
+
+      Serial.println(requested_speed);
+
+
     }
     else if (receivedData[0] == STB2Command) // 2nd byte: branch pipe temperature
     {
@@ -282,12 +288,9 @@ void loop()
     else if (receivedData[0] == RTBCommand) // RTB - 2 byte has actuator position, first iteration sends RDYE
     {
 
-      // Copy the two bytes of data into the last two bytes of the union
-      converter.bytes[6] = receivedData[1];
-      converter.bytes[7] = receivedData[2];
+      // requested_speed = (double)(uint8_t (receivedData[1]));
 
-      // Set the remaining bytes of the union to 0 (assuming a big-endian system)
-      converter.bytes[0] = converter.bytes[1] = converter.bytes[2] = converter.bytes[3] = converter.bytes[4] = converter.bytes[5] = 0;
+      requested_speed = (double)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2])) / double(1000);
 
       // If the padding is 00, LED is HIGH showing RTB command
       if (receivedData[3] == 0b00000000)
@@ -329,7 +332,7 @@ void loop()
     // Convert the pulse counts into a speed value (mL/s)
     measured_speed = ((double)sensor_pulse_counter * (double)timer_speed / (double)1530) * (double)(1000);
 
-    Serial.println(measured_speed);
+    // Serial.println(measured_speed);
 
     // Triangular wave test code
 
