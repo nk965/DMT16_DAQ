@@ -89,6 +89,7 @@ void setup()
 
         // Reset the moveto command so that it doesn't want to go over anymore
         myStepper.moveTo(total_steps);
+        myStepper.setSpeed(0);
         
         // Stop the stepper's current run command immediately - next iteration it won't be called again
         myStepper.stop();
@@ -106,6 +107,7 @@ void setup()
 
     // Reset the moveto command so that it doesn't want to go over anymore
     myStepper.moveTo(total_steps);
+    myStepper.setSpeed(0);
 
     // Stop the stepper's current run command immediately - next iteration it won't be called again
     myStepper.stop();
@@ -119,7 +121,7 @@ void setup()
   }
 
   // Mechanical stop interrupt
-  pinMode(mechanical_stop_pin, INPUT_PULLUP);
+  pinMode(mechanical_stop_pin, INPUT);
   attachInterrupt(digitalPinToInterrupt(mechanical_stop_pin), mechanical_stop, CHANGE); // Configure EXT1 with ISR record pulse to trigger
 
   cli(); // stop interrupts
@@ -172,6 +174,7 @@ void mechanical_stop()
 
         // Reset the moveto command so that it doesn't want to go over anymore
         myStepper.moveTo(total_steps);
+        myStepper.setSpeed(0);
         
         // Stop the stepper's current run command immediately - next iteration it won't be called again
         myStepper.stop();
@@ -189,6 +192,7 @@ void mechanical_stop()
 
     // Reset the moveto command so that it doesn't want to go over anymore
     myStepper.moveTo(total_steps);
+    myStepper.setSpeed(0);
 
     // Stop the stepper's current run command immediately - next iteration it won't be called again
     myStepper.stop();
