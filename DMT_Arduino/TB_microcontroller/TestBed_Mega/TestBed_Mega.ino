@@ -172,11 +172,11 @@ void mechanical_stop()
   if ((left_detected == 1) && (right_detected == 0)){
 
     // Stop it from going left any further
-        left_stop_flag = 1;
+    left_stop_flag = 1;
 
-        // Stop the stepper's current run command immediately - next iteration it won't be called again
-        myStepper.setSpeed(0);
-        myStepper.stop();
+    // Stop the stepper's current run command immediately - next iteration it won't be called again
+    myStepper.setSpeed(0);
+    myStepper.stop();
   }
   // If it has hit the right wall:
   else if ((right_detected == 1) && (left_detected == 0)){
@@ -340,14 +340,16 @@ void loop()
 
     // Triangular wave test code
 
-    if ((int)requested_speed > 199){
-      sign = -1;
-    }
-    else if ((int)requested_speed < -199){
-      sign = 1;
-    }
+    // if ((int)requested_speed > 199){
+    //   sign = -1;
+    // }
+    // else if ((int)requested_speed < -199){
+    //   sign = 1;
+    // }
 
-    requested_speed = requested_speed + sign*interval;
+    // requested_speed = requested_speed + sign*interval;
+
+    // End test code
 
     sensor_pulse_counter = 0;
 

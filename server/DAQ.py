@@ -19,6 +19,8 @@ def DAQ_TESTING(port: str, inputInfo):
 
     DAQ_UART = UART("DAQ Microcontroller", port) # check this, optionally, specify the port number
 
+    time.sleep(5)
+
     logs['SDAQ'] = SDAQCommand(DAQ_UART, inputInfo['PIVfreq']['defaultValue'], inputInfo["Datafreq"]["defaultValue"],
                                  inputInfo["PIVfreq"], inputInfo["Datafreq"])  # TODO replace the second and third arguments with actual values from user input
 
@@ -40,6 +42,8 @@ def TB_TESTING(port: str, inputInfo):
     logs = {}
 
     TB_UART = UART("TB Microcontroller", port)
+
+    time.sleep(5)
 
     logs['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) # TODO ask Pike if this is necessary 
 
@@ -74,6 +78,8 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
 
     TB_UART = UART("TB Microcontroller", TB_port)
     DAQ_UART = UART("DAQ Microcontroller", DAQ_port)
+
+    time.sleep(5)
 
     logs['ITB'] = ITBCommand(TB_UART, inputs["stabilising_delay"], info['stabilising_delay']) 
 
@@ -149,9 +155,9 @@ if __name__ == "__main__":
     TB_port_index = int(input("Choose TB port selection number (input should be an integer): "))
 
     # logs = TB_TESTING(ports_available[TB_port_index], inputInfo) # Benchscale Test for TB system
-    # logs = DAQ_TESTING(ports_available[DAQ_port_index], inputInfo) # Benchscale Test for DAQ system
+    logs = DAQ_TESTING(ports_available[DAQ_port_index], inputInfo) # Benchscale Test for DAQ system
 
-    logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
+    # logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
 
     print(logs)
 

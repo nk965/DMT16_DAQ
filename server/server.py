@@ -39,9 +39,9 @@ def StartExperiment():
 
     # print(logs)
 
-    return {'message': {'inputs': f"Experiment Started with {inputs}", 'logs': logs}}
+    return {'message': 'Success'}
 
-@app.route('/ResetDyeInjection', methods=['POST'])
+@app.route('/ResetDyeInjection', methods=['GET', 'POST'])
 def ResetDyeInjection():
     
     userConfig = globals().get('userConfig')
