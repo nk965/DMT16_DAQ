@@ -129,11 +129,5 @@ class UART:
 
         self.serial_connection.write(info)
 
-        time.sleep(1)
 
-        # time.sleep(0.8) 
-
-        # read_receipt = self.serial_connection.read_all()
-
-        # print(f'{self.port_name} sends back {read_receipt}')
 

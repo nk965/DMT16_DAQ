@@ -19,6 +19,8 @@ def DAQ_TESTING(port: str, inputInfo):
 
     DAQ_UART = UART("DAQ Microcontroller", port) # check this, optionally, specify the port number
 
+    time.sleep(5)
+
     logs['SDAQ'] = SDAQCommand(DAQ_UART, inputInfo['PIVfreq']['defaultValue'], inputInfo["Datafreq"]["defaultValue"],
                                  inputInfo["PIVfreq"], inputInfo["Datafreq"])  # TODO replace the second and third arguments with actual values from user input
 
@@ -41,6 +43,8 @@ def TB_TESTING(port: str, inputInfo):
 
     TB_UART = UART("TB Microcontroller", port)
 
+    time.sleep(5)
+
     logs['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) # TODO ask Pike if this is necessary 
 
     logs['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
@@ -53,9 +57,10 @@ def TB_TESTING(port: str, inputInfo):
 
     logs['IDYE3'] = IDYE3Command(TB_UART, inputInfo['enPulse']['defaultValue'], inputInfo['syrDia']['defaultValue'], inputInfo['vol_inject']['defaultValue'])
 
-    time.sleep(0.5*(inputInfo['inject_time']['defaultValue'] - inputInfo['trans_time']['defaultValue']))
+    # time.sleep(0.5*(inputInfo['inject_time']['defaultValue'] - inputInfo['trans_time']['defaultValue']))
+    time.sleep(3)
 
-    time.sleep(inputInfo['inject_time']['defaultValue']) # TEMPORARY
+    # time.sleep(inputInfo['inject_time']['defaultValue']) # TEMPORARY
 
     logs['RTB'] = RTBProcedure(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
 
@@ -74,6 +79,8 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
     TB_UART = UART("TB Microcontroller", TB_port)
     DAQ_UART = UART("DAQ Microcontroller", DAQ_port)
 
+    time.sleep(5)
+
     logs['ITB'] = ITBCommand(TB_UART, inputs["stabilising_delay"], info['stabilising_delay']) 
 
     logs['STB'] = STBCommand(TB_UART, inputs["start_y"], info["start_y"], inputs["trans_time"], info["trans_time"])
@@ -88,7 +95,7 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
 
     logs['SDAQ'] = SDAQCommand(DAQ_UART, inputs["PIVfreq"], inputs["Datafreq"], info["PIVfreq"], info["Datafreq"]) 
 
-    time.sleep(1)
+    time.sleep(1.5)
 
     logs['SDAQ2'] = SDAQ2Command(DAQ_UART, inputs["lenExperiment"], info["lenExperiment"]) 
 
@@ -111,6 +118,18 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
     time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
 
     logs['EDAQ'] = EDAQCommand(DAQ_UART)
+
+    return logs
+
+def resetDyeInjection(TB_port: str):
+
+    logs = {}
+
+    TB_UART = UART("TB Microcontroller", TB_port)
+
+    time.sleep(5)
+
+    logs['ETB2'] = ETB2Command(TB_UART)
 
     return logs
 
@@ -137,8 +156,9 @@ if __name__ == "__main__":
     DAQ_port_index = int(input("Choose DAQ port selection number (input should be an integer): "))
     TB_port_index = int(input("Choose TB port selection number (input should be an integer): "))
 
-    # logs = TB_TESTING(ports_available[TB_port_index], inputInfo) # Benchscale Test for TB system
-    # logs = DAQ_TESTING(ports_available[DAQ_port_index], inputInfo) # Benchscale Test for DAQ system
+    #logs = TB_TESTING(ports_available[TB_port_index], inputInfo) # Benchscale Test for TB system
+    #logs = DAQ_TESTING(ports_available[DAQ_port_index], inputInfo) # Benchscale Test for DAQ system
+    # logs = resetDyeInjection(ports_available[TB_port_index])
 
     logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
 

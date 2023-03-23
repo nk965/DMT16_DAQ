@@ -53,7 +53,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "PIVfreq": {
-        "defaultValue": 20,
+        "defaultValue": 6,
         "type": float,
         "range": [5, 50000], #TODO check with Pike with this
         "bits": 16,
@@ -85,7 +85,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "start_y": {
-        "defaultValue": 25,
+        "defaultValue": 15,
         "type": float,
         "range": [0, 100],
         "bits": 8,
@@ -93,15 +93,15 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "end_y": {
-        "defaultValue": 55,
+        "defaultValue": 63.79,
         "type": float,
-        "range": [0, 100],
+        "range": [0, 50],
         "bits": 8,
         "units": "", #TODO: use units of momentum ratio?
         "submission_form": "transientInput"
     },
     "nodes": {
-        "defaultValue": 5,
+        "defaultValue": 15,
         "type": float,
         "range": [0, 500],
         "bits": None,

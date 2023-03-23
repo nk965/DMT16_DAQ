@@ -11,8 +11,11 @@ int EDYECommand = 0b00010111;
 int TestCommand = 0b1101001;
 
 // Define pin connections
+#define back_contact_pin 14
+#define front_contact_pin 15
 const int dirPin = 2;
 const int stepPin = 3;
+const byte mechanical_stop_pin = 21; // Mechanical stop switch
 // const int steps_per_rev = 200; // Steps per revolution
 int speed = 0;         // The speed variable used to set stuff - there are 2 variables because this allows the motor to remember the speed after reset
 int const_speed = 200; // Steps per second
@@ -24,8 +27,10 @@ int const_speed = 200; // Steps per second
 AccelStepper myStepper(motorInterfaceType, stepPin, dirPin);
 
 String input;
-unsigned int no_steps = 0; // Variable to store the current number of steps
-unsigned int total_steps = 0;       // Total number of steps issued - used in reset to turn the correct number of times backwards. In steps, so NOT revs
+int no_steps = 0; // Variable to store the current number of steps
+int total_steps = 0;       // Total number of steps issued - used in reset to turn the correct number of times backwards. In steps, so NOT revs
+int backwards_stop_steps = 0; // Stores wherever the switch is upon reset at the back wall
+int forwards_stop_steps = 0; // Stores wherever the switch is upon reset at the front wall
 float turn_counter;    // Turn counter - in REVS NOT STEPS
 float duty = 0.2;      // Duty cycle value
 float period = 0.25;    // Period of pulses - max period is around 9 seconds and a bit
@@ -44,6 +49,13 @@ unsigned int timeout_counter = 0; // Counter for 0.5 seconds
 boolean start_timer_flush = 0; // Start timer flag
 uint8_t temp_buffer[4]; // Temporary buffer for reading serial data to clear erroneous stuff
 
+boolean backwards_stop_flag = 0;
+boolean forwards_stop_flag = 0;
+boolean current_direction = 1; // 0 = left, 1 = right
+boolean master_stop_flag = 0;
+boolean back_detected = 0;
+boolean front_detected = 0;
+
 void setup()
 {
   pinMode(dirPin, OUTPUT); // Direction pin for stepper motor
@@ -56,7 +68,61 @@ void setup()
   pinMode(10, OUTPUT); // If it receives the RIGHT commands (reads the identifier)
   pinMode(12, OUTPUT); // If the serial buffer flushes
   pinMode(13, OUTPUT); // If it receives ANYTHING
+  pinMode(back_contact_pin, INPUT); // Setup the back contact switch reading pin
+  pinMode(front_contact_pin, INPUT); // Setup the front contact switch reading pin
 
+  // Preliminary read, so that in the setup before any commands are called it cannot self-destruct (basically a forced interrupt)
+
+  back_detected = digitalRead(back_contact_pin);
+  front_detected = digitalRead(front_contact_pin);
+
+  // If it has hit the back wall:
+  if ((back_detected == 1) && (front_detected == 0)){
+    // Stop it from going back any further
+        backwards_stop_flag = 1;
+
+        // Reset the stop point
+        backwards_stop_steps = myStepper.currentPosition();
+
+        // Set the total displacement to wherever it stopped
+        total_steps = backwards_stop_steps;
+
+        // Reset the moveto command so that it doesn't want to go over anymore
+        myStepper.moveTo(total_steps);
+        myStepper.setSpeed(0);
+        
+        // Stop the stepper's current run command immediately - next iteration it won't be called again
+        myStepper.stop();
+  }
+  // If it has hit the front wall:
+  else if ((front_detected == 1) && (back_detected == 0)){
+    // Stop it from going forwards any further
+    forwards_stop_flag = 1;
+
+    // Reset the stop point
+    forwards_stop_steps = myStepper.currentPosition();
+
+    // Set the total displacement to wherever it stopped
+    total_steps = forwards_stop_steps;
+
+    // Reset the moveto command so that it doesn't want to go over anymore
+    myStepper.moveTo(total_steps);
+    myStepper.setSpeed(0);
+
+    // Stop the stepper's current run command immediately - next iteration it won't be called again
+    myStepper.stop();
+  }
+  // Otherwise, it is currently not hitting anything.
+  else{
+
+    // Reset the stop flags so that it is free to move in both directions again
+    backwards_stop_flag = 0;
+    forwards_stop_flag = 0;
+  }
+
+  // Mechanical stop interrupt
+  pinMode(mechanical_stop_pin, INPUT);
+  attachInterrupt(digitalPinToInterrupt(mechanical_stop_pin), mechanical_stop, CHANGE); // Configure EXT1 with ISR record pulse to trigger
 
   cli(); // stop interrupts
 
@@ -66,7 +132,7 @@ void setup()
   TCNT4 = 0;  // initialize counter value to 0
   // set compare match register for 10kHz increments
   // OCR4A = 1599/1; // = (16*10^6) / (Prescaler*desired_freq) - 1 (must be <65536)
-  OCR4A = 1599;// = (16*10^6) / (1*1024) - 1 (must be <65536)
+  OCR4A = 1599;// = (16*10^6) / (1*10000) - 1 (must be <65536)
   // turn on CTC mode
   TCCR4B |= (1 << WGM12);
   // Set CS12 and CS10 bits for 1 prescaler
@@ -87,6 +153,60 @@ void readData(uint8_t *data, int length)
     data[i] = (uint8_t)Serial1.read();
   }
 }
+
+void mechanical_stop()
+{
+
+  // Read the state of the contact switches
+  back_detected = digitalRead(back_contact_pin);
+  front_detected = digitalRead(front_contact_pin);
+
+  // If it has hit the back wall:
+  if ((back_detected == 1) && (front_detected == 0)){
+    // Stop it from going back any further
+        backwards_stop_flag = 1;
+
+        // Reset the stop point
+        backwards_stop_steps = myStepper.currentPosition();
+
+        // Set the total displacement to wherever it stopped
+        total_steps = backwards_stop_steps;
+
+        // Reset the moveto command so that it doesn't want to go over anymore
+        myStepper.moveTo(total_steps);
+        myStepper.setSpeed(0);
+        
+        // Stop the stepper's current run command immediately - next iteration it won't be called again
+        myStepper.stop();
+  }
+  // If it has hit the front wall:
+  else if ((front_detected == 1) && (back_detected == 0)){
+    // Stop it from going forwards any further
+    forwards_stop_flag = 1;
+
+    // Reset the stop point
+    forwards_stop_steps = myStepper.currentPosition();
+
+    // Set the total displacement to wherever it stopped
+    total_steps = forwards_stop_steps;
+
+    // Reset the moveto command so that it doesn't want to go over anymore
+    myStepper.moveTo(total_steps);
+    myStepper.setSpeed(0);
+
+    // Stop the stepper's current run command immediately - next iteration it won't be called again
+    myStepper.stop();
+  }
+  // Otherwise, it is currently not hitting anything.
+  else{
+
+    // Reset the stop flags so that it is free to move in both directions again
+    backwards_stop_flag = 0;
+    forwards_stop_flag = 0;
+  }
+  
+}
+
 
 // Interrupt service routine (ISR) for timer4
 ISR(TIMER4_COMPA_vect)
@@ -198,6 +318,8 @@ void loop()
     // Read data into the buffer - only 4 long (max_bytes = 4)
     readData(receivedData, max_bytes);
 
+    current_direction = 1; // By default it is going forwards
+
     // If the command is RDYE:
     if (receivedData[0] == RDYECommand)
     {
@@ -279,7 +401,7 @@ void loop()
       // Extract the period we have inputted from 2 bytes
       period = (float)(((unsigned int)receivedData[2] << 8) | ((unsigned int)receivedData[3]))/float(100);
     }
-    // If the EDYE command is called::
+    // If the EDYE command is called:
     else if (receivedData[0] == EDYECommand)
     {
       digitalWrite(10, HIGH);
@@ -292,12 +414,17 @@ void loop()
       // Max speed backwards
       speed = -800;
 
-      // Reset all of the step variables
-      total_steps = 0;
+      // Reset all of the step variables - we go extra far back so that the master stop switch can be hit
+
+      total_steps = backwards_stop_steps - 20000;
       no_steps = 0;
+
+      // Store the current direction as backwards
+      current_direction = 0;
     }
     else{
         Serial1.flush();
+        speed = 0;
     }
 
     start_timer_flush = 0;
@@ -324,33 +451,89 @@ void loop()
   total_steps = total_steps + no_steps;
   no_steps = 0;
 
-  // Tell the stepper to move to that place
-  myStepper.moveTo(total_steps);
+  if (master_stop_flag == 0){
+    
+    // If it has been commanded to spin forwards:
+    if (speed > 0){
+      
+      // If it is allowed to spin forwards:
+      if (forwards_stop_flag == 0){
 
-  // If the stepper hasn't reached there yet, and is not on pulse mode:
-  if ((abs(myStepper.distanceToGo()) > 0) && (pulse == 0))
-  {
+        // Tell the stepper to move to that place
+        myStepper.moveTo(total_steps);
 
-    // Set the speed to what we want and keep running
-    myStepper.setSpeed(speed);
-    myStepper.run();
-  }
-  // If the stepper hasn't reached there yet, and is on pulse mode:
-  else if ((abs(myStepper.distanceToGo()) > 0) && (pulse == 1))
-  {
+        // If the stepper hasn't reached there yet, and is not on pulse mode:
+        if ((abs(myStepper.distanceToGo()) > 0) && (pulse == 0))
+        {
 
-    // If the mode is on:
-    if (on_off)
-    {
+          // Set the speed to what we want and keep running
+          myStepper.setSpeed(speed);
+          myStepper.run();
+        }
+        // If the stepper hasn't reached there yet, and is on pulse mode:
+        else if ((abs(myStepper.distanceToGo()) > 0) && (pulse == 1))
+        {
 
-      // Then turn the motor
-      myStepper.setSpeed(speed);
-      myStepper.run();
+          // If the mode is on:
+          if (on_off)
+          {
+
+            // Then turn the motor
+            myStepper.setSpeed(speed);
+            myStepper.run();
+          }
+
+          // If not, leave it alone
+        }
+        if (abs(myStepper.distanceToGo()) == 0){
+          digitalWrite(7, LOW); // GP/IO low to siginify the end of dye injection
+        }    
+      }
+      // If it is not allowed to spin:
+      else{
+
+        // Stop spinning
+        myStepper.setSpeed(0);
+        myStepper.stop();
+      }
     }
+    // If it has been commanded to spin backwards
+    else if (speed < 0){
+      
+      // If it is allowed to spin backwards:
+      if (backwards_stop_flag == 0){
 
-    // If not, leave it alone
+        // Tell the stepper to move to that place
+        myStepper.moveTo(total_steps);
+        
+        // If the stepper hasn't reached there yet, and is not on pulse mode:
+        if ((abs(myStepper.distanceToGo()) > 0) && (pulse == 0))
+        {
+
+          // Set the speed to what we want and keep running
+          myStepper.setSpeed(speed);
+          myStepper.run();
+        }
+      }
+      // If it is not allowed to spin:
+      else{
+
+        // Stop spinning
+        myStepper.setSpeed(0);
+        myStepper.stop();
+      }
+    }
+    // If it has been commanded to stop (speed == 0):
+    else{
+      myStepper.setSpeed(speed);
+      myStepper.stop();
+    }
+      
   }
-  if (abs(myStepper.distanceToGo()) == 0){
-    digitalWrite(7, LOW); // GP/IO low to siginify the end of dye injection
+  // If master stop:
+  else{
+    myStepper.setSpeed(0);
+        myStepper.stop();
   }
+ 
 }

@@ -38,6 +38,13 @@ double next_total_steps = 0;
 double error = 0;          // E = U-Y in control system
 long current_distance = 0; // Current position of the motor
 
+// Converter for RTB User Inputs
+union
+{
+  unsigned char bytes[8]; // Assumes a big-endian system
+  double value;
+} converter;
+
 double requested_speed; // U in the control system (mL/s)
 
 // PID Characteristics
@@ -95,6 +102,8 @@ void setup()
     // Stop it from going left any further
     left_stop_flag = 1;
 
+    // Stop the stepper's current run command immediately - next iteration it won't be called again
+    // myStepper.stop();
   }
   // If it has hit the right wall:
   else if ((right_detected == 1) && (left_detected == 0)){
@@ -102,6 +111,8 @@ void setup()
     // Stop it from going right any further
     right_stop_flag = 1;
 
+    // Stop the stepper's current run command immediately - next iteration it won't be called again
+    // myStepper.stop();
   }
   // Otherwise, it is currently not hitting anything.
   else{
@@ -118,12 +129,12 @@ void setup()
   TCCR4A = 0; // set entire TCCR1A register to 0
   TCCR4B = 0; // same for TCCR1B
   TCNT4 = 0;  // initialize counter value to 0
-  // set compare match register for 1kHz increments
-  OCR4A = 24999; // = (16*10^6) / (5*64) - 1 (must be <65536)
+  // set compare match register for 10 kHz increments
+  OCR4A = 1599; // = (16*10^6) / (10000*1) - 1 (must be <65536)
   // turn on CTC mode
   TCCR4B |= (1 << WGM12);
   // Set CS12 and CS10 bits for 1 prescaler
-  TCCR4B |= (1 << CS11) | (1 << CS10);
+  TCCR4B |= (1 << CS10);
   // enable timer compare interrupt
   TIMSK4 |= (1 << OCIE4A);
 
@@ -133,19 +144,64 @@ void setup()
 // Triangular wave test code
 int sign = 1;
 int interval = 10;
+long timer = 0;
+double time_interval = 100000000;
+unsigned int sensor_pulse_threshold = 3;
 
-// Interrupt service routine (ISR) for timer4
+// Interrupt service routine (ISR) for timer4 (10 kHz)
 ISR(TIMER4_COMPA_vect)
+{
 
-{ // timer4 interrupt 5 Hz
-  calculate_PID_vals = 1;
+  // If 2 pulses have been detected:
+  if (sensor_pulse_counter == sensor_pulse_threshold){
+
+    // Reset the number of pulses
+    sensor_pulse_counter = 0;
+
+    // Reset the timer - reset to 1 so never division by zero error
+    timer = 1;
+  }
+
+  // 10 Hz
+  if (timer > 1000){
+    calculate_PID_vals = 1;
+    timer = 1;
+
+    // Triangular wave test code
+
+    // if ((int)requested_speed > 199){
+    //   sign = -1;
+    // }
+    // else if ((int)requested_speed < -199){
+    //   sign = 1;
+    // }
+
+    // requested_speed = requested_speed + sign*interval;
+
+    // End test code
+
+    sensor_pulse_counter = 0;
+  }
+
+  // Increment the timer
+  timer++;
+  
 }
 
 void record_pulse()
 {
   sensor_pulse_counter++;
-}
+  if (sensor_pulse_counter == sensor_pulse_threshold){
 
+    // If it has reached 2 pulses, find the speed
+    calculate_PID_vals = 1;
+
+    // Store the value of the timer so that it can be calculated inside the PID loop
+    time_interval = timer;
+
+    // Don't reset the number of pulses here - can reset in timer
+  }
+}
 
 void mechanical_stop()
 {
@@ -158,11 +214,11 @@ void mechanical_stop()
   if ((left_detected == 1) && (right_detected == 0)){
 
     // Stop it from going left any further
-    left_stop_flag = 1;
+        left_stop_flag = 1;
 
-    // Stop the stepper's current run command immediately - next iteration it won't be called again
-    myStepper.setSpeed(0);
-    myStepper.stop();
+        // Stop the stepper's current run command immediately - next iteration it won't be called again
+        myStepper.setSpeed(0);
+        myStepper.stop();
   }
   // If it has hit the right wall:
   else if ((right_detected == 1) && (left_detected == 0)){
@@ -211,6 +267,9 @@ void sendMega(uint8_t *data, int dataSize)
     Serial1.write(data[i]);
   }
 
+  // digitalWrite(10, HIGH);
+  // delay(100);
+  // digitalWrite(10, LOW);
 }
 
 // Main loop function
@@ -227,11 +286,15 @@ void loop()
     }
     else if (receivedData[0] == STBCommand) // 2nd byte: initial actuator input, 3rd + 4th byte: time duration
     {
-      sendData(receivedData, max_bytes); // Debugging print
+      // sendData(receivedData, max_bytes); // Debugging print
+
       requested_speed = (((double)receivedData[1])/double(256)) * double(100);
+
+      // Serial.println(requested_speed);
+
     }
     else if (receivedData[0] == STB2Command) // 2nd byte: branch pipe temperature
-    { 
+    {
       sendData(receivedData, max_bytes); // Debugging print
     }
     else if (receivedData[0] == IDYECommand) // 2nd + 3rd byte: speed
@@ -247,7 +310,7 @@ void loop()
     }
     else if (receivedData[0] == IDYE2Command)
     {
-      sendData(receivedData, max_bytes); // Debugging print
+      sendData(receivedData, max_bytes);
 
       SDYE2message[0] = 0b00010110;      // assign new hex identifier for SDYE2
       SDYE2message[1] = receivedData[1]; // Duty Cycle
@@ -259,7 +322,7 @@ void loop()
     else if (receivedData[0] == IDYE3Command)
     {
 
-      sendData(receivedData, max_bytes); // Debugging print
+      sendData(receivedData, max_bytes);
 
       RDYEmessage[0] = 0b00001000;      // assign new hex identifier for RDYE
       RDYEmessage[1] = receivedData[1]; // Enable Pulse Mode
@@ -270,6 +333,8 @@ void loop()
     }
     else if (receivedData[0] == RTBCommand) // RTB - 2 byte has actuator position, first iteration sends RDYE
     {
+
+      // requested_speed = (double)(uint8_t (receivedData[1]));
 
       requested_speed = (double)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2])) / double(1000);
 
@@ -311,24 +376,11 @@ void loop()
   {
 
     // Convert the pulse counts into a speed value (mL/s)
-    measured_speed = ((double)sensor_pulse_counter * (double)timer_speed / (double)1530) * (double)(1000);
+    // measured_speed = ((double)sensor_pulse_counter * (double)timer_speed / (double)1530) * (double)(1000);
+
+    measured_speed = ((double)sensor_pulse_threshold/(double)1.53)/(time_interval/(double)10000);
 
     // Serial.println(measured_speed);
-
-    // Start test code
-
-    // if ((int)requested_speed > 199){
-    //   sign = -1;
-    // }
-    // else if ((int)requested_speed < -199){
-    //   sign = 1;
-    // }
-
-    // requested_speed = requested_speed + sign*interval;
-
-    // End test code
-
-    sensor_pulse_counter = 0;
 
     // Work out the error to put into the PID controller
     error = requested_speed - measured_speed;
@@ -392,7 +444,7 @@ void loop()
     }
     else
     {
-      // If it hs reached its destination then stop
+      // If it has reached its destination then stop
       myStepper.setSpeed(0);
       myStepper.stop();
     }

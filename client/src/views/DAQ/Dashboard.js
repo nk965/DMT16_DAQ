@@ -25,6 +25,9 @@ export default function Dashboard() {
   });
 
   const postUserConfig = (inputs) => {
+
+    console.log(inputs)
+
     fetch("http://127.0.0.1:5000/LoadUserConfig", {
       credentials: "same-origin",
       "Content-Type": "application/json",
@@ -74,7 +77,6 @@ export default function Dashboard() {
   };
 
   const getPorts = () => {
-    console.log("Test")
 
     fetch("http://127.0.0.1:5000/FindPorts")
       .then((response) => response.json())
@@ -85,6 +87,20 @@ export default function Dashboard() {
         console.error(error);
       });
   };
+
+  const resetDye = () => {
+
+    console.log('resetDye');
+
+    fetch("http://127.0.0.1:5000/ResetDyeInjection")
+      .then((response) => response.json())
+      .then((data) => {
+        alert(JSON.stringify(data, null, 2));
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   const handleLoadUserConfig = (event) => {
     event.preventDefault();
@@ -101,6 +117,12 @@ export default function Dashboard() {
     getPorts();
   };
 
+  const handleResetInjectRequest = (event) => {
+    event.preventDefault();
+    resetDye();
+  }
+
+
   return (
     <>
       <form onSubmit={handleStartExperiment}>
@@ -116,6 +138,15 @@ export default function Dashboard() {
         <button className="w-full px-4 py-2">
           <CardStopStart
             statTitle="Find Serial Ports"
+            color="bg-lightBlue-400"
+            accent="active:bg-LightBlue-600"
+          />
+        </button>
+      </form>
+      <form onSubmit={handleResetInjectRequest}>
+        <button className="w-full px-4 py-2">
+          <CardStopStart
+            statTitle="Reset Dye Injection System"
             color="bg-lightBlue-400"
             accent="active:bg-LightBlue-600"
           />
@@ -429,7 +460,7 @@ export default function Dashboard() {
                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         htmlFor="grid-password"
                       >
-                        Particle Image Velocimetry (KHz)
+                        Particle Image Velocimetry (Hz)
                       </label>
                       <input
                         type="number"

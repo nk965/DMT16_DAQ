@@ -59,6 +59,7 @@ if __name__ == '__main__':
 
    recording_period = x[2]
   
+  
    last = [None]*32
 
    cb = []  # Documented Standard for library and pi.callback()
