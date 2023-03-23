@@ -219,6 +219,12 @@ def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_i
 
     actualPIV, outPIVticks = convert_frequency_to_clock_tick(PIVfreq_val)
 
+    if Datafreq_val < 5:
+
+        # Hard coded error catch
+
+        Datafreq_val = 5
+
     actualDatafreq, outDatafreq = float_to_base_15(
         Datafreq_val, Datafreq_info)
     

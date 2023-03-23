@@ -25,6 +25,9 @@ export default function Dashboard() {
   });
 
   const postUserConfig = (inputs) => {
+
+    console.log(inputs)
+
     fetch("http://127.0.0.1:5000/LoadUserConfig", {
       credentials: "same-origin",
       "Content-Type": "application/json",

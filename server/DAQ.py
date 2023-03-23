@@ -95,7 +95,7 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
 
     logs['SDAQ'] = SDAQCommand(DAQ_UART, inputs["PIVfreq"], inputs["Datafreq"], info["PIVfreq"], info["Datafreq"]) 
 
-    time.sleep(1)
+    time.sleep(1.5)
 
     logs['SDAQ2'] = SDAQ2Command(DAQ_UART, inputs["lenExperiment"], info["lenExperiment"]) 
 
@@ -127,6 +127,8 @@ def resetDyeInjection(TB_port: str):
 
     TB_UART = UART("TB Microcontroller", TB_port)
 
+    time.sleep(5)
+
     logs['ETB2'] = ETB2Command(TB_UART)
 
     return logs
@@ -156,6 +158,7 @@ if __name__ == "__main__":
 
     #logs = TB_TESTING(ports_available[TB_port_index], inputInfo) # Benchscale Test for TB system
     #logs = DAQ_TESTING(ports_available[DAQ_port_index], inputInfo) # Benchscale Test for DAQ system
+    # logs = resetDyeInjection(ports_available[TB_port_index])
 
     logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
 

@@ -39,7 +39,7 @@ def StartExperiment():
 
     # print(logs)
 
-    return {'message': 'Success'}
+    return {'message': {'inputs': inputs}}
 
 @app.route('/ResetDyeInjection', methods=['GET', 'POST'])
 def ResetDyeInjection():
