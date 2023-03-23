@@ -38,13 +38,6 @@ double next_total_steps = 0;
 double error = 0;          // E = U-Y in control system
 long current_distance = 0; // Current position of the motor
 
-// Converter for RTB User Inputs
-union
-{
-  unsigned char bytes[8]; // Assumes a big-endian system
-  double value;
-} converter;
-
 double requested_speed; // U in the control system (mL/s)
 
 // PID Characteristics
@@ -102,8 +95,6 @@ void setup()
     // Stop it from going left any further
     left_stop_flag = 1;
 
-    // Stop the stepper's current run command immediately - next iteration it won't be called again
-    // myStepper.stop();
   }
   // If it has hit the right wall:
   else if ((right_detected == 1) && (left_detected == 0)){
@@ -111,8 +102,6 @@ void setup()
     // Stop it from going right any further
     right_stop_flag = 1;
 
-    // Stop the stepper's current run command immediately - next iteration it won't be called again
-    // myStepper.stop();
   }
   // Otherwise, it is currently not hitting anything.
   else{
@@ -164,9 +153,6 @@ void mechanical_stop()
   // Read the state of the contact switches
   left_detected = digitalRead(left_contact_pin);
   right_detected = digitalRead(right_contact_pin);
-
-  Serial.println(left_detected);
-  Serial.println(right_detected);
 
   // If it has hit the left wall:
   if ((left_detected == 1) && (right_detected == 0)){
@@ -225,9 +211,6 @@ void sendMega(uint8_t *data, int dataSize)
     Serial1.write(data[i]);
   }
 
-  // digitalWrite(10, HIGH);
-  // delay(100);
-  // digitalWrite(10, LOW);
 }
 
 // Main loop function
@@ -244,15 +227,11 @@ void loop()
     }
     else if (receivedData[0] == STBCommand) // 2nd byte: initial actuator input, 3rd + 4th byte: time duration
     {
-      // sendData(receivedData, max_bytes); // Debugging print
-
+      sendData(receivedData, max_bytes); // Debugging print
       requested_speed = (((double)receivedData[1])/double(256)) * double(100);
-
-      // Serial.println(requested_speed);
-
     }
     else if (receivedData[0] == STB2Command) // 2nd byte: branch pipe temperature
-    {
+    { 
       sendData(receivedData, max_bytes); // Debugging print
     }
     else if (receivedData[0] == IDYECommand) // 2nd + 3rd byte: speed
@@ -268,7 +247,7 @@ void loop()
     }
     else if (receivedData[0] == IDYE2Command)
     {
-      sendData(receivedData, max_bytes);
+      sendData(receivedData, max_bytes); // Debugging print
 
       SDYE2message[0] = 0b00010110;      // assign new hex identifier for SDYE2
       SDYE2message[1] = receivedData[1]; // Duty Cycle
@@ -280,7 +259,7 @@ void loop()
     else if (receivedData[0] == IDYE3Command)
     {
 
-      sendData(receivedData, max_bytes);
+      sendData(receivedData, max_bytes); // Debugging print
 
       RDYEmessage[0] = 0b00001000;      // assign new hex identifier for RDYE
       RDYEmessage[1] = receivedData[1]; // Enable Pulse Mode
@@ -291,8 +270,6 @@ void loop()
     }
     else if (receivedData[0] == RTBCommand) // RTB - 2 byte has actuator position, first iteration sends RDYE
     {
-
-      // requested_speed = (double)(uint8_t (receivedData[1]));
 
       requested_speed = (double)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2])) / double(1000);
 
@@ -338,7 +315,7 @@ void loop()
 
     // Serial.println(measured_speed);
 
-    // Triangular wave test code
+    // Start test code
 
     // if ((int)requested_speed > 199){
     //   sign = -1;

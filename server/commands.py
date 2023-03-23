@@ -160,10 +160,6 @@ def RTBCommand(UART, actuator_array, times):
 
     actual_actuator_pos_array, out_actuator_pos_array = float_array_to_hex_string(actuator_array, info)
 
-    # out_actuator_pos_array = actuator_array * 1000
-
-    # actual_actuator_pos_array = out_actuator_pos_array / 1000
-
     for index in range(1, len(times)):
 
         # toggle padding

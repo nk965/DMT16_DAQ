@@ -155,12 +155,6 @@ def float_to_base_15(value: float, info:dict) -> tuple:
     return actual, base_15_protocol_convert(rounded) 
 
 def float_array_to_hex_string(arr: np.ndarray, info: dict) -> np.ndarray:
-    # min_input, max_input = info["range"][0], info["range"][1]
-    # max_output = 2**info["bits"] - 1
-    # min_output = 0
-
-    # scaled = (((arr - min_input) / (max_input - min_input))
-    #           * (max_output - min_output)) + min_output
 
     rounded = np.round(arr*1000).astype(int)
 

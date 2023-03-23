@@ -457,7 +457,7 @@ export default function Dashboard() {
                         className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                         htmlFor="grid-password"
                       >
-                        Particle Image Velocimetry (KHz)
+                        Particle Image Velocimetry (Hz)
                       </label>
                       <input
                         type="number"
