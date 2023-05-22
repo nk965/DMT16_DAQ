@@ -62,7 +62,7 @@ $$H\left( s \right) = K_{P}+\frac{K_{I}}{s} + K_{D}s$$
 We get the desired digital filter:
 
 **Digital PID Controller**
-$$y[n]-y[n-2]= \left(  \right)x[n] + \left( s \right)x[n-1] + \left( s \right)x[n-2]$$
+$$y[n]-y[n-2]= \left( K_{P} + \frac{K_{I}T}{2} + \frac{2K_{D}}{T} \right)x[n] + \left( K_{I}T - \frac{4K_{D}}{T} \right)x[n-1] + \left( -K_{P} + \frac{K_{I}T}{2} + \frac{2K_{D}}{T} \right)x[n-2]$$
 
 **The Cauchy-Schwarz Inequality**
 $$\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)$$
