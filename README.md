@@ -52,7 +52,7 @@ In order to meet the requirements of transient boundary conditions (i.e. control
 Thus, we used an implementation of a digital PID by applying the Bilinear Transform on the analog PID transfer function:
 
 **The Bilinear Transform**
-$$ s = \frac{2}{T}\frac{z-1}{z+1} $$
+$$s = \frac{2}{T}\frac{z-1}{z+1}$$
 
 
 **The Cauchy-Schwarz Inequality**
