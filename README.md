@@ -15,16 +15,39 @@ Our subgroup was created in order to deal with the wide range of electronic dema
 * To install and synchronise all of the measurements such that a time reference can be assigned to each measurement
 * To control the actuators in order to produce the desired transient boundary conditions
 
+# Getting Started
+
+text here
+
+## Prerequisites
+
+Hello 
+
 ### Code Structure
 
 The code was split into 3 parts:
 
-- The data transmission circuit and actuators
-- The PICO Data logger
-- The GUI interface
+* The data transmission circuit and actuators
+* The PICO Data logger
+* The GUI interface
 
 ## System Design
 
 Below we will cover the rough groundwork
 
-### 
+### Layout Structure
+
+### Operating Sequence
+
+put diagram here
+
+### Dye Injection Control
+
+
+
+### Flow Valve Control
+
+**The Cauchy-Schwarz Inequality**
+$$\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)$$
+
+
