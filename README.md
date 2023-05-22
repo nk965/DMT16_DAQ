@@ -47,6 +47,14 @@ put diagram here
 
 ### Flow Valve Control
 
+In order to meet the requirements of transient boundary conditions (i.e. controlling the flow in the branch pipe during the experiment), we decided to use a digital PID controller. This was because incorporating an analog one without proper analog feedback would have been very hard. Furthermore, the use of a servomotor would have made this very difficult to control with a microcontroller. Finally, due to how low our sampling speed was, it would have been difficult to get a good step response from approximating the system as a continuous time system.
+
+Thus, we used an implementation of a digital PID by applying the Bilinear Transform on the analog PID transfer function:
+
+**The Bilinear Transform**
+$$ s = \frac{2}{T}\frac{z-1}{z+1} $$
+
+
 **The Cauchy-Schwarz Inequality**
 $$\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)$$
 
