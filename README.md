@@ -54,6 +54,15 @@ Thus, we used an implementation of a digital PID by applying the Bilinear Transf
 **The Bilinear Transform**
 $$s = \frac{2}{T}\frac{z-1}{z+1}$$
 
+Applying this on the general PID controller transfer function
+
+**PID Controller**
+$$H\left( s \right) = K_{P}+\frac{K_{I}}{s} + K_{D}s$$
+
+We get the desired digital filter:
+
+**Digital PID Controller**
+$$y[n]-y[n-2]= \left(  \right)x[n] + \left( s \right)x[n-1] + \left( s \right)x[n-2]$$
 
 **The Cauchy-Schwarz Inequality**
 $$\left( \sum_{k=1}^n a_k b_k \right)^2 \leq \left( \sum_{k=1}^n a_k^2 \right) \left( \sum_{k=1}^n b_k^2 \right)$$
