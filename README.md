@@ -12,7 +12,7 @@ In this super project, the intention is to design, make and test an experimental
 
 Experimental data from thermocouples will be captured through a data acquisition software and compared to Computational Fluid Dynamics (CFD) models. 
 
-The wider test bed rig, which consists of all necessary ancillary subassemblies to precisely control temperature and flow rate, will be closely integrated with the transparent and opaque section in a way such that the experimentalist can easily switch in and out sections. 
+The wider test bed rig, which consists of all necessary auxiliary subassemblies to precisely control temperature and flow rate, will be closely integrated with the transparent and opaque section in a way such that the experimentalist can easily switch in and out sections. 
 
 The super project is the start of a wider initiative to understand the transient thermo-fluid induced stresses in a T-junction more comprehensively, and a key objective of this project is to provide extensibility of the platform so that future research into continuous health monitoring (CHM) and non-destructive evaluation (NDE) methods can be conducted.
 
@@ -21,7 +21,7 @@ In summary, the rig's primary goal is:
 * Validation of CFD results from test data obtained.
 * A novel platform to train both undergraduates and postgraduates on thermal hydraulic diagnostics.
 
-## The aim of this subgroup - DMT16 DAQ
+### The aim of this subgroup - DMT16 DAQ
 
 More specifically, this section of the group was created to deal with the wide range of electronic demands of the project. 
 
@@ -30,40 +30,58 @@ The main tasks were:
 * To install and synchronise all of the measurements such that a time reference can be assigned to each measurement
 * To control the actuators in order to produce the desired transient boundary conditions
 
-# Getting Started
+## Prerequisites
 
-### Repository File Structure
+Must haves:
+
+* VS Code (highly recommended) or suitable IDE (like PyCharm) - untested on Anaconda
+* Please see `Modules.py` in `server/`
+* MacOS or Windows
+
+To run the JavaScript API:
+* Check Installation Instructions
+
+Optional (if you would like to edit and re-flash STM32 code):
+
+* STM32 Cube MX
+* STM32 Programmer
+* STM32 IDE
+
+## Repository and Code Structure
+> File structure is not fully comphrehensive, only the most important folders and scripts are shown
 
     .
-    ├── DMT_Arduino/                 # Compiled files (alternatively `dist`)
-    │   ├── Dye_Injection_microcontroller
-    │   └── TB_microcontroller 
-    ├── DMT_RPi/                     # Documentation files (alternatively `doc`)
-    ├── DMT_STM32/                   # Source files (alternatively `lib` or `app`)
-    │   ├── DAQ_microcontroller
-    │   └── PIV_microcontroller 
-    ├── client/                      # Automated tests (alternatively `spec` or `tests`)
-    ├── server/                      # Tools and utilities
+    ├── DMT_Arduino/                              
+    │   ├── Dye_Injection_microcontroller         # Source code for Dye Injection control
+    │   └── TB_microcontroller                    # Source code for closed loop control of flow actuator valve and testbed sync
+    ├── DMT_RPi/                                  # Contains both required Pico Software Development Kit (SDK) and custom source code
+    ├── DMT_STM32/                                
+    │   ├── DAQ_microcontroller                   # Source code for STM32 DAQ - controls Pico Datalogger through Raspberry Pi 
+    │   └── PIV_microcontroller                   # Source code for STM32 PIV - sends PIV signals to Raspberry Pi
+    ├── client/                                   # JavaScript GUI
+    ├── server/                                   
+    │   ├── DAQ.py                                # Main Python script if JavaScript GUI is to not be used
+    │   ├── Module.py                             # List of required modules for program to run 
+    │   ├── server_config.py                      # Default configuration when using DAQ.py 
+    │   └── server.py                             # Flask API   
     ├── .gitignore
     ├── DMT Branch Strategy.drawio
     └── README.md
-
-
-> Use short lowercase names at least for the top-level files and folders except
-> `LICENSE`, `README.md`
-
-
-## Prerequisites
-
-Hello 
 
 ### Code Structure
 
 The code was split into 3 parts:
 
-* The data transmission circuit and actuators
-* The PICO Data logger
-* The GUI interface
+* The data transmission circuit and actuators (under `DMT_Arduino/`, `DMT_RPi/`, `DMT_STM32/`)
+* The Pico Data Logger (under `DMT_RPi/`) 
+* The GUI interface (under `client/`)
+* Python Backbones (under `server/`)
+
+The associated folders are flashed on to the corresponding microcontrollers (Arduino TB, Arduino Dye Inject, DAQ STM32, PIV STM32 and Raspberry Pi)
+
+## Getting Started
+
+Running Python r
 
 ## System Design
 
