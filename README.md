@@ -34,36 +34,203 @@ The main tasks were:
 
 Must haves:
 
-* VS Code (highly recommended) or suitable IDE (like PyCharm) - untested on Anaconda
+* VS Code (highly recommended) or suitable IDE (like PyCharm).  Note that Anaconda environments will not work
+* Clone this repository on your PC
 * Please see `Modules.py` in `server/`
+* Flask for Python, if using the JavaScript UI, i.e., use ` $ pip install Flask `
+* Google Chrome to run the JavaScript UI 
+* Moesif CORS Extension for Google Chrome
+
 * MacOS or Windows
 
-To run the JavaScript API:
-* Check Installation Instructions
-
-Optional (if you would like to edit and re-flash STM32 code):
+Optional (if you would like to edit and re-flash STM32 or Arduino code):
 
 * STM32 Cube MX
 * STM32 Programmer
 * STM32 IDE
+* Arduino IDE 
+
+
+### Installing the JavaScript UI 
+
+The first step to install the JavasScript UI is to install the package manager, yarn. 
+
+If on Windows, use Command Prompt, and on Mac use the terminal in VS Code:
+
+```
+npm install --global yarn
+```
+
+Now install the JavaScript UI (this should take a while to install):
+
+```
+cd client
+yarn install --production
+```
+
+If you encounter errors for Windows, enter the commands into Command Prompt: 
+
+```
+set NODE_OPTIONS=--openssl-legacy-provider
+```
+
+If you encounter errors for Mac, enter the commands into the VS Code terminal:
+
+```
+export NODE_OPTIONS=--openssl-legacy-provider
+```
+
+Now your JavaScript UI should be installed, and you should have a new folder within `client/` called `node_modules`. 
+
+## Setting up the Raspberry Pi from scratch
+> THIS STEP IS ONLY NECESSARY IF THE RASPBERRY PI HAS BEEN THROUGH A FACTORY RESET 
+
+To Setup from Unboxing:
+* Install the Raspberry Pi Imager on Desktop.
+* Write the 32-Bit Raspberry Pi OS on the SD Card using the Imager.
+* Create Account
+    * Username: icl-dmt16
+    * Password: password
+
+### To install PicoTech Drivers:
+
+Connect to WiFi, open terminal, and update Raspberry Pi Source Packages List: 
+
+```
+$ sudo apt update && sudo apt upgrade
+```
+
+Import Public Key
+```
+$ wget -qO - https://labs.picotech.com/Release.gpg.key | sudo apt-key add
+```
+
+Configure your system repository
+
+```
+$ sudo bash -c 'echo "deb https://labs.picotech.com/picoscope7/debian/ picoscope main" >/etc/apt/sources.list.d/picoscope7.list'
+```
+
+Update package manager cache:
+
+```
+$ sudo apt-get update
+```
+
+Download the .deb file on the Raspberry Pi
+
+```
+$ wget https://labs.picotech.com/debian/pool/main/libu/libusbtc08/libusbtc08_2.0.17-1r1441_armhf.deb 
+```
+
+Install the .deb file on the Raspberry Pi
+
+```
+$ sudo apt install ./libusbtc08_2.0.17-1r1441_armhf.deb
+```
+
+### Installing Git and Obtaining Source Code
+
+Create a working folder called icl-dmt16 and CD into that folder:
+
+```
+$ mkdir icl-dmt16
+$ cd icl-dmt16
+```
+
+Installing Git: 
+
+```
+$ sudo apt-get install git
+```
+
+Adding Username Attributes To Local Git Account:
+
+```
+$ git config –global user.name “nk965”
+```
+
+Adding Email Attributes To Local Git Account:
+
+```
+$ git config –global user.email “nyk20@ic.ac.uk”
+```
+
+Clone Repository:
+
+```
+$ git clone https://github.com/nk965/DMT16_DAQ.git 
+```
+
+### Authorising Serial Ports: 
+
+Open Raspberry Pi configuration: 
+
+```
+$ sudo raspi-config
+```
+
+* Follow Path:
+    * 3 Interfacing Options
+    * I6 Serial Port
+    * Login shell Over Serial Port? NO
+    * Serial Hardware Port Enabled? YES
+    * OK
+    * Finish
+*	Reboot
+
+``` 
+$ sudo reboot
+```
+
+### Installing packages
+
+Install pandas:
+
+```
+$ pip install pandas
+```
+
+Install seaborn:
+
+```
+$ sudo apt-get install libatlas-base-dev
+```
+
+Update numpy:
+
+```
+$ pip install seaborn
+```
+
+Install pigio:
+
+```
+$ sudo apt-get install pigpio python-pigpio python3-pigpio
+```
 
 ## Repository and Code Structure
 > File structure is not fully comphrehensive, only the most important folders and scripts are shown
 
     .
     ├── DMT_Arduino/                              
-    │   ├── Dye_Injection_microcontroller         # Source code for Dye Injection control
-    │   └── TB_microcontroller                    # Source code for closed loop control of flow actuator valve and testbed sync
-    ├── DMT_RPi/                                  # Contains both required Pico Software Development Kit (SDK) and custom source code
+    │   ├── Dye_Injection_microcontroller/         # Source code for Dye Injection control
+    │   └── TB_microcontroller/                    # Source code for closed loop control of flow actuator valve and testbed sync
+    ├── DMT_RPi/                                   # Contains both required Pico Software Development Kit (SDK) and custom source code
+    │   └── launcher.sh                            # Starting script for Raspberry Pi logging 
     ├── DMT_STM32/                                
-    │   ├── DAQ_microcontroller                   # Source code for STM32 DAQ - controls Pico Datalogger through Raspberry Pi 
-    │   └── PIV_microcontroller                   # Source code for STM32 PIV - sends PIV signals to Raspberry Pi
-    ├── client/                                   # JavaScript GUI
+    │   ├── DAQ_microcontroller/                   # Controls Pico Datalogger through Raspberry Pi
+    │   │   └── Core/                       
+    │   │      └── main.c                          # Source code for STM32 DAQ, contains communication protocols
+    │   └── PIV_microcontroller/                   # Sends PIV signals to Raspberry Pi
+    │   │   └── Core/                       
+    │   │      └── main.c                          # Source code for STM32 DAQ, contains PIV protocols
+    ├── client/                                    # JavaScript GUI
     ├── server/                                   
-    │   ├── DAQ.py                                # Main Python script if JavaScript GUI is to not be used
-    │   ├── Module.py                             # List of required modules for program to run 
-    │   ├── server_config.py                      # Default configuration when using DAQ.py 
-    │   └── server.py                             # Flask API   
+    │   ├── DAQ.py                                 # Main Python script if JavaScript GUI is to not be used
+    │   ├── Module.py                              # List of required modules for program to run 
+    │   ├── server_config.py                       # Default configuration when using DAQ.py 
+    │   └── server.py                              # Flask API   
     ├── .gitignore
     ├── DMT Branch Strategy.drawio
     └── README.md
@@ -81,7 +248,44 @@ The associated folders are flashed on to the corresponding microcontrollers (Ard
 
 ## Getting Started
 
-Running Python r
+The first step for running the data acquisition process is to initialise the Raspberry Pi. The Raspberry Pi controls the Pico Datalogger and receives GPIO inputs from testbed components. 
+
+### Starting the Raspberry Pi subassembly
+
+Firstly, go to the relevant directory on the Raspberry Pi
+
+```
+$ cd DMT16_DAQ/DMT_RPi
+```
+
+Launch the launcher file:
+
+```
+$ sh launcher.sh
+```
+
+### Starting the Central PC
+
+Ensure that the two USBs are connected through a hub to the PC. Make sure that you know which one is which. 
+
+
+#### Using the Python Interface
+
+If using the Python interface, ensure to check the configuration file in `server/server_config.py` to input experiment conditions.
+
+Then, run the Python script `server/DAQ.py`. 
+
+By default, the bench scale tests `TB_TESTING`, `DAQ_TESTING` are commented out as well as `resetDyeInjection` 
+To enable, uncomment the desired function, in the `server/DAQ.py` file. 
+
+```python
+    # logs = TB_TESTING(ports_available[TB_port_index], inputInfo) # Benchscale Test for TB system
+    # logs = DAQ_TESTING(ports_available[DAQ_port_index], inputInfo) # Benchscale Test for DAQ system
+    # logs = resetDyeInjection(ports_available[TB_port_index])
+
+    logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
+```
+
 
 ## System Design
 
