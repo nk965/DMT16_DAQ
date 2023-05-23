@@ -237,7 +237,7 @@ $ sudo apt-get install pigpio python-pigpio python3-pigpio
 
 ### Code Structure
 
-The code was split into 3 parts:
+The code was split into 4 parts:
 
 * The data transmission circuit and actuators (under `DMT_Arduino/`, `DMT_RPi/`, `DMT_STM32/`)
 * The Pico Data Logger (under `DMT_RPi/`) 
@@ -264,14 +264,62 @@ Launch the launcher file:
 $ sh launcher.sh
 ```
 
+The next step is to run the software package on the Central PC. 
+
 ### Starting the Central PC
 
 Ensure that the two USBs are connected through a hub to the PC. Make sure that you know which one is which. 
+There are **TWO methods** to start the data acquisition system and electronics, one uses a JavaScript interface, the other uses a Python interface. 
+Ensure that the CORS Chrome extension is on (this should be installed beforehand, refer to the prerequisites)
+
+#### Using the JavaScript Interface
+
+The JavaScript interface relies on a React Flask API. To launch the React frontend (i.e., the client), in the terminal, enter the following commands. 
+
+```
+cd client 
+yarn start
+```
+
+This should open up to a landing page on Chrome on `localhost:3000` like this:
+
+<img width="900" alt="Screenshot 2023-05-23 at 15 16 58" src="https://github.com/nk965/DMT16_DAQ/assets/107625806/904335f9-81fd-4e0c-a997-51b26524f464">
+
+Then, in a new terminal on VS Code, start the Python Flask API using the follow commands and it will open on `localhost:5000`:
+
+```
+cd server
+python3 server.py
+```
+> Alternatively, if `python3 server.py` does not work, use `python server.py` or `py server.py` commands 
+
+An example of how to do this: 
+
+![ezgif com-gif-maker](https://github.com/nk965/DMT16_DAQ/assets/107625806/fe8fe906-b167-4e40-8c1e-27567d5accd7)
+
+
+##### Running the experiment
+
+To run or start an experiment with custom configurations: 
+* Click on *"Find Serial Ports"* and input the respective ports into the system
+* Input desired characteristics
+* Click on Reset Dye Injection System if required
+* Click on Load User Configuration
+
+To Adjust Transient Conditions:
+* Click on the Transient tab
+* Input as necessary, and load
+
+To start:
+* Click on Start Experiment 
 
 
 #### Using the Python Interface
 
-If using the Python interface, ensure to check the configuration file in `server/server_config.py` to input experiment conditions.
+If you are using the Python interface, ensure to check the configuration file in `server/server_config.py` to input experiment conditions, as shown below.
+
+<img width="926" alt="Screenshot 2023-05-23 at 17 06 28" src="https://github.com/nk965/DMT16_DAQ/assets/107625806/e10c857a-caf9-4a81-ab9d-75eeb01e25f6">
+
 
 Then, run the Python script `server/DAQ.py`. 
 
@@ -286,16 +334,24 @@ To enable, uncomment the desired function, in the `server/DAQ.py` file.
     logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
 ```
 
-
 ## System Design
 
-Below we will cover the rough groundwork
+Below we will cover the rough groundwork, consisting of 5 microcontrollers. 
 
 ### Layout Structure
 
+The main schematic for the communications between the components is as follows: 
+
+<img width="1024" alt="Screenshot 2023-05-23 at 17 05 53" src="https://github.com/nk965/DMT16_DAQ/assets/107625806/dd334260-f5b7-45cc-af7a-ccb62c601bf7">
+
+A list of commands used for the communication protocol is below, found in the `commands.py` file under server, and is referenced in the microcontrollers. 
+
+[Data Acquisition Plan Final.docx](https://github.com/nk965/DMT16_DAQ/files/11546125/Data.Acquisition.Plan.Final.docx)
+
 ### Operating Sequence
 
-put diagram here
+The system of 5 microcontrollers allow us to control the timings and procedures precisely. 
+<img width="542" alt="Screenshot 2023-05-23 at 16 56 16" src="https://github.com/nk965/DMT16_DAQ/assets/107625806/c52daa46-2fce-46d1-9f5e-4ac2c1b2ee5f">
 
 ### Dye Injection Control
 
