@@ -41,8 +41,10 @@ def procedure(GPIO, level, tick):
       # Time difference (in us) between the current event change and the last change
    
       diff = pigpio.tickDiff(last[GPIO], tick)
+
+      now = datetime.now()
    
-      py_data.append([GPIO, level, tick, diff, str(datetime.now())])
+      py_data.append([GPIO, level, tick, diff, now.strftime("%H:%M:%S:%f")])
    
       # print("G={} l={} t={} d={}".format(GPIO, level, tick, diff)) - Debug Printing - IGNORE
    
@@ -63,6 +65,10 @@ if __name__ == '__main__':
    last = [None]*32
 
    cb = []  # Documented Standard for library and pi.callback()
+
+   start = datetime.now()
+
+   start_datetime_string = start.strftime("%Y_%m_%d_%H_%M_%S")
    
    py_data = [['GPIO', 'State', 'Tick', 'Diff', 'Time']]  # Titles
 
@@ -95,7 +101,9 @@ if __name__ == '__main__':
 time.sleep(recording_period)
 print("\nTidying up")
 
-with open('time_GPIO' + str(date.today()) + '.csv', 'a+', newline='') as csvfile:  # Writing Data into .csv
+filename = f"RPI-{start_datetime_string}-ALLPINS-GPIO.csv"
+
+with open(filename, 'w', newline='') as csvfile:  # Writing Data into .csv
 
    writer = csv.writer(csvfile)
 

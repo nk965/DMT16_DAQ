@@ -102,13 +102,18 @@ class LoggingUnit:
     def runUnit(self) -> None:
         ''' start running unit at sampling interval '''
 
+        start_datetime = datetime.now()
+
         self.status["run"] = tc08.usb_tc08_run(
             self.chandle, self.status["interval_ms"])
         # verifies API call is successful
         assert_pico2000_ok(self.status["run"])
 
         # adds starting time stamp for timing
-        self.status["start_run_time"] = datetime.now()
+
+        start_datetime_string = start_datetime.strftime("%Y_%m_%d_%H_%M_%S")
+
+        self.status["start_run_time"] = start_datetime_string
 
     def setBuffers(self, polling_period) -> None:
         ''' initialise dictionary of buffers for polling 
@@ -247,13 +252,13 @@ class LoggingUnit:
             formatted_timestamps = [timestamp.strftime(
                 "%H:%M:%S:%f") for timestamp in timestamps]
 
-            raw_data[channel]["Time Stamps"] = formatted_timestamps
+            raw_data[channel]["Time"] = formatted_timestamps
 
             # create pandas dataframe and export to csv
 
-            df = pd.DataFrame.from_dict(raw_data[channel])
+            df = pd.DataFrame.from_dict(raw_data[channel], index=False)
 
-            filename = f"{self.name}_{channel} Data.csv"
+            filename = f"{self.name}-{info['Start']}-{channel}-temp.csv"
 
             df.to_csv(filename)
         

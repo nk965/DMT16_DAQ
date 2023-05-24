@@ -22,40 +22,40 @@ INPUT_TYPES = {
 # default configuration 
 
 USBTC08_CONFIG = {
-    "UNIT_1": {
-        "CHANNEL_CJC": {
+    "UNIT1": {
+        "CHANNELCJC": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 0,
             "NAME": "Cold Junction Compensation",
             "ENABLE": True
         }, 
-        "CHANNEL_1": {
+        "CHANNEL1": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 1,
             "NAME": "Depth 4mm",
             "ENABLE": True
         }, 
-        "CHANNEL_2": {
+        "CHANNEL2": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 2,
             "NAME": "Depth 2mm",
             "ENABLE": True
         }    
     }, 
-    "UNIT_2": {
-        "CHANNEL_CJC": {
+    "UNIT2": {
+        "CHANNELCJC": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 0,
             "NAME": "Cold Junction Compensation",
             "ENABLE": True
         }, 
-        "CHANNEL_1": {
+        "CHANNEL1": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 1,
             "NAME": "Depth 4mm",
             "ENABLE": True
         }, 
-        "CHANNEL_2": {
+        "CHANNEL2": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 2,
             "NAME": "Depth 4mm",
