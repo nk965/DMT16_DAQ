@@ -43,13 +43,6 @@ class Datalogger_Data:
 
         self.data = split_data
 
-    def __repr__(self) -> str:
-
-        attributes = vars(self)
-
-        for attr, value in attributes.items():
-            print(attr, '=', value)
-
 class GPIO_Data:
 
     def readfile(self,name):
@@ -65,8 +58,8 @@ class GPIO_Data:
         filename_array = self.filename.split("-")
         self.date = filename_array[1][:10]
         self.start_time = filename_array[1][11:]
-        filename_array[3] = filename_array[0].split(".")
-        self.type = filename_array[2] + " " + filename[3]
+        filename_array[3] = filename_array[3].split(".")
+        self.type = filename_array[3][0]
 
         unprocessed_data = self.readfile(self.file_path)
         del unprocessed_data[0]
@@ -119,21 +112,14 @@ class GPIO_Data:
         self.Pin20_data = np.asarray(self.Pin20_data)
         self.Pin21_data = np.asarray(self.Pin21_data)
 
-    def __repr__(self) -> str:
+def process_individual_run(folder_path):
 
-        attributes = vars(self)
+    data_dump_experiment_path = folder_path
 
-        for attr, value in attributes.items():
-            print(attr, '=', value)
-
-if __name__== "__main__":
-
-    data_dump_experiment_path = 'analysis/data/opaque/inlet1/run1'
+    experiment_data = []
 
     for filename in os.listdir(data_dump_experiment_path):
-        
-        experiment_data = []
-
+    
         if filename.endswith('.csv'):  # Filter CSV files
 
             file_path = os.path.join(data_dump_experiment_path, filename)
@@ -141,16 +127,28 @@ if __name__== "__main__":
             filename_array = filename.split("-")
 
             if filename_array[0] == 'RPI':
-
                 experiment_data.append(GPIO_Data(file_path))
 
             else: 
+                experiment_data.append(Datalogger_Data(file_path, 30))
+        
+    return experiment_data
 
-                experiment_data.append(Datalogger_Data(file_path, 30)) 
+if __name__== "__main__":
 
-        for data in experiment_data:
+    folder_path = 'analysis/data/opaque/inlet1'
 
-            data.__repr__()
+    test_runs = []
+
+    for test_run in os.scandir(folder_path):
+        
+        if test_run.is_dir():
+            
+            subfolder_path = test_run.path
+            
+            print(f'Processing run at: {subfolder_path}')
+
+            test_runs.append(process_individual_run(subfolder_path))
 
 
 
