@@ -132,9 +132,11 @@ int main(void)
 
 	HAL_UART_Receive(&huart2,UART_buf,3,HAL_MAX_DELAY); //3 bits max:
 
-	HAL_GPIO_TogglePin(GPIOD,LD6_Pin); // Debugging pin - Blue for detecting UART transmission
+	HAL_GPIO_TogglePin(GPIOD,LD4_Pin); // Debugging pin - Received UART
 
 	if (UART_buf[0] == 0b00000100){ // SPIV command - tell PIV what frequency to pulse
+
+		HAL_GPIO_TogglePin(GPIOD,LD6_Pin); // Debugging pin - Blue for detecting correct UART transmission
 
 		HAL_TIM_Base_Stop_IT(&htim6); // Stop the current timer
 
