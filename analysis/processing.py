@@ -150,6 +150,8 @@ if __name__== "__main__":
 
             test_runs.append(process_individual_run(subfolder_path))
 
+    print(test_runs)
+
 
 
 # U2_CH2 = Datalogger_Data("UNIT2-2023_05_24_15_45_27-CHANNEL2-temp.csv",30)

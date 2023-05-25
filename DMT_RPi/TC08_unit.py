@@ -111,9 +111,11 @@ class LoggingUnit:
 
         # adds starting time stamp for timing
 
+        self.status["start_run_time"] = start_datetime
+
         start_datetime_string = start_datetime.strftime("%Y_%m_%d_%H_%M_%S")
 
-        self.status["start_run_time"] = start_datetime_string
+        self.status["start_run_time_string"] = start_datetime_string
 
     def setBuffers(self, polling_period) -> None:
         ''' initialise dictionary of buffers for polling 
@@ -204,7 +206,10 @@ class LoggingUnit:
         
         '''
 
-        info = {"Name": self.name, "Start": self.status["start_run_time"]}
+        # change "start"
+
+
+        info = {"Name": self.name, "Start": self.status["start_run_time"], "Start_string": self.status["start_run_time_string"]}
 
         raw_data = {}
 
@@ -258,7 +263,9 @@ class LoggingUnit:
 
             df = pd.DataFrame.from_dict(raw_data[channel], index=False)
 
-            filename = f"{self.name}-{info['Start']}-{channel}-temp.csv"
+            run_time_string = self.status["start_run_time_string"]
+
+            filename = f"{self.name}-{run_time_string}-{channel}-temp.csv"
 
             df.to_csv(filename)
         
