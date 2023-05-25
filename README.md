@@ -355,7 +355,21 @@ The system of 5 microcontrollers allow us to control the timings and procedures 
 
 ### Dye Injection Control
 
+The dye injection system was coded to handle 2 different running protocols:
 
+* A steady running speed of injection
+* A steady, periodic pulsing injection mode
+
+The program structure is roughly as follows:
+
+* 2 main interrupts: switches and timer
+
+The actuation structure is:
+
+* Check for any UART transmissions (NOT on blocking mode so will skip if it does not get anything)
+* If it is the correct command/there is a UART transmission then go through the cases to change set points and variables
+* After the data has been set, go through the control loop and update the actuators IF the timer interrupt flag has been set
+* During that, detect any timer interrupts or switch interrupts - timer interrupts set off the control loop in even increments while switches prevent overshoot and destruction of the motor
 
 ### Flow Valve Control
 
@@ -376,4 +390,5 @@ We get the desired digital filter:
 **Digital PID Controller**
 $$y[n] = y[n-2] + \left( K_{P} + \frac{K_{I}T}{2} + \frac{2K_{D}}{T} \right)x[n] + \left( K_{I}T - \frac{4K_{D}}{T} \right)x[n-1] + \left( -K_{P} + \frac{K_{I}T}{2} + \frac{2K_{D}}{T} \right)x[n-2]$$
 
+The tuning of the filter was done on-site purely experimentally (not Ziegler-Nichols). 
 
