@@ -38,9 +38,45 @@ USBTC08_CONFIG = {
         "CHANNEL2": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 2,
+            "NAME": "Depth 3mm",
+            "ENABLE": True
+        },
+        "CHANNEL3": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 3,
             "NAME": "Depth 2mm",
             "ENABLE": True
-        }    
+        }, 
+        "CHANNEL4": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 4,
+            "NAME": "Depth 1mm",
+            "ENABLE": True
+        },
+        "CHANNEL5": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 5,
+            "NAME": "Depth 4mm",
+            "ENABLE": True
+        }, 
+        "CHANNEL6": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 6,
+            "NAME": "Depth 3mm",
+            "ENABLE": True
+        },
+        "CHANNEL7": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 7,
+            "NAME": "Depth 2mm",
+            "ENABLE": True
+        },
+        "CHANNEL8": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 8,
+            "NAME": "Depth 1mm",
+            "ENABLE": True
+        }         
     }, 
     "UNIT2": {
         "CHANNELCJC": {
@@ -50,15 +86,51 @@ USBTC08_CONFIG = {
             "ENABLE": True
         }, 
         "CHANNEL1": {
-            "SENSOR_TYPE": "K",
+            "SENSOR_TYPE": "X",
             "CHANNEL_NO": 1,
             "NAME": "Depth 4mm",
             "ENABLE": True
         }, 
         "CHANNEL2": {
-            "SENSOR_TYPE": "K",
+            "SENSOR_TYPE": "X",
             "CHANNEL_NO": 2,
+            "NAME": "Depth 3mm",
+            "ENABLE": True
+        },
+        "CHANNEL3": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 3,
+            "NAME": "Depth 2mm",
+            "ENABLE": True
+        }, 
+        "CHANNEL4": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 4,
+            "NAME": "Depth 1mm",
+            "ENABLE": True
+        },
+        "CHANNEL5": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 5,
             "NAME": "Depth 4mm",
+            "ENABLE": True
+        }, 
+        "CHANNEL6": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 6,
+            "NAME": "Depth 3mm",
+            "ENABLE": True
+        },
+        "CHANNEL7": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 7,
+            "NAME": "Depth 2mm",
+            "ENABLE": True
+        },
+        "CHANNEL8": {
+            "SENSOR_TYPE": "K",
+            "CHANNEL_NO": 8,
+            "NAME": "Depth 1mm",
             "ENABLE": True
         }    
     }
