@@ -114,4 +114,4 @@ if __name__ == '__main__':
         logger.closeUnit()
         logger_data.append(logger.grabData())
 
-    plot_data(logger_data)
+    # plot_data(logger_data)
