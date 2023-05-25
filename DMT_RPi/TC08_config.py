@@ -88,49 +88,49 @@ USBTC08_CONFIG = {
         "CHANNEL1": {
             "SENSOR_TYPE": "X",
             "CHANNEL_NO": 1,
-            "NAME": "Depth 4mm",
+            "NAME": "Pressure 1",
             "ENABLE": True
         }, 
         "CHANNEL2": {
             "SENSOR_TYPE": "X",
             "CHANNEL_NO": 2,
-            "NAME": "Depth 3mm",
+            "NAME": "Pressure 2",
             "ENABLE": True
         },
         "CHANNEL3": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 3,
-            "NAME": "Depth 2mm",
+            "NAME": "Transparent 1",
             "ENABLE": True
         }, 
         "CHANNEL4": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 4,
-            "NAME": "Depth 1mm",
+            "NAME": "Transparent 2",
             "ENABLE": True
         },
         "CHANNEL5": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 5,
-            "NAME": "Depth 4mm",
+            "NAME": "Transparent 3",
             "ENABLE": True
         }, 
         "CHANNEL6": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 6,
-            "NAME": "Depth 3mm",
+            "NAME": "Testbed 1",
             "ENABLE": True
         },
         "CHANNEL7": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 7,
-            "NAME": "Depth 2mm",
+            "NAME": "Testbed 2",
             "ENABLE": True
         },
         "CHANNEL8": {
             "SENSOR_TYPE": "K",
             "CHANNEL_NO": 8,
-            "NAME": "Depth 1mm",
+            "NAME": "Testbed 3",
             "ENABLE": True
         }    
     }
