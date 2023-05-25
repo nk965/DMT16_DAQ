@@ -261,13 +261,13 @@ class LoggingUnit:
 
             # create pandas dataframe and export to csv
 
-            df = pd.DataFrame.from_dict(raw_data[channel], index=False)
+            df = pd.DataFrame.from_dict(raw_data[channel])
 
             run_time_string = self.status["start_run_time_string"]
 
             filename = f"{self.name}-{run_time_string}-{channel}-temp.csv"
 
-            df.to_csv(filename)
+            df.to_csv(filename, index=False)
         
         info["raw_data"] = raw_data 
 
