@@ -85,7 +85,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "start_y": {
-        "defaultValue": 15,
+        "defaultValue": 2,
         "type": float,
         "range": [0, 100],
         "bits": 8,
@@ -101,7 +101,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "nodes": {
-        "defaultValue": 15,
+        "defaultValue": 500,
         "type": float,
         "range": [0, 500],
         "bits": None,
@@ -109,7 +109,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "presetConfig": {
-        "defaultValue": "Linear",
+        "defaultValue": "Sine", #Step, Linear, Sine
         "type": str,
         "range": None,
         "bits": None,
@@ -155,5 +155,37 @@ inputInfo = {
         "bits": 8,
         "units": "s",
         "submission_form": "userConfig"
+    },
+    "frequency": {
+        "defaultValue": 1,  
+        "type": float,
+        "range": [0, 20],
+        "bits": 8,
+        "units": "Hz",
+        "submission_form": "None"
+    },
+    "amplitude": {
+        "defaultValue": 4,  
+        "type": float,
+        "range": [0, 480],
+        "bits": 8,
+        "units": "s",
+        "submission_form": "None"
+    },
+    "step_time": {
+        "defaultValue": 3, # this was 9 
+        "type": float,
+        "range": [0, 480],
+        "bits": 8,
+        "units": "s",
+        "submission_form": "None"
+    },
+    "step_value": {
+        "defaultValue": 5, # this was 9 
+        "type": float,
+        "range": [0, 100],
+        "bits": 8,
+        "units": "",
+        "submission_form": "None"
     },
 }

@@ -4,6 +4,7 @@ List of commands from Central PC side
 """
 
 from Modules import *
+import matplotlib.pyplot as plt 
 
 from helpers import convert_frequency_to_clock_tick, float_to_hex_string, float_to_base_15, bool_to_pulse_string, float_array_to_hex_string, linear_interpolation, int_to_hex_string
 
@@ -136,6 +137,56 @@ def RTBProcedure(UART, start_y, end_y, nodes, trans_time, preset_config="Linear"
         times, y_values = linear_interpolation(start_y, end_y, nodes, trans_time)
 
     actual_actuator_pos_array = RTBCommand(UART, y_values, times)
+
+    return {"Actuator Position Array": actual_actuator_pos_array, "Time Step": times}
+
+def PIDTuning(UART, start_y, end_y, nodes, trans_time, amplitude, frequency, step_time, step_value, preset_config):
+
+    if preset_config=="Linear":
+
+        times, y_values = linear_interpolation(start_y, end_y, nodes, trans_time)
+
+    if preset_config=="Step":
+
+        times = np.linspace(0, trans_time, nodes)
+
+        y_values = np.where(times >= step_time, start_y + step_value, start_y)
+
+        y_values = np.clip(y_values, 0, None)
+
+    if preset_config=="Sine":
+
+        # Fastest it can be is 0.5 Hz (due to Thermocouples sampling at 1 second) but we don't care about thermocouples for PID testing 
+        
+        #So, Nodes/trans_time is also a max if thermocouples don't matter
+
+        times = np.linspace(0, trans_time, nodes)
+        desired_times = np.linspace(0, trans_time, 1000)
+
+        max_frequency = 0.5 * (nodes/trans_time)
+
+        print(max_frequency, frequency)
+
+        if frequency >= max_frequency:
+            # Generate the sine wave
+            omega = 2 * np.pi * max_frequency  # Angular frequency
+        else: 
+            # Generate the sine wave
+            omega = 2 * np.pi * frequency  # Angular frequency
+
+        y_values = np.sin(omega * times)
+        y_values_desired = np.sin(omega * desired_times)
+
+        # Scale and shift the sine wave
+        y_values = amplitude * y_values + start_y
+
+        # Set negative values to zero
+        y_values = np.clip(y_values, 0, None)
+    
+    actual_actuator_pos_array = RTBCommand(UART, y_values, times)
+
+    plt.scatter(times, actual_actuator_pos_array)
+    plt.show()
 
     return {"Actuator Position Array": actual_actuator_pos_array, "Time Step": times}
 

@@ -8,7 +8,7 @@ from Modules import *
 
 from PySerial import UART, list_ports
 from server_config import inputInfo
-from commands import STBCommand, SDAQCommand, SDAQ2Command, ETB1Command, ETB2Command, EDAQCommand, RTBProcedure, ITBCommand, STB2Command, IDYECommand, IDYE2Command, IDYE3Command
+from commands import STBCommand, SDAQCommand, SDAQ2Command, ETB1Command, ETB2Command, EDAQCommand, RTBProcedure, ITBCommand, STB2Command, IDYECommand, IDYE2Command, IDYE3Command, PIDTuning
 
 def DAQ_TESTING(port: str, inputInfo):
     '''
@@ -71,6 +71,31 @@ def TB_TESTING(port: str, inputInfo):
     logs['ETB2'] = ETB2Command(TB_UART)
 
     return logs
+
+def PID_TESTING(port: str, inputInfo):
+
+    logs = {}
+
+    TB_UART = UART("TB Microcontroller", port)
+
+    # logs['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) # TODO ask Pike if this is necessary 
+
+    # logs['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
+
+    # logs['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
+
+    # time.sleep(5)    
+
+    logs['PIDTuning'] = PIDTuning(TB_UART, inputInfo["start_y"]["defaultValue"],inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["amplitude"]["defaultValue"], inputInfo["frequency"]["defaultValue"], inputInfo["step_time"]["defaultValue"], inputInfo["step_value"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
+
+    # logs['ETB1'] = ETB1Command(TB_UART) 
+
+    # time.sleep(5)
+
+    # logs['ETB2'] = ETB2Command(TB_UART)
+
+    return logs
+
 
 def process(DAQ_port: str, TB_port: str, inputs, info): 
 
@@ -156,11 +181,13 @@ if __name__ == "__main__":
     DAQ_port_index = int(input("Choose DAQ port selection number (input should be an integer): "))
     TB_port_index = int(input("Choose TB port selection number (input should be an integer): "))
 
-    #logs = TB_TESTING(ports_available[TB_port_index], inputInfo) # Benchscale Test for TB system
-    #logs = DAQ_TESTING(ports_available[DAQ_port_index], inputInfo) # Benchscale Test for DAQ system
+    # logs = TB_TESTING(ports_available[TB_port_index], inputInfo) # Benchscale Test for TB system
+    # logs = DAQ_TESTING(ports_available[DAQ_port_index], inputInfo) # Benchscale Test for DAQ system
     # logs = resetDyeInjection(ports_available[TB_port_index])
 
-    logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
+    # logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
+
+    logs = PID_TESTING(ports_available[TB_port_index], inputInfo)
 
     print(logs)
 
