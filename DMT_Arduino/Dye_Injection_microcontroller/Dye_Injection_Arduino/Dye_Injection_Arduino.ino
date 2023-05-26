@@ -163,6 +163,7 @@ void mechanical_stop()
 
   // If it has hit the back wall:
   if ((back_detected == 1) && (front_detected == 0)){
+    
     // Stop it from going back any further
         backwards_stop_flag = 1;
 
@@ -183,6 +184,8 @@ void mechanical_stop()
   else if ((front_detected == 1) && (back_detected == 0)){
     // Stop it from going forwards any further
     forwards_stop_flag = 1;
+
+    digitalWrite(7, LOW); // GP/IO low to siginify the end of dye injection
 
     // Reset the stop point
     forwards_stop_steps = myStepper.currentPosition();
@@ -407,6 +410,8 @@ void loop()
       digitalWrite(10, HIGH);
       delay(100);
       digitalWrite(10, LOW);
+
+      digitalWrite(7, LOW); // GP/IO low to siginify the end of dye injection
 
       // Disable pulse mode
       pulse = 0;
