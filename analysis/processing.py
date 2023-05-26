@@ -95,7 +95,7 @@ class GPIO_Data:
         self.Pin1_data = []
 
         # TB motor actuation
-        self.Pin12_data = []
+        self.Pin8_data = []
 
         # PIV Pulse
         self.Pin16_data = []
@@ -116,8 +116,8 @@ class GPIO_Data:
             if data[0] == "1":
                 self.Pin1_data.append(data)
 
-            elif data[0] == "12":
-                self.Pin12_data.append(data)
+            elif data[0] == "8":
+                self.Pin8_data.append(data)
 
             elif data[0] == "16":
                 self.Pin16_data.append(data)
@@ -183,7 +183,7 @@ def process_individual_run(folder_path, angle):
     for filename in os.listdir(data_dump_experiment_path):
 
         if filename.endswith('.csv'):  # Filter CSV files
-
+ 
             file_path = os.path.join(data_dump_experiment_path, filename)
 
             filename_array = filename.split("-")
@@ -228,8 +228,8 @@ def extract_GPIO_data(data_class):
     # Main flow meter 1
     Main_flow_meter_data = data_class.Pin1_data
 
-    # TB motor actuation 12
-    TB_motor_data = data_class.Pin12_data
+    # TB motor actuation 8
+    TB_motor_data = data_class.Pin8_data
 
     # PIV Pulse 16
     PIV_pulse_data = data_class.Pin16_data
@@ -284,9 +284,13 @@ def extract_GPIO_data(data_class):
 
 if __name__ == "__main__":
 
-    angle = [0, 30, 60]  # note that there is a phantom folder
+    # Looking at data for a particular inlet condition 
+
+    angle = [0, 30, 60]  
     folder_path = 'analysis/data/opaque/inlet1'
     test_runs = []
+
+    # Obtain the CSV Files and create dataclasses for each test run with that inlet condition
 
     for index, test_run in enumerate(os.scandir(folder_path)):
         if test_run.name == '.DS_Store' or not test_run.is_dir():
@@ -295,14 +299,24 @@ if __name__ == "__main__":
         subfolder_path = test_run.path
         print(f'Processing run at: {subfolder_path}')
 
+        # append all classes in a list called test_runs 
+
         test_runs.append(process_individual_run(subfolder_path, angle[index]))
 
+    # intialise individual arrays for sorting algorithm
+
     pressures = []
+    
     four_mm = []
+    
     three_mm = []
+    
     two_mm = []
+    
     one_mm = []
+    
     temperatures = []
+    
     GPIO_struct = []
 
     for run_number, run_info in enumerate(test_runs):
@@ -316,6 +330,7 @@ if __name__ == "__main__":
 
                 # Else, it must be a temperature measurement:
                 else:
+                    
                     temperatures.append(channels)
 
                     if channels.depth == 4:
@@ -326,13 +341,26 @@ if __name__ == "__main__":
                         two_mm.append(channels)
                     elif channels.depth == 1:
                         one_mm.append(channels)
+            
             elif channels.type == "GPIO":
+            
                 GPIO_struct.append(channels)
 
-    print(extract_GPIO_data(GPIO_struct[0])[4])
+    # Plotting GPIO data 
 
-    plt.plot(extract_GPIO_data(GPIO_struct[0])[4][0], extract_GPIO_data(GPIO_struct[0])[4][1])
-    plt.show()
+    for struct in GPIO_struct:
+
+        GPIO_run_data = extract_GPIO_data(struct)
+
+        for run_data in GPIO_run_data:
+
+            plt.plot(run_data[0], run_data[1])
+
+        plt.show()
+
+
+    # plt.plot(extract_GPIO_data(GPIO_struct[0])[4][0], extract_GPIO_data(GPIO_struct[0])[4][1])
+    # plt.show()
 
     # for test in pressures:
     #     test.print_status()
