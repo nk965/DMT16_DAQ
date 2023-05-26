@@ -87,21 +87,21 @@ inputInfo = {
     "start_y": {
         "defaultValue": 2,
         "type": float,
-        "range": [0, 100],
-        "bits": 8,
+        "range": [0, 800],
+        "bits": 8, 
         "units": "%", #TODO: use units of momentum ratio?
         "submission_form": "transientInput"
     },
     "end_y": {
-        "defaultValue": 63.79,
+        "defaultValue": 240,
         "type": float,
-        "range": [0, 50],
+        "range": [0, 800],
         "bits": 8,
         "units": "", #TODO: use units of momentum ratio?
         "submission_form": "transientInput"
     },
     "nodes": {
-        "defaultValue": 500,
+        "defaultValue": 100,
         "type": float,
         "range": [0, 500],
         "bits": None,
@@ -109,7 +109,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "presetConfig": {
-        "defaultValue": "Sine", #Step, Linear, Sine
+        "defaultValue": "Step", #Step, Linear, Sine
         "type": str,
         "range": None,
         "bits": None,
@@ -181,7 +181,7 @@ inputInfo = {
         "submission_form": "None"
     },
     "step_value": {
-        "defaultValue": 5, # this was 9 
+        "defaultValue": 30, # this was 9 
         "type": float,
         "range": [0, 100],
         "bits": 8,

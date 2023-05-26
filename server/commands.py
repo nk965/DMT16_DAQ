@@ -4,7 +4,7 @@ List of commands from Central PC side
 """
 
 from Modules import *
-import matplotlib.pyplot as plt 
+# import matplotlib.pyplot as plt 
 
 from helpers import convert_frequency_to_clock_tick, float_to_hex_string, float_to_base_15, bool_to_pulse_string, float_array_to_hex_string, linear_interpolation, int_to_hex_string
 
@@ -185,8 +185,8 @@ def PIDTuning(UART, start_y, end_y, nodes, trans_time, amplitude, frequency, ste
     
     actual_actuator_pos_array = RTBCommand(UART, y_values, times)
 
-    plt.scatter(times, actual_actuator_pos_array)
-    plt.show()
+    # plt.scatter(times, actual_actuator_pos_array)
+    # plt.show()
 
     return {"Actuator Position Array": actual_actuator_pos_array, "Time Step": times}
 

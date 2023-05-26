@@ -271,7 +271,7 @@ void loop()
     else if (receivedData[0] == RTBCommand) // RTB - 2 byte has actuator position, first iteration sends RDYE
     {
 
-      requested_speed = (double)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2])) / double(1000);
+      requested_speed = (double)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2])) / double(200);
 
       // If the padding is 00, LED is HIGH showing RTB command
       if (receivedData[3] == 0b00000000)

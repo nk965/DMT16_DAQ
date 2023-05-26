@@ -78,21 +78,23 @@ def PID_TESTING(port: str, inputInfo):
 
     TB_UART = UART("TB Microcontroller", port)
 
-    # logs['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) # TODO ask Pike if this is necessary 
+    time.sleep(5)
 
-    # logs['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
+    logs['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) # TODO ask Pike if this is necessary 
 
-    # logs['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
+    logs['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
 
-    # time.sleep(5)    
+    logs['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
+
+    time.sleep(5)    
 
     logs['PIDTuning'] = PIDTuning(TB_UART, inputInfo["start_y"]["defaultValue"],inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["amplitude"]["defaultValue"], inputInfo["frequency"]["defaultValue"], inputInfo["step_time"]["defaultValue"], inputInfo["step_value"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
 
-    # logs['ETB1'] = ETB1Command(TB_UART) 
+    logs['ETB1'] = ETB1Command(TB_UART) 
 
-    # time.sleep(5)
+    time.sleep(5)
 
-    # logs['ETB2'] = ETB2Command(TB_UART)
+    logs['ETB2'] = ETB2Command(TB_UART)
 
     return logs
 
