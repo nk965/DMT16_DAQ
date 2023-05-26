@@ -6,6 +6,6 @@ cd /
 sudo pigpiod
 cd home/icl-dmt16/DMT16_DAQ/DMT_RPi
 python3 Serial.py
-python3 Streaming.py & python3 GPIO.py 12 16 20 21
+python3 Streaming.py & python3 GPIO.py 1 8 16 20 21
 cd /
 sudo killall pigpiod

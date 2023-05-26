@@ -129,7 +129,7 @@ class GPIO_Data:
                 self.Pin21_data.append(data)
 
         self.Pin1_data = np.asarray(self.Pin1_data)
-        self.Pin12_data = np.asarray(self.Pin12_data)
+        self.Pin8_data = np.asarray(self.Pin8_data)
         self.Pin16_data = np.asarray(self.Pin16_data)
         self.Pin20_data = np.asarray(self.Pin20_data)
         self.Pin21_data = np.asarray(self.Pin21_data)
@@ -348,15 +348,17 @@ if __name__ == "__main__":
 
     # Plotting GPIO data 
 
+    labels = ["main flow rate", "TB motor", "PIV", "Dye Inject", "Branch Flow"]
     for struct in GPIO_struct:
 
         GPIO_run_data = extract_GPIO_data(struct)
 
-        for run_data in GPIO_run_data:
+        for index, run_data in enumerate(GPIO_run_data):
 
-            plt.plot(run_data[0], run_data[1])
+            plt.scatter(run_data[0], run_data[1],label=labels[index],s=1)
+            plt.legend()
 
-        plt.show()
+            plt.show()
 
 
     # plt.plot(extract_GPIO_data(GPIO_struct[0])[4][0], extract_GPIO_data(GPIO_struct[0])[4][1])
