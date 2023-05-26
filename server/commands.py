@@ -33,9 +33,9 @@ def STBCommand(UART, start_y: float, start_y_info: dict, trans_time: float, tran
 
     actualTransTime, outTransTime = float_to_hex_string(trans_time, trans_time_info)
 
-    message = bytearray.fromhex(hex_identifier + outStartY + outTransTime)
+    message = bytearray.fromhex(hex_identifier + outStartY + '00')
 
-    print(f'STB Sends: {hex_identifier} {outStartY} {outTransTime} in the form of {message}')
+    print(f'STB Sends: {hex_identifier} {outStartY} 00 in the form of {message}')
 
     UART.send(message)
 

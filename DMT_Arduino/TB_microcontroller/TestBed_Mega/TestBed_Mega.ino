@@ -228,7 +228,9 @@ void loop()
     else if (receivedData[0] == STBCommand) // 2nd byte: initial actuator input, 3rd + 4th byte: time duration
     {
       sendData(receivedData, max_bytes); // Debugging print
-      requested_speed = (((double)receivedData[1])/double(256)) * double(100);
+
+      requested_speed = (double)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2])) / double(200);
+
     }
     else if (receivedData[0] == STB2Command) // 2nd byte: branch pipe temperature
     { 
