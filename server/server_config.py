@@ -85,23 +85,23 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "start_y": {
-        "defaultValue": 2,
+        "defaultValue": 0,
         "type": float,
-        "range": [0, 800],
+        "range": [0, 1000],
         "bits": 16, 
         "units": "%", #TODO: use units of momentum ratio?
         "submission_form": "transientInput"
     },
     "end_y": {
-        "defaultValue": 240,
+        "defaultValue": 65.55,
         "type": float,
-        "range": [0, 800],
+        "range": [0, 1000],
         "bits": 16,
         "units": "", #TODO: use units of momentum ratio?
         "submission_form": "transientInput"
     },
     "nodes": {
-        "defaultValue": 100,
+        "defaultValue": 50, 
         "type": float,
         "range": [0, 500],
         "bits": None,
@@ -109,7 +109,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "presetConfig": {
-        "defaultValue": "Step", #Step, Linear, Sine
+        "defaultValue": "Linear", #Step, Linear, Sine
         "type": str,
         "range": None,
         "bits": None,
@@ -117,7 +117,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "trans_time": {
-        "defaultValue": 12,
+        "defaultValue": 7,
         "type": float,
         "range": [0, 800],
         "bits": 16,
@@ -165,9 +165,9 @@ inputInfo = {
         "submission_form": "None"
     },
     "amplitude": {
-        "defaultValue": 4,  
+        "defaultValue": 28,  
         "type": float,
-        "range": [0, 480],
+        "range": [0, 1000],
         "bits": 8,
         "units": "s",
         "submission_form": "None"
@@ -175,15 +175,15 @@ inputInfo = {
     "step_time": {
         "defaultValue": 3, # this was 9 
         "type": float,
-        "range": [0, 480],
+        "range": [0, 800],
         "bits": 8,
         "units": "s",
         "submission_form": "None"
     },
     "step_value": {
-        "defaultValue": 30, # this was 9 
+        "defaultValue": 65.55, # this was 9 
         "type": float,
-        "range": [0, 100],
+        "range": [0, 1000],
         "bits": 8,
         "units": "",
         "submission_form": "None"
