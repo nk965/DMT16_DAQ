@@ -1,179 +1,7 @@
-import os
+import os 
 import matplotlib.pyplot as plt
-
-class Datalogger_Data:
-
-    def readfile(self, file_path):
-        # Change the text file
-
-        with open(str(file_path), 'r') as read:
-            x = read.read().splitlines()
-        return x
-
-    def __init__(self, file_path, depth, rotation_angles, location):  # change filename into filepath
-
-        import numpy as np
-
-        self.file_path = file_path
-        self.filename = os.path.basename(file_path)
-        self.rotation_angle = rotation_angles
-        self.depth = depth
-
-        if location == 0:
-            self.location = "Left"
-        elif location == 1:
-            self.location = "Right"
-        else:
-            self.location = str(location)
-
-        filename_array = np.asarray(self.filename.split("-"))
-
-        self.unit = filename_array[0]
-
-        self.date = filename_array[1][:10]
-        self.start_time = filename_array[1][11:]
-        self.channel = filename_array[2]
-        self.type = filename_array[3].split(".")[0]
-
-        unprocessed_data = self.readfile(self.file_path)
-        del unprocessed_data[0]
-
-        split_data = []
-
-        for data_list in unprocessed_data:
-            split_data.append(data_list.split(","))
-
-        split_data = np.asarray(split_data)
-
-        for index, data in enumerate(split_data):
-            time = np.asarray(data[2].split(":")).astype(np.uint64)
-            time_microseconds = ((time[0] * 3600 + time[1] * 60 + time[2]) * 10 ** 6 + time[3]).astype(np.uint64)
-            split_data[index][2] = time_microseconds
-
-        self.data = split_data
-
-    def print_status(self):
-        print("File name : " + self.filename)
-        print("%s, %s" % (self.unit, self.channel))
-        print("Rotation Angle : " + str(self.rotation_angle))
-        print("Depth : " + str(self.depth) + " mm")
-        print("Location : " + self.location)
-        print("%s, %s" % (self.date, self.start_time))
-        print("Type: " + self.type)
-
-    def print_data(self):
-        print(self.data)
-
-
-class GPIO_Data:
-
-    def readfile(self, name):
-        # Change the text file
-        with open(name, 'r') as read:
-            x = read.read().splitlines()
-        return x
-
-    def __init__(self, file_path):
-        import numpy as np
-        self.file_path = file_path
-        self.filename = os.path.basename(file_path)
-        filename_array = self.filename.split("-")
-        self.date = filename_array[1][:10]
-        self.start_time = filename_array[1][11:]
-        filename_array[3] = filename_array[3].split(".")
-        self.type = filename_array[3][0]
-
-        unprocessed_data = self.readfile(self.file_path)
-        del unprocessed_data[0]
-
-        split_data = []
-
-        for data_list in unprocessed_data:
-            split_data.append(data_list.split(","))
-
-        # Main flow meter
-        self.Pin1_data = []
-
-        # TB motor actuation
-        self.Pin8_data = []
-
-        # PIV Pulse
-        self.Pin16_data = []
-
-        # Dye injection actuation
-        self.Pin20_data = []
-
-        # Branch Flow Meter
-        self.Pin21_data = []
-
-        split_data = np.asarray(split_data)
-
-        for index, data in enumerate(split_data):
-            time = np.asarray(data[4].split(":")).astype(np.uint64)
-            time_microseconds = ((time[0] * 3600 + time[1] * 60 + time[2]) * 10 ** 6 + time[3]).astype(np.uint64)
-            split_data[index][4] = time_microseconds
-
-            if data[0] == "1":
-                self.Pin1_data.append(data)
-
-            elif data[0] == "8":
-                self.Pin8_data.append(data)
-
-            elif data[0] == "16":
-                self.Pin16_data.append(data)
-
-            elif data[0] == "20":
-                self.Pin20_data.append(data)
-
-            elif data[0] == "21":
-                self.Pin21_data.append(data)
-
-        self.Pin1_data = np.asarray(self.Pin1_data)
-        self.Pin8_data = np.asarray(self.Pin8_data)
-        self.Pin16_data = np.asarray(self.Pin16_data)
-        self.Pin20_data = np.asarray(self.Pin20_data)
-        self.Pin21_data = np.asarray(self.Pin21_data)
-
-    def print_status(self):
-        print("File name : " + self.filename)
-        print("%s, %s" % (self.date, self.start_time))
-        print("Type: " + self.type)
-
-    def print_data(self):
-        print(self.Pin1_data)
-        print(self.Pin12_data)
-        print(self.Pin16_data)
-        print(self.Pin20_data)
-        print(self.Pin21_data)
-
-
-# (unit,channel) -> (depth, initial angle before rotation, location)
-# Depths are in mm
-# Location 0 = left, 1 = right
-
-null = -69
-
-channel_info = {("UNIT1", "CHANNEL1"): (4, 0, 0),
-                ("UNIT1", "CHANNEL2"): (3, 30, 0),
-                ("UNIT1", "CHANNEL3"): (2, 60, 0),
-                ("UNIT1", "CHANNEL4"): (1, 90, 0),
-                ("UNIT1", "CHANNEL5"): (4, 0, 1),
-                ("UNIT1", "CHANNEL6"): (3, 30, 1),
-                ("UNIT1", "CHANNEL7"): (2, 60, 1),
-                ("UNIT1", "CHANNEL8"): (1, 90, 1),
-                ("UNIT1", "CHANNELCJC"): (null, null, null),
-
-                ("UNIT2", "CHANNEL1"): (null, -30, 0),
-                ("UNIT2", "CHANNEL2"): (null, -30, 1),
-                ("UNIT2", "CHANNEL3"): (null, null, null),
-                ("UNIT2", "CHANNEL4"): (null, null, null),
-                ("UNIT2", "CHANNEL5"): (null, null, null),
-                ("UNIT2", "CHANNEL6"): (null, null, null),
-                ("UNIT2", "CHANNEL7"): (null, null, null),
-                ("UNIT2", "CHANNEL8"): (null, null, null),
-                ("UNIT2", "CHANNELCJC"): (null, null, null),
-                }
-
+from data_structs import Datalogger_Data, GPIO_Data
+from channel_info import channel_info, null
 
 def process_individual_run(folder_path, angle):
     data_dump_experiment_path = folder_path
@@ -199,7 +27,6 @@ def process_individual_run(folder_path, angle):
                 experiment_data.append(Datalogger_Data(file_path, depth, initial_angle + angle, location))
 
     return experiment_data
-
 
 def extract_pico_data(data_class):
     import numpy as np
@@ -281,6 +108,16 @@ def extract_GPIO_data(data_class):
                        [PIV_pulse_time_seconds, PIV_pulse_state], [Dye_injection_time_seconds, Dye_injection_state],
                        [Branch_flow_meter_time_seconds, Branch_flow_rate]]
 
+def exponential_filter(x,alpha=0.3):
+
+    import numpy as np
+    s = np.zeros(len(x))
+    s[0] = x[0]
+
+    for t in range(1,len(x)):
+        s[t] = alpha*x[t] + (1-alpha)*s[t-1]
+
+    return s
 
 if __name__ == "__main__":
 
@@ -348,17 +185,29 @@ if __name__ == "__main__":
 
     # Plotting GPIO data 
 
-    labels = ["main flow rate", "TB motor", "PIV", "Dye Inject", "Branch Flow"]
-    for struct in GPIO_struct:
+    # labels = ["main flow rate", "TB motor", "PIV", "Dye Inject", "Branch Flow"]
+    # for i, struct in enumerate(GPIO_struct):
 
-        GPIO_run_data = extract_GPIO_data(struct)
+    #     GPIO_run_data = extract_GPIO_data(struct)
 
-        for index, run_data in enumerate(GPIO_run_data):
+    #     for index, run_data in enumerate(GPIO_run_data):
 
-            plt.scatter(run_data[0], run_data[1],label=labels[index],s=1)
-            plt.legend()
+    #         plt.scatter(run_data[0], run_data[1], label=labels[index],s=1)
+    #         plt.title(f"{i}, GPIO Pin list {index} - Run")
+    #         plt.legend()
 
-            plt.show()
+    #         plt.show()
+
+    
+    GPIO_run_data_branch = extract_GPIO_data(GPIO_struct[0])[4]
+    print(GPIO_run_data_branch)
+
+    filtered = exponential_filter(GPIO_run_data_branch[1])
+    plt.plot(GPIO_run_data_branch[0], filtered, label="Filtered")
+    plt.scatter(GPIO_run_data_branch[0], GPIO_run_data_branch[1], s=1, label="Unfiltered",color="r")
+    plt.title("Filtered vs Unfiltered")
+    plt.legend()
+    plt.show()
 
 
     # plt.plot(extract_GPIO_data(GPIO_struct[0])[4][0], extract_GPIO_data(GPIO_struct[0])[4][1])

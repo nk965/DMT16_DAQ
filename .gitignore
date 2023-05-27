@@ -1,2 +1,5 @@
 /.vscode
 .DS_Store
+analysis/__pycache__/channel_info.cpython-311.pyc
+analysis/__pycache__/data_structs.cpython-311.pyc
+analysis/__pycache__/dataclasses.cpython-311.pyc
