@@ -85,7 +85,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "start_y": {
-        "defaultValue": 0,
+        "defaultValue": 10,
         "type": float,
         "range": [0, 30], # remember 65.535
         "bits": 16, 
@@ -109,7 +109,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "presetConfig": {
-        "defaultValue": "Linear", #Step, Linear, Sine
+        "defaultValue": "Constant", #Step, Linear, Sine, Constant
         "type": str,
         "range": None,
         "bits": None,
@@ -165,7 +165,7 @@ inputInfo = {
         "submission_form": "None"
     },
     "amplitude": {
-        "defaultValue": 28,  
+        "defaultValue": 5,  
         "type": float,
         "range": [0, 1000],
         "bits": 8,
@@ -181,7 +181,7 @@ inputInfo = {
         "submission_form": "None"
     },
     "step_value": {
-        "defaultValue": 65.55, # this was 9 
+        "defaultValue": 10, # this was 9 
         "type": float,
         "range": [0, 1000],
         "bits": 8,

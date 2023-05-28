@@ -3,7 +3,6 @@
 Main script for communicating with microcontrollers
 hello
 """
-
 from Modules import *
 
 from PySerial import UART, list_ports
@@ -72,6 +71,64 @@ def TB_TESTING(port: str, inputInfo):
 
     return logs
 
+def plot_transient_request(logs, command, inputs):
+
+    fig1, axes = plt.subplots(figsize=(10, 5)) 
+    axes.set_xlabel('Time (s)')
+    axes.set_ylabel('Requested Speed (ml/s)')
+    axes.set_title('Requested Flow Rate')   
+    axes.legend(loc='best') # insert legend to distinguish between raw and predicted dat
+    fig1.canvas.manager.set_window_title('Figure 1') 
+    fig1.suptitle('Requested Flow Rate')    
+    sns.scatterplot(x=logs[command]["Time Step"], y=logs[command]["Actuator Position Array"],
+                ax=axes, label='Requested', s=30)  # plotting scatterplot from raw data
+
+    # Add line plot connecting scatter points
+    sns.lineplot(x=logs[command]["Time Step"], y=logs[command]["Actuator Position Array"],
+             ax=axes, color='blue', label='Line Plot')
+
+    # Add maximum low rate red line
+    max_flow_rate = inputInfo['start_y']['range'][1]
+    axes.axhline(y=max_flow_rate, color='red', linestyle='--', label='Max Flow Rate')
+    axes.set_ylim(0)
+
+    axes.legend(loc='best')  # Update legend to include the Max Low Rate line
+    
+    plt.tight_layout
+
+    save_folder_path = "server/transient_condition_request"
+
+    # Create the folder if it does not exist
+    if not os.path.exists(save_folder_path):
+        os.makedirs(save_folder_path)
+
+    start_datetime = datetime.now()
+
+    start_datetime_string = start_datetime.strftime("%Y_%m_%d_%H_%M_%S")
+
+    plot_filename = f"PC-{start_datetime_string}-plots-requested.png"
+
+    # Save the plot as a PNG file in the specified folder
+    plt.savefig(os.path.join(save_folder_path, plot_filename), dpi=300)
+
+    plt.show()
+
+    # Combine the two arrays into a list of tuples
+    data = list(zip(logs[command]["Time Step"], logs[command]["Actuator Position Array"]))
+
+    csv_filename = f"PC-{start_datetime_string}-arrays-requested.csv"
+    
+    file_path = os.path.join(save_folder_path, csv_filename)
+
+    # Write the data to a CSV file
+    with open(file_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Time Step', 'Actuator Position Array'])  # Write header row
+        writer.writerows(data)  # Write data rows
+
+    return {}
+
+
 def PID_TESTING(port: str, inputInfo):
 
     logs = {}
@@ -95,6 +152,8 @@ def PID_TESTING(port: str, inputInfo):
     time.sleep(5)
 
     logs['ETB2'] = ETB2Command(TB_UART)
+
+    plot_transient_request(logs, "PIDTuning", inputInfo)
 
     return logs
 
@@ -134,7 +193,7 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
 
     time.sleep(0.5*(inputs['inject_time'] - inputs['trans_time']))
     
-    logs['RTB'] = RTBProcedure(TB_UART, inputs["start_y"], inputs["end_y"], inputs["nodes"], inputs["trans_time"], inputs["presetConfig"])
+    logs['RTB'] = RTBProcedure(TB_UART, inputs["start_y"], inputs["end_y"], inputs["nodes"], inputs["trans_time"], inputs["amplitude"], inputs["frequency"], inputs["step_time"], inputs["step_value"], inputs["presetConfig"])
 
     logs['ETB1'] = ETB1Command(TB_UART) 
     
@@ -145,6 +204,8 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
     time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
 
     logs['EDAQ'] = EDAQCommand(DAQ_UART)
+
+    plot_transient_request(logs, "RTB", inputs)
 
     return logs
 
@@ -187,9 +248,9 @@ if __name__ == "__main__":
     # logs = DAQ_TESTING(ports_available[DAQ_port_index], inputInfo) # Benchscale Test for DAQ system
     # logs = resetDyeInjection(ports_available[TB_port_index])
 
-    # logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
+    logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
 
-    logs = PID_TESTING(ports_available[TB_port_index], inputInfo)
+    # logs = PID_TESTING(ports_available[TB_port_index], inputInfo)
 
     print(logs)
 

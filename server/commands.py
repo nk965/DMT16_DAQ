@@ -129,13 +129,52 @@ def IDYE3Command(UART, enPulse: bool, syrDia: float, vol_inject: float):
     return {"Steps": steps, "Pulse Mode": enPulse}
 
 
-def RTBProcedure(UART, start_y, end_y, nodes, trans_time, preset_config="Linear"):
+def RTBProcedure(UART, start_y, end_y, nodes, trans_time, amplitude, frequency, step_time, step_value, preset_config="Constant"):
 
     # generate actuator_array and time_array based on user input
 
     if preset_config=="Linear":
 
         times, y_values = linear_interpolation(start_y, end_y, nodes, trans_time)
+    
+    if preset_config=="Constant":
+
+        times, y_values = linear_interpolation(start_y, start_y, nodes, trans_time)
+
+    if preset_config=="Step":
+
+        times = np.linspace(0, trans_time, nodes)
+
+        y_values = np.where(times >= step_time, start_y + step_value, start_y)
+
+        y_values = np.clip(y_values, 0, None)
+
+    if preset_config=="Sine":
+
+        # Fastest it can be is 0.5 Hz (due to Thermocouples sampling at 1 second) but we don't care about thermocouples for PID testing 
+        
+        #So, Nodes/trans_time is also a max if thermocouples don't matter
+
+        times = np.linspace(0, trans_time, nodes)
+        desired_times = np.linspace(0, trans_time, 1000)
+
+        max_frequency = 0.5 * (nodes/trans_time)
+
+        if frequency >= max_frequency:
+            # Generate the sine wave
+            omega = 2 * np.pi * max_frequency  # Angular frequency
+        else: 
+            # Generate the sine wave
+            omega = 2 * np.pi * frequency  # Angular frequency
+
+        y_values = np.sin(omega * times)
+        y_values_desired = np.sin(omega * desired_times)
+
+        # Scale and shift the sine wave
+        y_values = amplitude * y_values + start_y
+
+        # Set negative values to zero
+        y_values = np.clip(y_values, 0, None)
 
     actual_actuator_pos_array = RTBCommand(UART, y_values, times)
 
@@ -165,8 +204,6 @@ def PIDTuning(UART, start_y, end_y, nodes, trans_time, amplitude, frequency, ste
         desired_times = np.linspace(0, trans_time, 1000)
 
         max_frequency = 0.5 * (nodes/trans_time)
-
-        print(max_frequency, frequency)
 
         if frequency >= max_frequency:
             # Generate the sine wave
@@ -279,12 +316,12 @@ def SDAQCommand(UART: object, PIVfreq_val: float, Datafreq_val: float, PIVfreq_i
 
     actualDatafreq, outDatafreq = float_to_base_15(
         Datafreq_val, Datafreq_info)
-    
-    print(f'SDAQ Sends: {hex_identifier} {outPIVticks} {outDatafreq}')
 
     message = bytearray.fromhex(hex_identifier + outPIVticks + outDatafreq)
 
     UART.send(message)
+
+    print(f'SDAQ Sends: {hex_identifier} {outPIVticks} {outDatafreq} in the form of: {message}')
 
     return {"Logger Frequency": actualDatafreq, "PIV Frequency": actualPIV, "PIV Ticks": outPIVticks}
 
@@ -294,10 +331,10 @@ def SDAQ2Command(UART, LenExperiment, LenExperimentInfo):
 
     actualLen, outLen = float_to_base_15(LenExperiment+30, LenExperimentInfo)
 
-    print(f'SDAQ2 Sends: {hex_identifier} {outLen} 01')
-
     message = bytearray.fromhex(hex_identifier + outLen + "01")
 
     UART.send(message)
+
+    print(f'SDAQ2 Sends: {hex_identifier} {outLen} 01 in the form of: {message}')
 
     return {"Length of Experiment": actualLen}
