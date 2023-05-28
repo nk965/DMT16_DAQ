@@ -158,9 +158,6 @@ def float_array_to_hex_string(arr: np.ndarray, info: dict) -> np.ndarray:
 
     scaled_arr = ((arr - info["range"][0]) / (info["range"][1] - info["range"][0])) * (65.535 - 0) + 0 
 
-    print(arr)
-    print(scaled_arr)
-
     rounded = np.round(scaled_arr*1000).astype(int)
 
     hex_func = np.vectorize(lambda x: int_to_hex_string(x, info["bits"]))

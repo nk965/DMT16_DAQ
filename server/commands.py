@@ -186,9 +186,6 @@ def PIDTuning(UART, start_y, end_y, nodes, trans_time, amplitude, frequency, ste
     
     actual_actuator_pos_array = RTBCommand(UART, y_values, times)
 
-    # plt.scatter(times, actual_actuator_pos_array)
-    # plt.show()
-
     return {"Actuator Position Array": actual_actuator_pos_array, "Time Step": times}
 
 
