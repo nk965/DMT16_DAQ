@@ -119,14 +119,38 @@ def exponential_filter(x,alpha=0.3):
 
     return s
 
+def plot_flow_rate_GPIO_data():
+
+
+
+    return 0 
+
+def plot_all_GPIO_data(GPIO_struct):
+
+    labels = ["main flow rate", "TB motor", "PIV", "Dye Inject", "Branch Flow"]
+    for i, struct in enumerate(GPIO_struct):
+
+        GPIO_run_data = extract_GPIO_data(struct)
+
+        for index, run_data in enumerate(GPIO_run_data):
+
+            plt.scatter(run_data[0], run_data[1], label=labels[index],s=1)
+            plt.title(f"{i}, GPIO Pin list {index} - Run")
+            plt.legend()
+
+            plt.show()
+
+    return 0 
+
 if __name__ == "__main__":
 
     # Looking at data for a particular inlet condition 
 
     angle = [0, 30, 60]  
     folder_path = 'analysis/data/opaque/inlet1'
+    
     test_runs = []
-
+    
     # Obtain the CSV Files and create dataclasses for each test run with that inlet condition
 
     for index, test_run in enumerate(os.scandir(folder_path)):
@@ -152,7 +176,7 @@ if __name__ == "__main__":
     
     one_mm = []
     
-    temperatures = []
+    temperatures = [] # contains all temperature measurements 
     
     GPIO_struct = []
 
@@ -183,24 +207,15 @@ if __name__ == "__main__":
             
                 GPIO_struct.append(channels)
 
-    # Plotting GPIO data 
+    print(temperatures)
 
-    # labels = ["main flow rate", "TB motor", "PIV", "Dye Inject", "Branch Flow"]
-    # for i, struct in enumerate(GPIO_struct):
-
-    #     GPIO_run_data = extract_GPIO_data(struct)
-
-    #     for index, run_data in enumerate(GPIO_run_data):
-
-    #         plt.scatter(run_data[0], run_data[1], label=labels[index],s=1)
-    #         plt.title(f"{i}, GPIO Pin list {index} - Run")
-    #         plt.legend()
-
-    #         plt.show()
-
+    for temp in temperatures:
+        temp.print_status()
     
+    plot_all_GPIO_data(GPIO_struct)
+
     GPIO_run_data_branch = extract_GPIO_data(GPIO_struct[0])[4]
-    print(GPIO_run_data_branch)
+    # print(GPIO_run_data_branch)
 
     filtered = exponential_filter(GPIO_run_data_branch[1])
     plt.plot(GPIO_run_data_branch[0], filtered, label="Filtered")
@@ -210,30 +225,3 @@ if __name__ == "__main__":
     plt.show()
 
 
-    # plt.plot(extract_GPIO_data(GPIO_struct[0])[4][0], extract_GPIO_data(GPIO_struct[0])[4][1])
-    # plt.show()
-
-    # for test in pressures:
-    #     test.print_status()
-
-    # for test in four_mm:
-    #     test.print_status()
-
-    # for test in three_mm:
-    #     test.print_status()
-
-    # for test in two_mm:
-    #     test.print_status()
-
-    # for test in one_mm:
-    #     test.print_status()
-
-    # for test in temperatures:
-    #     test.print_status()
-
-    # print(pressures.print_status())
-    # print(four_mm.print_status())
-    # print(three_mm.print_status())
-    # print(two_mm.print_status())
-    # print(one_mm.print_status())
-    # print(temperatures.print_status())

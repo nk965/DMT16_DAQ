@@ -7,6 +7,7 @@ from Modules import *
 # import matplotlib.pyplot as plt 
 
 from helpers import convert_frequency_to_clock_tick, float_to_hex_string, float_to_base_15, bool_to_pulse_string, float_array_to_hex_string, linear_interpolation, int_to_hex_string
+from server_config import inputInfo
 
 def ITBCommand(UART, testDelay:float, testDelay_info: dict):
 
@@ -205,11 +206,14 @@ def TestCommand(UART):
 
 def RTBCommand(UART, actuator_array, times):
 
-    info = {"range": [np.min(actuator_array), np.max(actuator_array)], "bits": 16}
+    info = {"range": [inputInfo["start_y"]["range"][0], inputInfo["start_y"]["range"][1]], "bits": 16}
 
     hex_identifier = "07"
 
-    actual_actuator_pos_array, out_actuator_pos_array = float_array_to_hex_string(actuator_array, info)
+    # basically, when using float_array_to_hex_string, the maximum cap is 65.535 (i.e,, 2^16-1 / 1000)
+    # so, we need to linearly scale the original array, say range of 0-30. Thus this is turned into an array between 0-65.535 and sent in the form of hex (16 bits)
+
+    actual_actuator_pos_array, out_actuator_pos_array = float_array_to_hex_string(actuator_array, info) # actuator array an array between 0 and 65.535 
 
     for index in range(1, len(times)):
 
