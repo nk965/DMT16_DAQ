@@ -73,6 +73,8 @@ def TB_TESTING(port: str, inputInfo):
 
 def plot_transient_request(logs, command, inputs):
 
+    sns.set_theme()
+
     fig1, axes = plt.subplots(figsize=(10, 5)) 
     axes.set_xlabel('Time (s)')
     axes.set_ylabel('Requested Speed (ml/s)')

@@ -109,7 +109,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "presetConfig": {
-        "defaultValue": "Constant", #Step, Linear, Sine, Constant
+        "defaultValue": "Sine", #Step, Linear, Sine, Constant
         "type": str,
         "range": None,
         "bits": None,
