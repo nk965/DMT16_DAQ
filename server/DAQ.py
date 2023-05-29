@@ -47,7 +47,7 @@ def Dye_Injection_TB(port: str, inputInfo):
 
     logs['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
 
-    logs['IDYE'] = IDYECommand(TB_UART, inputInfo['syrDia']['defaultValue'], inputInfo['vol_inject']['defaultValue'], inputInfo['inject_time']['defaultValue'], inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['enPulse'])
+    logs['IDYE'] = IDYECommand(TB_UART, inputInfo['syrDia']['defaultValue'], inputInfo['vol_inject']['defaultValue'], inputInfo['inject_time']['defaultValue'], inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['enPulse']['defaultValue'])
 
     logs['IDYE2'] = IDYE2Command(TB_UART, inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['cyclePeriod']['defaultValue'], inputInfo['cyclePeriod'])
 

@@ -63,17 +63,17 @@ def IDYECommand(UART, syrDia: float, vol_inject: float, inject_time: float, duty
 
     steps_per_rev = 200
 
-    mm_per_rev = 0.5
+    mm_per_rev = 2
 
-    if enPulse: 
+    if enPulse == True: 
 
         actualDutyCycle, outDutyCycle = float_to_hex_string(dutyCycle, dutyCycle_info)
 
-        steps_per_second = math.floor((steps_per_rev * mm_per_rev * 4 * vol_inject * 1000)/(math.pi * inject_time * actualDutyCycle * syrDia**2)) # this should be an integer between 1 and 65536 TODO add error checking for this 
+        steps_per_second = math.floor((steps_per_rev * 4 * vol_inject * 1000)/(math.pi * mm_per_rev * inject_time * actualDutyCycle * syrDia**2)) # this should be an integer between 1 and 65536 TODO add error checking for this 
 
     else:
 
-        steps_per_second = math.floor((steps_per_rev * mm_per_rev * 4 * vol_inject * 1000)/(math.pi * inject_time * syrDia**2)) # this should be an integer between 1 and 65536 TODO add error checking for this 
+        steps_per_second = math.floor((steps_per_rev * 4 * vol_inject * 1000)/(math.pi * mm_per_rev * inject_time * syrDia**2)) # this should be an integer between 1 and 65536 TODO add error checking for this 
 
     outspeed = int_to_hex_string(steps_per_second, 16) # steps per second is 100
 
@@ -107,9 +107,9 @@ def IDYE3Command(UART, enPulse: bool, syrDia: float, vol_inject: float):
 
     steps_per_rev = 200
 
-    mm_per_rev = 0.5
+    mm_per_rev = 2
 
-    steps = math.floor((steps_per_rev * mm_per_rev * 4 * vol_inject * 1000)/(math.pi * syrDia**2)) # this should be an integer between 1 and 65536 TODO add error checking for this 
+    steps = math.floor((steps_per_rev * 4 * vol_inject * 1000)/(math.pi * mm_per_rev * syrDia**2)) # this should be an integer between 1 and 65536 TODO add error checking for this 
 
     outEnPulse = bool_to_pulse_string(enPulse)
 

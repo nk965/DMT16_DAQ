@@ -13,9 +13,9 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "syrDia": {
-        "defaultValue": 31.8,
+        "defaultValue": 29.46384007,
         "type": float,
-        "range": [10, 50],
+        "range": [10, 35],
         "bits": 8,
         "units": "mm",
         "submission_form": "userConfig"
@@ -69,7 +69,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "cyclePeriod": {
-        "defaultValue": 0.5,
+        "defaultValue": 2,
         "type": float,
         "range": [0, 100],
         "bits": 16,
@@ -77,7 +77,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "dutyCycle": {
-        "defaultValue": 0.30,
+        "defaultValue": 0.8,
         "type": float,
         "range": [0, 1],
         "bits": 8,
@@ -149,7 +149,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "inject_time": {
-        "defaultValue": 30, # first test
+        "defaultValue": 20, # first test
         "type": float,
         "range": [0, 480],
         "bits": 8,
