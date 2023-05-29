@@ -16,8 +16,8 @@ channel_info = {("UNIT1", "CHANNEL1"): (4, 0, 0),
                 ("UNIT1", "CHANNEL8"): (1, 90, 1),
                 ("UNIT1", "CHANNELCJC"): (null, null, null),
 
-                ("UNIT2", "CHANNEL1"): (null, -30, 0),
-                ("UNIT2", "CHANNEL2"): (null, -30, 1),
+                ("UNIT2", "CHANNEL1"): (null, -30, 0), # pressure 
+                ("UNIT2", "CHANNEL2"): (null, -30, 1), # pressure
                 ("UNIT2", "CHANNEL3"): (null, null, null),
                 ("UNIT2", "CHANNEL4"): (null, null, null),
                 ("UNIT2", "CHANNEL5"): (null, null, null),
