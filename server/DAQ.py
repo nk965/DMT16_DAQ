@@ -57,9 +57,13 @@ def Dye_Injection_TB(port: str, inputInfo):
 
     logs['ETB1'] = ETB1Command(TB_UART) 
 
-    time.sleep(0.5*(inputInfo['inject_time']['defaultValue'] - inputInfo['trans_time']['defaultValue']))
+    time.sleep(2)
+
+    # time.sleep(0.5*(inputInfo['inject_time']['defaultValue'] - inputInfo['trans_time']['defaultValue']))
 
     logs['ETB2'] = ETB2Command(TB_UART)
+
+    print(logs)
 
 
 def TB_TESTING(port: str, inputInfo):

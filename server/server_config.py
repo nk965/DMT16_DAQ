@@ -13,7 +13,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "syrDia": {
-        "defaultValue": 31.9,
+        "defaultValue": 31.8,
         "type": float,
         "range": [10, 50],
         "bits": 8,
@@ -29,7 +29,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "enPulse": {
-        "defaultValue": True,
+        "defaultValue": False,
         "type": bool,
         "range": None,
         "bits": 8,
@@ -149,7 +149,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "inject_time": {
-        "defaultValue": 240, # first test
+        "defaultValue": 30, # first test
         "type": float,
         "range": [0, 480],
         "bits": 8,
