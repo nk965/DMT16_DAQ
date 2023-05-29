@@ -13,7 +13,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "syrDia": {
-        "defaultValue": 30,
+        "defaultValue": 31.9,
         "type": float,
         "range": [10, 50],
         "bits": 8,
@@ -21,7 +21,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "dyeSpeed": {
-        "defaultValue": 8,
+        "defaultValue": 8, # 0.03, 0.08
         "type": float,
         "range": [0, 50],
         "bits": 16,
@@ -109,7 +109,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "presetConfig": {
-        "defaultValue": "Sine", #Step, Linear, Sine, Constant
+        "defaultValue": "Step", #Step, Linear, Sine, Constant
         "type": str,
         "range": None,
         "bits": None,
@@ -149,7 +149,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "inject_time": {
-        "defaultValue": 15, # this was 9 
+        "defaultValue": 240, # first test
         "type": float,
         "range": [0, 480],
         "bits": 8,

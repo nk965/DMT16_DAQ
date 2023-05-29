@@ -43,7 +43,7 @@ double requested_speed; // U in the control system (mL/s)
 // PID Characteristics
 double PID_input_buffer[3] = {0, 0, 0};  // Buffer for bilinear multistep transfer function
 double PID_output_buffer[3] = {0, 0, 0}; // Output buffer
-double Kp = 20;
+double Kp = 5;
 double Ki = 0;
 double Kd = 0;
 
@@ -231,8 +231,7 @@ void loop()
       sendData(receivedData, max_bytes); // Debugging print
 
       // requested_speed = (double)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2])) / double(200);
-      requested_speed = (double)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2])) *(30(double) / 65536(double));
-
+      requested_speed = (double)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2])) *((double)30 / (double)65535);
     }
     else if (receivedData[0] == STB2Command) // 2nd byte: branch pipe temperature
     { 
@@ -275,7 +274,7 @@ void loop()
     else if (receivedData[0] == RTBCommand) // RTB - 2 byte has actuator position, first iteration sends RDYE
     {
 
-      requested_speed = (double)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2])) / double(200);
+      requested_speed = (double)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2])) *((double)30 / (double)65535);
 
       // If the padding is 00, LED is HIGH showing RTB command
       if (receivedData[3] == 0b00000000)

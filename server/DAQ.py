@@ -33,6 +33,35 @@ def DAQ_TESTING(port: str, inputInfo):
 
     return logs
 
+def Dye_Injection_TB(port: str, inputInfo):
+
+    logs = {}
+
+    TB_UART = UART("TB Microcontroller", port)
+
+    time.sleep(5)
+
+    logs['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) # TODO ask Pike if this is necessary 
+
+    logs['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
+
+    logs['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
+
+    logs['IDYE'] = IDYECommand(TB_UART, inputInfo['syrDia']['defaultValue'], inputInfo['vol_inject']['defaultValue'], inputInfo['inject_time']['defaultValue'], inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['enPulse'])
+
+    logs['IDYE2'] = IDYE2Command(TB_UART, inputInfo['dutyCycle']['defaultValue'], inputInfo['dutyCycle'], inputInfo['cyclePeriod']['defaultValue'], inputInfo['cyclePeriod'])
+
+    logs['IDYE3'] = IDYE3Command(TB_UART, inputInfo['enPulse']['defaultValue'], inputInfo['syrDia']['defaultValue'], inputInfo['vol_inject']['defaultValue'])
+
+    time.sleep(inputInfo['inject_time']['defaultValue'])
+
+    logs['ETB1'] = ETB1Command(TB_UART) 
+
+    time.sleep(0.5*(inputInfo['inject_time']['defaultValue'] - inputInfo['trans_time']['defaultValue']))
+
+    logs['ETB2'] = ETB2Command(TB_UART)
+
+
 def TB_TESTING(port: str, inputInfo):
     '''
     Benchscale Test
@@ -141,21 +170,23 @@ def PID_TESTING(port: str, inputInfo):
 
     logs['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) # TODO ask Pike if this is necessary 
 
-    logs['Reset TB Motor'] = RTBProcedure(TB_UART, 0, 500, 300, 8, inputInfo["amplitude"]["defaultValue"], inputInfo["frequency"]["defaultValue"], inputInfo["step_time"]["defaultValue"], inputInfo["step_value"]["defaultValue"], preset_config="Linear")
+    logs['Reset TB Motor'] = RTBProcedure(TB_UART, 0, 30, 300, 8, inputInfo["amplitude"]["defaultValue"], inputInfo["frequency"]["defaultValue"], inputInfo["step_time"]["defaultValue"], inputInfo["step_value"]["defaultValue"], preset_config="Linear")
 
-    time.sleep(5)
+    time.sleep(2)
+
+    # plot_transient_request(logs, "Reset TB Motor", inputInfo)
 
     logs['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
 
     logs['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
 
-    time.sleep(5)    
+    time.sleep(1)    
 
     logs['PIDTuning'] = PIDTuning(TB_UART, inputInfo["start_y"]["defaultValue"],inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["amplitude"]["defaultValue"], inputInfo["frequency"]["defaultValue"], inputInfo["step_time"]["defaultValue"], inputInfo["step_value"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
 
     logs['ETB1'] = ETB1Command(TB_UART) 
 
-    time.sleep(5)
+    time.sleep(1)
 
     logs['ETB2'] = ETB2Command(TB_UART)
 
@@ -175,7 +206,7 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
 
     logs['ITB'] = ITBCommand(TB_UART, inputs["stabilising_delay"], info['stabilising_delay']) 
 
-    logs['Reset TB Motor'] = RTBProcedure(TB_UART, 0, 500, 300, 8, inputs["amplitude"], inputs["frequency"], inputs["step_time"], inputs["step_value"], preset_config="Linear")
+    logs['Reset TB Motor'] = RTBProcedure(TB_UART, 0, 30, 300, 8, inputs["amplitude"], inputs["frequency"], inputs["step_time"], inputs["step_value"], preset_config="Linear")
 
     time.sleep(5)
 
@@ -258,9 +289,11 @@ if __name__ == "__main__":
     # logs = DAQ_TESTING(ports_available[DAQ_port_index], inputInfo) # Benchscale Test for DAQ system
     # logs = resetDyeInjection(ports_available[TB_port_index])
 
-    logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
+    # logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
 
     # logs = PID_TESTING(ports_available[TB_port_index], inputInfo)
+
+    logs = Dye_Injection_TB(ports_available[TB_port_index], inputInfo)
 
     print(logs)
 
