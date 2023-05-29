@@ -43,7 +43,7 @@ double requested_speed; // U in the control system (mL/s)
 // PID Characteristics
 double PID_input_buffer[3] = {0, 0, 0};  // Buffer for bilinear multistep transfer function
 double PID_output_buffer[3] = {0, 0, 0}; // Output buffer
-double Kp = 2;
+double Kp = 20;
 double Ki = 0;
 double Kd = 0;
 
@@ -223,13 +223,15 @@ void loop()
     readData(receivedData, max_bytes); // reads data, and tries to decode what it is
     if (receivedData[0] == ITBCommand) // 2nd byte: stabilising delay
     {
+
       sendData(receivedData, max_bytes); // Debugging print
     }
     else if (receivedData[0] == STBCommand) // 2nd byte: initial actuator input, 3rd + 4th byte: time duration
     {
       sendData(receivedData, max_bytes); // Debugging print
 
-      requested_speed = (double)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2])) / double(200);
+      // requested_speed = (double)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2])) / double(200);
+      requested_speed = (double)(((uint16_t)receivedData[1] << 8) | ((uint16_t)receivedData[2])) *(30(double) / 65536(double));
 
     }
     else if (receivedData[0] == STB2Command) // 2nd byte: branch pipe temperature
@@ -340,13 +342,15 @@ void loop()
     PID_input_buffer[1] = PID_input_buffer[2];
     PID_input_buffer[2] = error;
 
-    // Put it through a digital PID controller
+    // Put it through a digital PID controller - calculate K(U-Y)
     PID_output_buffer[0] = PID_output_buffer[1];
     PID_output_buffer[1] = PID_output_buffer[2];
     PID_output_buffer[2] = PID_output_buffer[0] +
-                           (Kp + Ki / (2 * (double)timer_speed) + 2 * Kd * (double)timer_speed) * PID_input_buffer[2] + (Ki / (double)timer_speed - 4 * Kd * (double)timer_speed) * PID_input_buffer[1] + (-Kp + Ki / (2 * (double)timer_speed) + 2 * Kd * (double)timer_speed) * PID_input_buffer[0];
+                           (Kp + Ki / (2 * (double)timer_speed) + 2 * Kd * (double)timer_speed) * PID_input_buffer[2]
+                            + (Ki / (double)timer_speed - 4 * Kd * (double)timer_speed) * PID_input_buffer[1]
+                            + (-Kp + Ki / (2 * (double)timer_speed) + 2 * Kd * (double)timer_speed) * PID_input_buffer[0];
 
-    // The new volumetric flow rate is recorded:
+    // The new volumetric flow rate is recorded - this is in random units (input into motor):
     after_PID_speed = PID_output_buffer[2];
 
     // Update the current total motor displacement
