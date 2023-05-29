@@ -141,6 +141,10 @@ def PID_TESTING(port: str, inputInfo):
 
     logs['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) # TODO ask Pike if this is necessary 
 
+    logs['Reset TB Motor'] = RTBProcedure(TB_UART, 0, 500, 300, 8, inputInfo["amplitude"]["defaultValue"], inputInfo["frequency"]["defaultValue"], inputInfo["step_time"]["defaultValue"], inputInfo["step_value"]["defaultValue"], preset_config="Linear")
+
+    time.sleep(5)
+
     logs['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
 
     logs['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
@@ -170,6 +174,10 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
     time.sleep(5)
 
     logs['ITB'] = ITBCommand(TB_UART, inputs["stabilising_delay"], info['stabilising_delay']) 
+
+    logs['Reset TB Motor'] = RTBProcedure(TB_UART, 0, 500, 300, 8, inputs["amplitude"], inputs["frequency"], inputs["step_time"], inputs["step_value"], preset_config="Linear")
+
+    time.sleep(5)
 
     logs['STB'] = STBCommand(TB_UART, inputs["start_y"], info["start_y"], inputs["trans_time"], info["trans_time"])
 

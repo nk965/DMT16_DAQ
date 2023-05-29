@@ -323,9 +323,9 @@ def analyse_all_runs(folder_path, angle):
 
     for i in range(len(test_runs)):
 
-        # analyse_GPIO_run_data(processed_data["GPIO_structs"][i])
+        analyse_GPIO_run_data(processed_data["GPIO_structs"][i])
 
-        analyse_all_pico_data(processed_data)
+        # analyse_all_pico_data(processed_data)
 
     return {}
 
