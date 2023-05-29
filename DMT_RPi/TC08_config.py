@@ -7,14 +7,14 @@ Check tc08StreamingModeExample line 27 for thermocouple types and int8 equivalen
 """
 
 INPUT_TYPES = {
-    "B": ctypes.c_int8(66),
-    "E": ctypes.c_int8(69),
-    "J": ctypes.c_int8(74),
+    "B": ctypes.c_int8(66), #no 
+    "E": ctypes.c_int8(69), 
+    "J": ctypes.c_int8(74), # no 
     "K": ctypes.c_int8(75), # type K thermocouples
-    "N": ctypes.c_int8(78),
-    "R": ctypes.c_int8(82),
-    "S": ctypes.c_int8(83),
-    "T": ctypes.c_int8(84),
+    "N": ctypes.c_int8(78), 
+    "R": ctypes.c_int8(82), # R 
+    "S": ctypes.c_int8(83), # no
+    "T": ctypes.c_int8(84), # 
     " ": ctypes.c_int8(32),
     "X": ctypes.c_int8(88), # mV readings 
 }

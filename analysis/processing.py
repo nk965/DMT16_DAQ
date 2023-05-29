@@ -1,5 +1,7 @@
 import os 
+import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 from data_structs import Datalogger_Data, GPIO_Data
 from channel_info import channel_info, null
 
@@ -29,7 +31,6 @@ def process_individual_run(folder_path, angle):
     return experiment_data
 
 def extract_pico_data(data_class):
-    import numpy as np
     raw_data = data_class.data.astype(np.float64)
     temp_values = raw_data[:, 0]
     time_values_seconds = raw_data[:, 2] / (10 ** 6)
@@ -37,7 +38,6 @@ def extract_pico_data(data_class):
 
 
 def extract_GPIO_data(data_class):
-    import numpy as np
 
     def convert_pulses_to_flow_rate(times):
         flow_rates = []
@@ -104,14 +104,20 @@ def extract_GPIO_data(data_class):
         Branch_flow_meter_time_seconds = Branch_flow_meter_data[:, 4].astype(np.float64) / (10 ** 6)
         Branch_flow_rate, Branch_flow_meter_time_seconds = convert_pulses_to_flow_rate(Branch_flow_meter_time_seconds)
 
-    return [[Main_flow_meter_time_seconds, Main_flow_rate], [TB_motor_time_seconds, TB_motor_state],
-                       [PIV_pulse_time_seconds, PIV_pulse_state], [Dye_injection_time_seconds, Dye_injection_state],
-                       [Branch_flow_meter_time_seconds, Branch_flow_rate]]
+    extracted_data = {
+        "main_flow_meter": [Main_flow_meter_time_seconds, Main_flow_rate],
+        "TB_motor": [TB_motor_time_seconds, TB_motor_state],
+        "PIV_signal": [PIV_pulse_time_seconds, PIV_pulse_state],
+        "Dye_Inject_Signal": [Dye_injection_time_seconds, Dye_injection_state],
+        "branch_flow_meter": [Branch_flow_meter_time_seconds, Branch_flow_rate]
+    }
+
+    return extracted_data
 
 def exponential_filter(x,alpha=0.3):
 
-    import numpy as np
     s = np.zeros(len(x))
+
     s[0] = x[0]
 
     for t in range(1,len(x)):
@@ -121,34 +127,12 @@ def exponential_filter(x,alpha=0.3):
 
 def plot_flow_rate_GPIO_data():
 
-
-
-    return 0 
-
-def plot_all_GPIO_data(GPIO_struct):
-
-    labels = ["main flow rate", "TB motor", "PIV", "Dye Inject", "Branch Flow"]
-    for i, struct in enumerate(GPIO_struct):
-
-        GPIO_run_data = extract_GPIO_data(struct)
-
-        for index, run_data in enumerate(GPIO_run_data):
-
-            plt.scatter(run_data[0], run_data[1], label=labels[index],s=1)
-            plt.title(f"{i}, GPIO Pin list {index} - Run")
-            plt.legend()
-
-            plt.show()
+    # quick an easy function for lab tuning 
 
     return 0 
 
-if __name__ == "__main__":
+def create_dataclasses_for_run(run_folder_path, angles):
 
-    # Looking at data for a particular inlet condition 
-
-    angle = [0, 30, 60]  
-    folder_path = 'analysis/data/opaque/inlet1'
-    
     test_runs = []
     
     # Obtain the CSV Files and create dataclasses for each test run with that inlet condition
@@ -164,9 +148,11 @@ if __name__ == "__main__":
 
         test_runs.append(process_individual_run(subfolder_path, angle[index]))
 
-    # intialise individual arrays for sorting algorithm
+    return test_runs 
 
-    pressures = []
+def sort_test_runs(test_runs):
+
+    test_bed_measurements = []
     
     four_mm = []
     
@@ -178,16 +164,16 @@ if __name__ == "__main__":
     
     temperatures = [] # contains all temperature measurements 
     
-    GPIO_struct = []
+    GPIO_structs = []
 
     for run_number, run_info in enumerate(test_runs):
         for index, channels in enumerate(run_info):
             if channels.type == "temp":
 
-                # If this is a pressure measurement:
+                # If this is a pressure + testbed measurement:
                 if channels.depth == null and (channels.rotation_angle - angle[
                     run_number]) != null and channels.location != null and channels.channel != "CHANNELCJC":
-                    pressures.append(channels)
+                    test_bed_measurements.append(channels)
 
                 # Else, it must be a temperature measurement:
                 else:
@@ -205,23 +191,166 @@ if __name__ == "__main__":
             
             elif channels.type == "GPIO":
             
-                GPIO_struct.append(channels)
+                GPIO_structs.append(channels)
 
-    print(temperatures)
+    for measurement in test_bed_measurements:
 
-    for temp in temperatures:
-        temp.print_status()
+        measurement.print_status()
+
+
+    sorted_structs = {"test_bed_measurements": test_bed_measurements, "four_mm": four_mm, "three_mm": three_mm, "two_mm": two_mm, "one_mm": one_mm, "GPIO_structs": GPIO_structs}
+
+    return sorted_structs 
+
+# def analyse_all_GPIO(GPIO_structs):
+
+#     labels = ["main flow rate", "TB motor", "PIV", "Dye Inject", "Branch Flow"]
+#     for i, struct in enumerate(GPIO_structs):
+
+#         GPIO_run_data = extract_GPIO_data(struct)
+
+#         for index, run_data in enumerate(GPIO_run_data):
+
+#             plt.scatter(run_data[0], run_data[1], label=labels[index],s=1)
+#             plt.title(f"{i}, GPIO Pin list {index} - Run")
+#             plt.legend()
+
+#             plt.show()
+
+#     return {}
+
+def analyse_GPIO_run_data(GPIO_struct):
+
+    GPIO_run_data = extract_GPIO_data(GPIO_struct)
+
+    # extracted_data = {
+    #     "main_flow_meter": [Main_flow_meter_time_seconds, Main_flow_rate],
+    #     "TB_motor": [TB_motor_time_seconds, TB_motor_state],
+    #     "PIV_signal": [PIV_pulse_time_seconds, PIV_pulse_state],
+    #     "Dye_Inject_Signal": [Dye_injection_time_seconds, Dye_injection_state],
+    #     "branch_flow_meter": [Branch_flow_meter_time_seconds, Branch_flow_rate]
+    # }
+
+    filtered_branch = exponential_filter(GPIO_run_data["branch_flow_meter"][1])
+    # filtered_main = exponential_filter(GPIO_run_data["main_flow_meter"][1])
+
+    sns.set_theme()
+
+    fig1, axes = plt.subplots(nrows=2, ncols=1, figsize=(12, 8)) 
+    axes[0].set_xlabel('Time (s)')
+    axes[0].set_ylabel('Flow Rate (ml/s)')
+    axes[0].set_title('Branch Flow Rates and Signals') 
+    axes[1].set_xlabel('Time (s)')
+    axes[1].set_ylabel('Flow Rate (ml/s)')
+    axes[1].set_title('Main Flow Rates and Signals')    
     
-    plot_all_GPIO_data(GPIO_struct)
+    axes[0].legend(loc='best')
+    axes[1].legend(loc='best')
+    
+    fig1.canvas.manager.set_window_title('Figure 1') 
+    fig1.suptitle('Actual Flow Rates and Signals')   
 
-    GPIO_run_data_branch = extract_GPIO_data(GPIO_struct[0])[4]
-    # print(GPIO_run_data_branch)
+    sns.scatterplot(x=GPIO_run_data["branch_flow_meter"][0], y=GPIO_run_data["branch_flow_meter"][1], ax=axes[0], label="Branch Flow Rate Raw", s=5, color="red")  
 
-    filtered = exponential_filter(GPIO_run_data_branch[1])
-    plt.plot(GPIO_run_data_branch[0], filtered, label="Filtered")
-    plt.scatter(GPIO_run_data_branch[0], GPIO_run_data_branch[1], s=1, label="Unfiltered",color="r")
-    plt.title("Filtered vs Unfiltered")
-    plt.legend()
+    for x in GPIO_run_data["TB_motor"][0]:
+
+        axes[0].vlines(x, ymin=min(GPIO_run_data["branch_flow_meter"][1]), ymax=max(GPIO_run_data["branch_flow_meter"][1]), linestyle='--', linewidth=0.5)
+
+    sns.scatterplot(x=GPIO_run_data["main_flow_meter"][0], y=GPIO_run_data["main_flow_meter"][1], ax=axes[1], label="Main Flow Rate Raw", s=5)
+     
+    # sns.lineplot(x=GPIO_run_data["main_flow_meter"][0], y=filtered_main, ax=axes, label="Main Flow Rate Filtered")  
+
+    sns.lineplot(x=GPIO_run_data["branch_flow_meter"][0], y=filtered_branch, ax=axes[0], label="Branch Flow Rate Filtered")      
+                
+    plt.tight_layout()
+
     plt.show()
+
+    return {}
+
+def analyse_all_pico_data(processed_data):
+
+    # sorted_structs = {"test_bed_measurements": test_bed_measurements, "four_mm": four_mm, "three_mm": three_mm, "two_mm": two_mm, "one_mm": one_mm, "GPIO_structs": GPIO_structs}
+
+    test_bed_measurements = processed_data["test_bed_measurements"]
+    four_mm = processed_data["four_mm"]
+    three_mm = processed_data["three_mm"]
+    two_mm = processed_data["two_mm"]
+    one_mm = processed_data["one_mm"]
+
+    # for measurement in test_bed_measurements: # rotation, depth, location 
+
+    #     print(measurement.print_status())
+    
+    # for measurement in four_mm:
+
+    #     print(measurement.print_status())
+
+    # for measurement in three_mm:
+
+    #     print(measurement.print_status())
+
+    # for measurement in two_mm:
+
+    #     print(measurement.print_status())
+
+    # for measurement in one_mm:
+
+    #     print(measurement.print_status())
+
+    # def print_status(self):
+    #     print("File name : " + self.filename)
+    #     print("%s, %s" % (self.unit, self.channel))
+    #     print("Rotation Angle : " + str(self.rotation_angle))
+    #     print("Depth : " + str(self.depth) + " mm")
+    #     print("Location : " + self.location)
+    #     print("%s, %s" % (self.date, self.start_time))
+    #     print("Type: " + self.type)
+
+    # def print_data(self):
+    #     print(self.data)
+
+
+    return {}
+
+def analyse_all_runs(folder_path, angle):
+
+    # analysing all runs - to be done at the end of all measurements (12 or 8 rotations per inlet condition)
+
+    test_runs = create_dataclasses_for_run(folder_path, angle)
+
+    processed_data = sort_test_runs(test_runs)
+
+    for i in range(len(test_runs)):
+
+        analyse_GPIO_run_data(processed_data["GPIO_structs"][i])
+
+        # analyse_all_pico_data(processed_data)
+
+    return {}
+
+def analyse_single_run():
+
+    # on the spot running of data
+
+    # analyse_GPIO_run_data(processed_data["GPIO_structs"]) i.e., not indexed in comparison to use in "analyse_all_runs"
+
+    return {}
+
+if __name__ == "__main__":
+
+    # Looking at data for a particular inlet condition 
+
+    angle = [0, 30, 60]  
+    
+    folder_path = 'analysis/data/opaque/inlet1'
+
+    analyse_all_runs(folder_path, angle)
+    
+    analyse_single_run()
+
+
+
+
 
 

@@ -129,7 +129,7 @@ def IDYE3Command(UART, enPulse: bool, syrDia: float, vol_inject: float):
     return {"Steps": steps, "Pulse Mode": enPulse}
 
 
-def RTBProcedure(UART, start_y, end_y, nodes, trans_time, amplitude, frequency, step_time, step_value, preset_config="Constant"):
+def RTBProcedure(UART, start_y, end_y, nodes, trans_time, amplitude, frequency, step_time, step_value, preset_config="Linear"):
 
     # generate actuator_array and time_array based on user input
 
