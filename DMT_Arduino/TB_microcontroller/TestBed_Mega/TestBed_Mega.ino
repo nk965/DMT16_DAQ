@@ -43,8 +43,8 @@ double requested_speed; // U in the control system (mL/s)
 // PID Characteristics
 double PID_input_buffer[3] = {0, 0, 0};  // Buffer for bilinear multistep transfer function
 double PID_output_buffer[3] = {0, 0, 0}; // Output buffer
-double Kp = 5;
-double Ki = 0;
+double Kp = 3;
+double Ki = 0.3;
 double Kd = 0;
 
 // Flags and globals for interrupts

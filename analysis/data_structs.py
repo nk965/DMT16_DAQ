@@ -65,6 +65,7 @@ class Datalogger_Data:
         print(self.data)
 
 
+
 class GPIO_Data:
 
     def readfile(self, name):
@@ -106,6 +107,9 @@ class GPIO_Data:
         # Branch Flow Meter
         self.Pin21_data = []
 
+        # Not sure - temporary fix
+        self.Pin12_data = []
+
         split_data = np.asarray(split_data)
 
         for index, data in enumerate(split_data):
@@ -118,6 +122,9 @@ class GPIO_Data:
 
             elif data[0] == "8":
                 self.Pin8_data.append(data)
+
+            elif data[0] == "12":
+                self.Pin12_data.append(data)
 
             elif data[0] == "16":
                 self.Pin16_data.append(data)

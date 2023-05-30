@@ -13,7 +13,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "syrDia": {
-        "defaultValue": 29.46384007,
+        "defaultValue": 29.5,
         "type": float,
         "range": [10, 35],
         "bits": 8,
@@ -69,7 +69,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "cyclePeriod": {
-        "defaultValue": 2,
+        "defaultValue": 2, # 2 or 3
         "type": float,
         "range": [0, 100],
         "bits": 16,
@@ -77,7 +77,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "dutyCycle": {
-        "defaultValue": 0.8,
+        "defaultValue": 0.8, #0.5 or 0.8
         "type": float,
         "range": [0, 1],
         "bits": 8,
@@ -85,15 +85,15 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "start_y": {
-        "defaultValue": 10,
+        "defaultValue": 30, #1: 20, #2: 0, #3: 15
         "type": float,
         "range": [0, 30], # remember 65.535
         "bits": 16, 
-        "units": "%", #TODO: use units of momentum ratio?
+        "units": "ml/s", #TODO: use units of momentum ratio?
         "submission_form": "transientInput"
     },
     "end_y": {
-        "defaultValue": 25, 
+        "defaultValue": 30, #1: who cares, #2: 30, #3: who cares 
         "type": float,
         "range": [0, 30], #remember 65.535
         "bits": 16,
@@ -101,7 +101,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "nodes": {
-        "defaultValue": 50, 
+        "defaultValue": 1500, 
         "type": float,
         "range": [0, 500],
         "bits": None,
@@ -109,7 +109,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "presetConfig": {
-        "defaultValue": "Step", #Step, Linear, Sine, Constant
+        "defaultValue": "Constant", #1: Constant, #2: Linear, #3: Sine
         "type": str,
         "range": None,
         "bits": None,
@@ -117,7 +117,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "trans_time": {
-        "defaultValue": 7,
+        "defaultValue": 20,
         "type": float,
         "range": [0, 800],
         "bits": 16,
@@ -149,7 +149,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "inject_time": {
-        "defaultValue": 20, # first test
+        "defaultValue": 120, # 240, 120, 60, 30
         "type": float,
         "range": [0, 480],
         "bits": 8,
@@ -157,7 +157,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "frequency": {
-        "defaultValue": 1,  
+        "defaultValue": 2, # Only #3 
         "type": float,
         "range": [0, 20],
         "bits": 8,
@@ -165,7 +165,7 @@ inputInfo = {
         "submission_form": "None"
     },
     "amplitude": {
-        "defaultValue": 5,  
+        "defaultValue": 15, # Only #3
         "type": float,
         "range": [0, 1000],
         "bits": 8,

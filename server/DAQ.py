@@ -131,7 +131,7 @@ def plot_transient_request(logs, command, inputs):
     
     plt.tight_layout
 
-    save_folder_path = "server/transient_condition_request"
+    save_folder_path = f"analysis/data/{command}/requested/run5"
 
     # Create the folder if it does not exist
     if not os.path.exists(save_folder_path):
@@ -174,9 +174,9 @@ def PID_TESTING(port: str, inputInfo):
 
     logs['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) # TODO ask Pike if this is necessary 
 
-    logs['Reset TB Motor'] = RTBProcedure(TB_UART, 0, 30, 300, 8, inputInfo["amplitude"]["defaultValue"], inputInfo["frequency"]["defaultValue"], inputInfo["step_time"]["defaultValue"], inputInfo["step_value"]["defaultValue"], preset_config="Linear")
+    # logs['Reset TB Motor'] = RTBProcedure(TB_UART, 0, 30, 300, 5, inputInfo["amplitude"]["defaultValue"], inputInfo["frequency"]["defaultValue"], inputInfo["step_time"]["defaultValue"], inputInfo["step_value"]["defaultValue"], preset_config="Linear")
 
-    time.sleep(2)
+    # time.sleep(2)
 
     # plot_transient_request(logs, "Reset TB Motor", inputInfo)
 
@@ -184,7 +184,7 @@ def PID_TESTING(port: str, inputInfo):
 
     logs['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
 
-    time.sleep(1)    
+    # time.sleep(1)    
 
     logs['PIDTuning'] = PIDTuning(TB_UART, inputInfo["start_y"]["defaultValue"],inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["amplitude"]["defaultValue"], inputInfo["frequency"]["defaultValue"], inputInfo["step_time"]["defaultValue"], inputInfo["step_value"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
 
@@ -295,9 +295,9 @@ if __name__ == "__main__":
 
     # logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
 
-    # logs = PID_TESTING(ports_available[TB_port_index], inputInfo)
+    logs = PID_TESTING(ports_available[TB_port_index], inputInfo)
 
-    logs = Dye_Injection_TB(ports_available[TB_port_index], inputInfo)
+    # logs = Dye_Injection_TB(ports_available[TB_port_index], inputInfo)
 
     print(logs)
 

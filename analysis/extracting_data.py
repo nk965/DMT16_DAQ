@@ -3,7 +3,7 @@ import numpy as np
 from data_structs import Datalogger_Data, GPIO_Data
 from channel_info import channel_info, null
 
-def process_individual_run(folder_path, angle):
+def process_individual_run(folder_path, angle=null):
     data_dump_experiment_path = folder_path
 
     experiment_data = []
@@ -40,13 +40,13 @@ def extract_GPIO_data(data_class):
     def convert_pulses_to_flow_rate(times):
         flow_rates = []
 
-        pulses_per_litre = 1920
+        pulses_per_litre = 1530
         litres_per_pulse = 1 / pulses_per_litre
 
         for i, t in enumerate(times[:-1]):
             dt = times[i + 1] - times[i]
-            flow_rate = litres_per_pulse / dt
-            flow_rates.append(flow_rate)
+            flow_rate = litres_per_pulse / abs(dt)
+            flow_rates.append(flow_rate * 1000)
 
         return flow_rates, times[:-1]
 
@@ -65,41 +65,45 @@ def extract_GPIO_data(data_class):
     # Branch Flow Meter 21
     Branch_flow_meter_data = data_class.Pin21_data
 
+    # Find time = 0, defined as when the transient condition starts, i.e., pin 8 (testbed motor actuation)
+
+    if TB_motor_data.size == 0:
+        TB_motor_state = []
+        TB_motor_time_seconds = []
+        time_0_reference = 0 
+    else:
+        TB_motor_state = TB_motor_data[:, 1].astype(np.float64)
+        TB_motor_time_seconds = TB_motor_data[:, 4].astype(np.float64) / (10 ** 6)
+        time_0_reference = TB_motor_data[:, 4].astype(np.float64)[0] / (10 ** 6)
+    
     if Main_flow_meter_data.size == 0:
         Main_flow_rate = []
         Main_flow_meter_time_seconds = []
     else:
         Main_flow_meter_state = Main_flow_meter_data[:, 1].astype(np.float64)
-        Main_flow_meter_time_seconds = Main_flow_meter_data[:, 4].astype(np.float64) / (10 ** 6)
+        Main_flow_meter_time_seconds = Main_flow_meter_data[:, 4].astype(np.float64) / (10 ** 6) - time_0_reference
         Main_flow_rate, Main_flow_meter_time_seconds = convert_pulses_to_flow_rate(Main_flow_meter_time_seconds)
-
-    if TB_motor_data.size == 0:
-        TB_motor_state = []
-        TB_motor_time_seconds = []
-    else:
-        TB_motor_state = TB_motor_data[:, 1].astype(np.float64)
-        TB_motor_time_seconds = TB_motor_data[:, 4].astype(np.float64) / (10 ** 6)
 
     if PIV_pulse_data.size == 0:
         PIV_pulse_state = []
         PIV_pulse_time_seconds = []
     else:
         PIV_pulse_state = PIV_pulse_data[:, 1].astype(np.float64)
-        PIV_pulse_time_seconds = PIV_pulse_data[:, 4].astype(np.float64) / (10 ** 6)
+        PIV_pulse_time_seconds = PIV_pulse_data[:, 4].astype(np.float64) / (10 ** 6) - time_0_reference
 
     if Dye_injection_data.size == 0:
         Dye_injection_state = []
         Dye_injection_time_seconds = []
     else:
         Dye_injection_state = Dye_injection_data[:, 1].astype(np.float64)
-        Dye_injection_time_seconds = Dye_injection_data[:, 4].astype(np.float64) / (10 ** 6)
+        Dye_injection_time_seconds = Dye_injection_data[:, 4].astype(np.float64) / (10 ** 6) - time_0_reference
 
     if Branch_flow_meter_data.size == 0:
         Branch_flow_rate = []
         Branch_flow_meter_time_seconds = []
     else:
         Branch_flow_meter_state = Branch_flow_meter_data[:, 1].astype(np.float64)
-        Branch_flow_meter_time_seconds = Branch_flow_meter_data[:, 4].astype(np.float64) / (10 ** 6)
+        Branch_flow_meter_time_seconds = Branch_flow_meter_data[:, 4].astype(np.float64) / (10 ** 6) - time_0_reference
         Branch_flow_rate, Branch_flow_meter_time_seconds = convert_pulses_to_flow_rate(Branch_flow_meter_time_seconds)
 
     extracted_data = {
@@ -179,7 +183,7 @@ def sort_test_runs(test_runs, angles):
 
     for measurement in test_bed_measurements:
 
-        if measurement.channel == "CHANNEL1" or measurement.channel== "CHANNEL2": # and channel 2 as well 
+        if measurement.channel == "CHANNEL1" or measurement.channel== "CHANNEL2": 
 
             pressures.append(measurement)
 

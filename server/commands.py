@@ -221,6 +221,10 @@ def PIDTuning(UART, start_y, end_y, nodes, trans_time, amplitude, frequency, ste
         # Set negative values to zero
         y_values = np.clip(y_values, 0, None)
     
+    if preset_config=="Constant":
+
+        times, y_values = linear_interpolation(start_y, start_y, nodes, trans_time)
+
     actual_actuator_pos_array = RTBCommand(UART, y_values, times)
 
     return {"Actuator Position Array": actual_actuator_pos_array, "Time Step": times}
