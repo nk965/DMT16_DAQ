@@ -229,47 +229,32 @@ def analyse_all_runs(folder_path, angles):
 
         analyse_all_pico_data(processed_data)
 
-def compare_requested_to_actual_response(requested_folder_path, actual_folder_path):
+def compare_requested_to_actual_transient_response(run_number: str, date):
 
     # only have GPIO data in "analysis/data/PIDTuning/actual"
 
-    experiments = process_individual_run(actual_folder_path)
+    requested_folder = "analysis/data/PIDTuning/requested/" + date + "/"
 
-    GPIO_run_data = extract_GPIO_data(experiments[0]) # edit the index 
+    actual_folder = "analysis/data/PIDTuning/actual/" + date + "/"
 
-    filtered_branch = exponential_filter(GPIO_run_data["branch_flow_meter"][1])
+    requested_folder_path = requested_folder + "run" + run_number
 
-    fig1, axes = plt.subplots(nrows=2, ncols=1, figsize=(12, 8)) 
-    axes[0].set_xlabel('Time (s)')
-    axes[0].set_ylabel('Flow Rate (ml/s)')
-    axes[0].set_title(f'Branch Flow Rates at Start Time: {experiments[0].start_time}') # Index
-    axes[1].set_xlabel('Time (s)')
-    axes[1].set_ylabel('Flow Rate (ml/s)')
-    axes[1].set_title('Main Flow Rates and Signals')    
-    
-    axes[0].legend(loc='best')
-    axes[1].legend(loc='best')
-    
-    fig1.canvas.manager.set_window_title('Figure 1') 
-    fig1.suptitle('Actual Flow Rates')   
+    actual_folder_path = actual_folder + "run" + run_number
 
-    sns.scatterplot(x=GPIO_run_data["branch_flow_meter"][0], y=GPIO_run_data["branch_flow_meter"][1], ax=axes[0], label="Branch Flow Rate Raw", s=5, color="red")  
+    file_list = os.listdir(requested_folder_path)
+    file_list.sort(key=lambda x: os.path.getctime(os.path.join(requested_folder_path, x)))
 
-    sns.scatterplot(x=GPIO_run_data["main_flow_meter"][0], y=GPIO_run_data["main_flow_meter"][1], ax=axes[1], label="Main Flow Rate Raw", s=5)
-     
-    # sns.lineplot(x=GPIO_run_data["main_flow_meter"][0], y=filtered_main, ax=axes, label="Main Flow Rate Filtered")  
-
-    sns.lineplot(x=GPIO_run_data["branch_flow_meter"][0], y=filtered_branch, ax=axes[0], label="Branch Flow Rate Filtered")      
-                
-    plt.tight_layout()
-
-    plt.show()
+    print(f"Analysing: {file_list}")
 
     # Initialize empty arrays for 
-    requested_times = []
-    requested_actuator_position = []
 
-    for filename in os.listdir(requested_folder_path):
+    all_requested_runs = []
+
+    for filename in file_list:
+
+        requested_times = []
+
+        requested_actuator_position = []
 
         if filename.endswith('.csv'):  # Filter CSV files
  
@@ -283,17 +268,99 @@ def compare_requested_to_actual_response(requested_folder_path, actual_folder_pa
                     requested_times.append(float(row[0]))
                     requested_actuator_position.append(float(row[1]))
 
+            all_requested_runs.append((requested_times, requested_actuator_position))
+        
+    experiments = process_individual_run(actual_folder_path) # experiments is a list of classes
+
+    GPIO_run_data = []
+
+    for experiment in experiments: 
+
+        GPIO_run_data.append(extract_GPIO_data(experiment)) # GPIO_run_data is a list of dictionaries
+
+    for index, run_data in enumerate(GPIO_run_data):
+
+        if len(run_data["branch_flow_meter"][1]) != 0: 
+
+            # then plot things, error next to actual and error 
+
+            branch_times_data, branch_flow_rate_data, branch_filtered_flow_rate_data = run_data["branch_flow_meter"][0], run_data["branch_flow_meter"][1], exponential_filter(run_data["branch_flow_meter"][1])
+
+            TB_motor_times_data, TB_motor_times_state, time_0_reference = run_data["TB_motor"][0], run_data["TB_motor"][1], run_data["time_0_reference"]
+
+            PIV_signal_times_data, PIV_signal_times_state = run_data["PIV_signal"][0], run_data["PIV_signal"][1]
+
+            time = run_data["time"]
+
+            fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(15,8))
+
+            axes[0].set_xlabel('Time (s)')
+            axes[0].set_ylabel('Flow Rate (ml/s)')
+            axes[0].set_title('Requested and Actual Flow Rates')
+            axes[0].legend(loc='best')
+
+            # plotting actual and filtered flow rates
+
+            sns.scatterplot(x=branch_times_data, y=branch_flow_rate_data, ax=axes[0], label="Branch Flow Rate Raw", s=5, color="red")
+
+            sns.lineplot(x=branch_times_data, y=branch_filtered_flow_rate_data, ax=axes[0], label="Branch Flow Rate Filtered", color="blue")
+
+            requested_times, requested_actuator_position = all_requested_runs[index]
+
+            requested_actuator_position_interpolated = np.interp(TB_motor_times_data, requested_times, requested_actuator_position)
+
+            
+
+            # make green plot only start at 0, and error at 0. 
+
+            # Determine the difference in lengths
+            length_diff = len(branch_filtered_flow_rate_data) - len(requested_actuator_position_interpolated)
+
+            # Pad array1 with the last value until it matches the length of array2
+            last_value = requested_actuator_position_interpolated[-1]
+
+            requested_actuator_position_interpolated = np.pad(requested_actuator_position_interpolated, (0, length_diff), mode='constant', constant_values=last_value)
+
+            print(len(requested_actuator_position_interpolated))
+            print(len(branch_times_data))
+
+            sns.lineplot(x=branch_times_data, y=requested_actuator_position_interpolated, ax=axes[0], label="Requested Actuator Movement", color="green", markers=True)
+
+            axes[1].set_xlabel('Time (s)')
+            axes[1].set_ylabel('Error (ml/s)')
+            axes[1].set_title('Branch Flow Rates and Signals')    
+            axes[1].legend(loc='best')
+
+            error = requested_actuator_position_interpolated - branch_filtered_flow_rate_data
+
+            sns.lineplot(x=branch_times_data, y=error, ax=axes[1], label="Error", color="black")
+
+            fig.canvas.manager.set_window_title('Figure 1') 
+            fig.suptitle(f'Branch Flow Rates at Start Time: {time}')  
+                                    
+            plt.tight_layout()
+
+            plt.show()
+
+        if len(run_data["main_flow_meter"][1]) != 0:
+
+            main_times_data, main_flow_rate_data, main_filtered_flow_rate_data = run_data["main_flow_meter"][0], run_data["main_flow_meter"][1], exponential_filter(run_data["main_flow_meter"][1])
+
+            TB_motor_times_data, TB_motor_times_state = run_data["TB_motor"][0], run_data["TB_motor"][1]
+
+            PIV_signal_times_data, PIV_signal_times_state = run_data["PIV_signal"][0], run_data["PIV_signal"][1]
+        
     # Interpolation
 
-    requested_actuator_position_interpolated = np.interp(GPIO_run_data["branch_flow_meter"][0], requested_times, requested_actuator_position)
+    # requested_actuator_position_interpolated = np.interp(GPIO_run_data["branch_flow_meter"][0], requested_times, requested_actuator_position)
 
-    error = filtered_branch - requested_actuator_position_interpolated
+    # error = filtered_branch - requested_actuator_position_interpolated
 
-    sns.lineplot(x=GPIO_run_data["branch_flow_meter"][0], y=GPIO_run_data["branch_flow_meter"][1], label='Actual')
-    sns.scatterplot(x=requested_times, y=requested_actuator_position, color='red', label='Requested')
-    plt.legend()
+    # sns.lineplot(x=GPIO_run_data["branch_flow_meter"][0], y=GPIO_run_data["branch_flow_meter"][1], label='Actual')
+    # sns.scatterplot(x=requested_times, y=requested_actuator_position, color='red', label='Requested')
+    # plt.legend()
 
-    plt.show()    
+    # plt.show()    
 
     # fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 5))
     # axes[0].set_xlabel('Time (s)')
@@ -336,11 +403,10 @@ if __name__ == "__main__":
     
     # analyse_single_run(run_folder_path, angles[0]) 
 
-    requested_folder_path = "analysis/data/PIDTuning/requested/run6"
+    run_number = "6"
+    date = "29May"
 
-    actual_folder_path = "analysis/data/PIDTuning/actual/run6"
-
-    compare_requested_to_actual_response(requested_folder_path, actual_folder_path)
+    compare_requested_to_actual_transient_response(run_number, date)
 
 
 

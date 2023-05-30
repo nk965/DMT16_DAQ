@@ -2,6 +2,7 @@ import os
 import numpy as np
 from data_structs import Datalogger_Data, GPIO_Data
 from channel_info import channel_info, null
+from datetime import datetime
 
 def process_individual_run(folder_path, angle=null):
     data_dump_experiment_path = folder_path
@@ -25,6 +26,10 @@ def process_individual_run(folder_path, angle=null):
                 channel = split_filename[2]
                 depth, initial_angle, location = channel_info[(unit, channel)]
                 experiment_data.append(Datalogger_Data(file_path, depth, initial_angle + angle, location))
+
+    experiment_data.sort(key=lambda x: os.path.getctime(x.file_path))
+
+    print(f"Analysing: {experiment_data}")
 
     return experiment_data
 
@@ -75,6 +80,7 @@ def extract_GPIO_data(data_class):
         TB_motor_state = TB_motor_data[:, 1].astype(np.float64)
         TB_motor_time_seconds = TB_motor_data[:, 4].astype(np.float64) / (10 ** 6)
         time_0_reference = TB_motor_data[:, 4].astype(np.float64)[0] / (10 ** 6)
+        TB_motor_time_seconds = TB_motor_time_seconds - time_0_reference
     
     if Main_flow_meter_data.size == 0:
         Main_flow_rate = []
@@ -106,12 +112,23 @@ def extract_GPIO_data(data_class):
         Branch_flow_meter_time_seconds = Branch_flow_meter_data[:, 4].astype(np.float64) / (10 ** 6) - time_0_reference
         Branch_flow_rate, Branch_flow_meter_time_seconds = convert_pulses_to_flow_rate(Branch_flow_meter_time_seconds)
 
+    time_string = data_class.start_time
+    time_format = "%H_%M_%S"
+
+    # Convert the string to a datetime object
+    time_obj = datetime.strptime(time_string, time_format)
+
+    # Format the datetime object as a nicer string
+    presentable_time = time_obj.strftime("%I:%M:%S %p")
+
     extracted_data = {
         "main_flow_meter": [Main_flow_meter_time_seconds, Main_flow_rate],
         "TB_motor": [TB_motor_time_seconds, TB_motor_state],
         "PIV_signal": [PIV_pulse_time_seconds, PIV_pulse_state],
         "Dye_Inject_Signal": [Dye_injection_time_seconds, Dye_injection_state],
-        "branch_flow_meter": [Branch_flow_meter_time_seconds, Branch_flow_rate]
+        "branch_flow_meter": [Branch_flow_meter_time_seconds, Branch_flow_rate],
+        "time": presentable_time,
+        "time_0_reference": time_0_reference
     }
 
     return extracted_data
