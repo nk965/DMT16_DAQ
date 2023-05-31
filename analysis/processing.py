@@ -4,11 +4,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import csv
 
+from scipy.fft import fft, fftfreq
+
 from extracting_data import extract_GPIO_data, create_dataclasses_for_run, sort_test_runs, process_individual_run, extract_pico_data
 
 sns.set_theme()
 
-def exponential_filter(x,alpha=0.3):
+def exponential_filter(x,alpha=0.1):
 
     s = np.zeros(len(x))
 
@@ -86,7 +88,7 @@ def analyse_all_pico_data(processed_data):
 
     return {}
 
-def plot_run_pico_data(pico_single_run_data):
+def plot_run_pico_data(pico_single_run_data, run_info):
 
     pressures = []
     opaque_temps = []
@@ -122,10 +124,10 @@ def plot_run_pico_data(pico_single_run_data):
 
             sns.scatterplot(x=time_values_seconds, y=temp_values, ax=axes[index], s=10)
         
-        fig1.canvas.manager.set_window_title('Figure 1') 
+        fig1.canvas.manager.set_window_title('PRESSURES') 
         
-        fig1.suptitle(f'Figure 1: Pressures vs Time')
-        
+        fig1.suptitle(f'Pressures vs Time, CONDITIONS: {run_info["momentum_ratio_no"]}, at {run_info["temperature_string"]} at Orientation: {run_info["orientation"]} Pressures vs Time')
+
         fig1.subplots_adjust(wspace=0.3)
 
         plt.show()
@@ -150,9 +152,9 @@ def plot_run_pico_data(pico_single_run_data):
 
                 sns.scatterplot(x=time_values_seconds, y=temp_values, ax=axes1[i][j], s=5)
         
-        fig2.canvas.manager.set_window_title('Figure 1') 
+        fig2.canvas.manager.set_window_title('TEMPERATURES') 
         
-        fig2.suptitle(f'Figure 1: Temperatures vs Time')
+        fig2.suptitle(f'Temperature vs Time, CONDITIONS: {run_info["momentum_ratio_no"]}, at {run_info["temperature_string"]} at Orientation: {run_info["orientation"]} Pressures vs Time')
 
         plt.subplots_adjust(hspace=0.5)
 
@@ -176,9 +178,9 @@ def plot_run_pico_data(pico_single_run_data):
 
                 sns.scatterplot(x=time_values_seconds, y=temp_values, ax=axes1[i][j], s=5)
         
-        fig3.canvas.manager.set_window_title('Figure 1') 
+        fig3.canvas.manager.set_window_title('TESTBED TEMPERATURES') 
         
-        fig3.suptitle(f'Figure 1: Temperatures vs Time')
+        fig3.suptitle(f'Testbed Temperature vs Time, CONDITIONS: {run_info["momentum_ratio_no"]}, at {run_info["temperature_string"]} at Orientation: {run_info["orientation"]} Pressures vs Time')
 
         plt.subplots_adjust(hspace=0.5)
 
@@ -211,7 +213,22 @@ def analyse_single_run(run_folder_path, angle):
 
     # plot temperatures/pressures and GPIO signals 
 
-    plot_run_pico_data(pico_single_run_data)
+    split_array = run_folder_path.split("/")
+
+
+    date_string = split_array[3]
+    orientation_string = split_array[4].upper() + " " + split_array[5].upper()
+    temperature_string = split_array[7] + " DEGREES"
+    momentum_ratio_no_string = "RATIO " + split_array[9]
+
+    run_info = {
+        "date": date_string,
+        "orientation": orientation_string,
+        "temperature": temperature_string,
+        "momentum_ratio_no": momentum_ratio_no_string,
+    }
+
+    plot_run_pico_data(pico_single_run_data, run_info)
 
     analyse_GPIO_run_data(gpio_single_run_data[0])
 
@@ -307,24 +324,11 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
 
             requested_times, requested_actuator_position = all_requested_runs[index]
 
-            requested_actuator_position_interpolated = np.interp(TB_motor_times_data, requested_times, requested_actuator_position)
-
-            
-
-            # make green plot only start at 0, and error at 0. 
-
-            # Determine the difference in lengths
-            length_diff = len(branch_filtered_flow_rate_data) - len(requested_actuator_position_interpolated)
-
-            # Pad array1 with the last value until it matches the length of array2
-            last_value = requested_actuator_position_interpolated[-1]
-
-            requested_actuator_position_interpolated = np.pad(requested_actuator_position_interpolated, (0, length_diff), mode='constant', constant_values=last_value)
-
-            print(len(requested_actuator_position_interpolated))
-            print(len(branch_times_data))
+            requested_actuator_position_interpolated = np.interp(branch_times_data, requested_times, requested_actuator_position)
 
             sns.lineplot(x=branch_times_data, y=requested_actuator_position_interpolated, ax=axes[0], label="Requested Actuator Movement", color="green", markers=True)
+
+            axes[1].set_xlim(-1, max(branch_times_data) + 1)
 
             axes[1].set_xlabel('Time (s)')
             axes[1].set_ylabel('Error (ml/s)')
@@ -342,6 +346,54 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
 
             plt.show()
 
+            # plotting fft for branch data
+
+            #  branch_times_data, branch_flow_rate_data, branch_filtered_flow_rate_data
+
+
+            max_dt = float('-inf')
+
+            for i in range(1, len(branch_times_data)):
+                diff = branch_times_data[i] - branch_times_data[i-1]
+                if diff > max_dt:
+                    max_dt = diff
+
+            constant_dt = max_dt / 3 
+
+            # Create a new set of time values with constant interval
+            new_time = np.arange(branch_times_data[0], branch_times_data[-1], constant_dt)
+
+            # Interpolate the data to the new time values
+            new_data = np.interp(new_time, branch_times_data, branch_flow_rate_data)
+
+            fft_filtered = np.abs(np.fft.fft(exponential_filter(new_data, alpha=0.1))[:len(new_data)//2])
+            fft_unfiltered = np.abs(np.fft.fft(new_data)[:len(new_data)//2])
+
+            PSD_filtered = constant_dt * (fft_filtered ** 2)
+            PSD_unfiltered = constant_dt * (fft_unfiltered ** 2)
+
+            freq = np.fft.fftfreq(new_time.shape[-1])[:len(new_data)//2]
+
+            unfiltered_FRF = fft_filtered / fft_unfiltered
+
+            FRF = unfiltered_FRF
+
+            fig, axes = plt.subplots()
+
+            plt.plot(freq, PSD_filtered, label="Filtered", linewidth=0.5)
+            plt.plot(freq, PSD_unfiltered, label="Unfiltered", linewidth=0.5)
+
+            axes.set_yscale('log')
+            axes.set_xscale('log')
+            plt.legend()
+            plt.show()
+
+            fig, axes = plt.subplots()
+            plt.plot(freq, FRF, label="FRF")
+            axes.set_yscale('log')
+            axes.set_xscale('log')
+            plt.show()
+
         if len(run_data["main_flow_meter"][1]) != 0:
 
             main_times_data, main_flow_rate_data, main_filtered_flow_rate_data = run_data["main_flow_meter"][0], run_data["main_flow_meter"][1], exponential_filter(run_data["main_flow_meter"][1])
@@ -349,43 +401,12 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
             TB_motor_times_data, TB_motor_times_state = run_data["TB_motor"][0], run_data["TB_motor"][1]
 
             PIV_signal_times_data, PIV_signal_times_state = run_data["PIV_signal"][0], run_data["PIV_signal"][1]
-        
-    # Interpolation
 
-    # requested_actuator_position_interpolated = np.interp(GPIO_run_data["branch_flow_meter"][0], requested_times, requested_actuator_position)
+            sns.scatterplot(x=main_times_data, y=main_flow_rate_data, label="Branch Flow Rate Raw", s=5, color="red")
 
-    # error = filtered_branch - requested_actuator_position_interpolated
+            sns.lineplot(x=main_times_data, y=main_filtered_flow_rate_data, label="Branch Flow Rate Filtered", color="blue")
 
-    # sns.lineplot(x=GPIO_run_data["branch_flow_meter"][0], y=GPIO_run_data["branch_flow_meter"][1], label='Actual')
-    # sns.scatterplot(x=requested_times, y=requested_actuator_position, color='red', label='Requested')
-    # plt.legend()
-
-    # plt.show()    
-
-    # fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 5))
-    # axes[0].set_xlabel('Time (s)')
-    # axes[0].set_ylabel('Flow Rate')
-    # axes[0].set_title('Flow Rate vs Time, Requested and Actual') 
-
-    # sns.lineplot(x=GPIO_run_data["branch_flow_meter"][0], y=GPIO_run_data["branch_flow_meter"][1], label='Actual', ax=axes[0])
-    # sns.scatterplot(x=requested_times, y=requested_actuator_position, color='red', label='Requested', ax=axes[0])
-
-    # axes[1].set_xlabel('Time (s)')
-    # axes[1].set_ylabel('Flow Rate')
-    # axes[1].set_title('Error')
-
-    # # sns.lineplot(x=GPIO_run_data["branch_flow_meter"][0], y=error, label='Requested', linewidth=0.45, ax=axes[1])
-
-    # fig.canvas.manager.set_window_title('Figure 5') 
-    # fig.suptitle(f'PID Closed Loop Flow Actuator Control Plots')
-    # fig.subplots_adjust(wspace=0.5)
-
-    # plt.tight_layout
-
-    # plt.show()
-
-    # for index, experiment in enumerate(experiments): 
-    #     GPIO_run_data = extract_GPIO_data()
+            plt.plot()
 
 
 
@@ -393,20 +414,23 @@ if __name__ == "__main__":
 
     # Looking at data for a particular inlet condition 
 
-    angles = [0, 30, 60]  
+    orientations = [0, 30, 90, 120, 180, 210, 240, 270]  
     
     # folder_path = 'analysis/data/opaque/inlet1'
 
     # analyse_all_runs(folder_path, angles)
 
-    # run_folder_path = "analysis/data/opaque/inlet1/run2"
+    temperature_condition = "60"
+    orientation_number = "1"
+    date = "31May"
+    momentum_ratio = "2"
+    pid_run_number = "6"
+
+    run_folder_path = "analysis/data/opaque/" + date + "/" + "orientation" + orientation_number + "/" + "temp" + temperature_condition + "/" + "momentum" + momentum_ratio
     
-    # analyse_single_run(run_folder_path, angles[0]) 
+    # analyse_single_run(run_folder_path, orientations[int(orientation_number)-1]) 
 
-    run_number = "6"
-    date = "29May"
-
-    compare_requested_to_actual_transient_response(run_number, date)
+    compare_requested_to_actual_transient_response(pid_run_number, date)
 
 
 

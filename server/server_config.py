@@ -87,7 +87,7 @@ inputInfo = {
     "start_y": {
         "defaultValue": 30, #1: 20, #2: 0, #3: 15
         "type": float,
-        "range": [0, 30], # remember 65.535
+        "range": [0, 100], # remember 65.535
         "bits": 16, 
         "units": "ml/s", #TODO: use units of momentum ratio?
         "submission_form": "transientInput"
@@ -95,7 +95,7 @@ inputInfo = {
     "end_y": {
         "defaultValue": 30, #1: who cares, #2: 30, #3: who cares 
         "type": float,
-        "range": [0, 30], #remember 65.535
+        "range": [0, 100], #remember 65.535
         "bits": 16,
         "units": "", #TODO: use units of momentum ratio?
         "submission_form": "transientInput"

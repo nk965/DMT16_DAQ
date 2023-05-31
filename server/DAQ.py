@@ -5,6 +5,8 @@ hello
 """
 from Modules import *
 
+import json
+
 from PySerial import UART, list_ports
 from server_config import inputInfo
 from commands import STBCommand, SDAQCommand, SDAQ2Command, ETB1Command, ETB2Command, EDAQCommand, RTBProcedure, ITBCommand, STB2Command, IDYECommand, IDYE2Command, IDYE3Command, PIDTuning
@@ -104,7 +106,7 @@ def TB_TESTING(port: str, inputInfo):
 
     return logs
 
-def plot_transient_request(logs, command, inputs):
+def plot_transient_request(logs, command, inputs, save_folder_path):
 
     sns.set_theme()
 
@@ -130,8 +132,6 @@ def plot_transient_request(logs, command, inputs):
     axes.legend(loc='best')  # Update legend to include the Max Low Rate line
     
     plt.tight_layout
-
-    save_folder_path = f"analysis/data/{command}/requested/run5"
 
     # Create the folder if it does not exist
     if not os.path.exists(save_folder_path):
@@ -164,7 +164,7 @@ def plot_transient_request(logs, command, inputs):
     return {}
 
 
-def PID_TESTING(port: str, inputInfo):
+def PID_TESTING(port: str, inputInfo, run_string):
 
     logs = {}
 
@@ -194,7 +194,9 @@ def PID_TESTING(port: str, inputInfo):
 
     logs['ETB2'] = ETB2Command(TB_UART)
 
-    plot_transient_request(logs, "PIDTuning", inputInfo)
+    save_folder_path = f"analysis/data/PIDTuning/requested/" + date_string + "/" + run_string
+
+    plot_transient_request(logs, "PIDTuning", inputInfo, save_folder_path)
 
     return logs
 
@@ -266,12 +268,31 @@ def resetDyeInjection(TB_port: str):
 
     return logs
 
-def run(DAQ_port: str, TB_port: str, inputs=None):
+def saveLogs(run_info):
+
+    folder_path = '/server/logs'  # Replace with the desired folder path
+
+    file_name = f'PC-{run_info["date"]}-{run_info["time_string"]}-{run_info["test"]}'
+
+    file_path = f'{folder_path}/{file_name}.txt'  # Replace with the desired file name and extension
+
+    # Open the file in write mode
+    with open(file_path, 'w') as file:
+        json.dump(run_info, file)
+
+    print(f"The logs have been saved to: {file_path}")
+
+
+def run(DAQ_port: str, TB_port: str, run_info: dict, inputs=None):
 
     if inputs is None:
         inputs = {key: inputInfo[key]["defaultValue"] for key in inputInfo}
 
     system_logs = process(DAQ_port, TB_port, inputs, inputInfo)
+
+    system_logs.update(run_info)
+
+    saveLogs(system_logs)
 
     return system_logs
 
@@ -290,14 +311,63 @@ if __name__ == "__main__":
     TB_port_index = int(input("Choose TB port selection number (input should be an integer): "))
 
     # logs = TB_TESTING(ports_available[TB_port_index], inputInfo) # Benchscale Test for TB system
+    
     # logs = DAQ_TESTING(ports_available[DAQ_port_index], inputInfo) # Benchscale Test for DAQ system
+    
     # logs = resetDyeInjection(ports_available[TB_port_index])
 
-    # logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index])
-
-    logs = PID_TESTING(ports_available[TB_port_index], inputInfo)
-
     # logs = Dye_Injection_TB(ports_available[TB_port_index], inputInfo)
+
+
+    current_time = datetime.datetime.now()
+    hour = current_time.hour
+    minute = current_time.minute
+    second = current_time.second
+
+    hour_str = str(hour).zfill(2)
+    minute_str = str(minute).zfill(2)
+    second_str = str(second).zfill(2)
+
+    time_string = f"{hour_str}:{minute_str}:{second_str}"
+
+    '''
+    EDIT THIS BELOW - GENERAL  
+    '''
+
+    date_string = "31May"
+    test = "PID"
+
+    '''
+    EDIT THIS BELOW - OPAQUE
+    '''
+
+    temperature_condition = "60" + "DEGREES"
+    orientation_no = "1"
+    momentum_ratio_string = "2"
+
+    '''
+    EDIT THIS BELOW - PID
+    '''
+
+    run_string = "run1"
+
+
+    '''
+    '''
+
+    run_info = {
+        "date": date_string,
+        "orientation": orientation_no,
+        "temperature": temperature_condition,
+        "momentum_ratio_no": momentum_ratio_string,
+        "time_string": time_string, 
+        "test": test,
+        "run": run_string,
+    }
+
+    logs = PID_TESTING(ports_available[TB_port_index], inputInfo, run_string, date_string)
+
+    # logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index], run_info)
 
     print(logs)
 
