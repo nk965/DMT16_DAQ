@@ -21,6 +21,17 @@ def exponential_filter(x,alpha=0.1):
 
     return s
 
+def window_filter(x, N=5):
+
+    s = np.zeros(len(x))
+
+    for i in range(N):
+        s[i] = x[i]
+
+    for t in range(N,len(x)):
+        s[t] = sum(x[t:t+N])/N
+    return s
+
 def plot_flow_rate_GPIO_data():
 
     # quick an easy function for lab tuning 
