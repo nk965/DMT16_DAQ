@@ -348,9 +348,6 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
 
             # plotting fft for branch data
 
-            #  branch_times_data, branch_flow_rate_data, branch_filtered_flow_rate_data
-
-
             max_dt = float('-inf')
 
             for i in range(1, len(branch_times_data)):
@@ -383,15 +380,21 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
             plt.plot(freq, PSD_filtered, label="Filtered", linewidth=0.5)
             plt.plot(freq, PSD_unfiltered, label="Unfiltered", linewidth=0.5)
 
+            plt.xlabel("Frequency (Hz)")
+            plt.ylabel("Power Spectral Density")
+
             axes.set_yscale('log')
             axes.set_xscale('log')
+            plt.title("Power Spectral Density Analysis")
             plt.legend()
             plt.show()
 
             fig, axes = plt.subplots()
-            plt.plot(freq, FRF, label="FRF")
-            axes.set_yscale('log')
+            plt.plot(freq, exponential_filter(20*np.log10(FRF), alpha=0.1), label="FRF (dB)")
             axes.set_xscale('log')
+            plt.xlabel("Frequency (Hz)")
+            plt.ylabel("Gain (dB)")
+            plt.title("Frequency Response Function")
             plt.show()
 
         if len(run_data["main_flow_meter"][1]) != 0:
@@ -409,7 +412,6 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
             plt.plot()
 
 
-
 if __name__ == "__main__":
 
     # Looking at data for a particular inlet condition 
@@ -422,7 +424,7 @@ if __name__ == "__main__":
 
     temperature_condition = "60"
     orientation_number = "1"
-    date = "31May"
+    date = "29May"
     momentum_ratio = "2"
     pid_run_number = "6"
 

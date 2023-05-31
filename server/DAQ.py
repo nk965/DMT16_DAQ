@@ -6,6 +6,7 @@ hello
 from Modules import *
 
 import json
+from datetime import datetime
 
 from PySerial import UART, list_ports
 from server_config import inputInfo
@@ -164,7 +165,7 @@ def plot_transient_request(logs, command, inputs, save_folder_path):
     return {}
 
 
-def PID_TESTING(port: str, inputInfo, run_string):
+def PID_TESTING(port: str, inputInfo, run_string, date_string):
 
     logs = {}
 
@@ -212,10 +213,6 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
 
     logs['ITB'] = ITBCommand(TB_UART, inputs["stabilising_delay"], info['stabilising_delay']) 
 
-    logs['Reset TB Motor'] = RTBProcedure(TB_UART, 0, 30, 300, 8, inputs["amplitude"], inputs["frequency"], inputs["step_time"], inputs["step_value"], preset_config="Linear")
-
-    time.sleep(5)
-
     logs['STB'] = STBCommand(TB_UART, inputs["start_y"], info["start_y"], inputs["trans_time"], info["trans_time"])
 
     logs['STB2'] = STB2Command(TB_UART, inputs['branch_temp'], info['branch_temp'])
@@ -228,11 +225,7 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
 
     logs['SDAQ'] = SDAQCommand(DAQ_UART, inputs["PIVfreq"], inputs["Datafreq"], info["PIVfreq"], info["Datafreq"]) 
 
-    time.sleep(1.5)
-
     logs['SDAQ2'] = SDAQ2Command(DAQ_UART, inputs["lenExperiment"], info["lenExperiment"]) 
-
-    time.sleep(15)
 
     time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
 
@@ -318,8 +311,7 @@ if __name__ == "__main__":
 
     # logs = Dye_Injection_TB(ports_available[TB_port_index], inputInfo)
 
-
-    current_time = datetime.datetime.now()
+    current_time = datetime.now()
     hour = current_time.hour
     minute = current_time.minute
     second = current_time.second
@@ -350,8 +342,6 @@ if __name__ == "__main__":
     '''
 
     run_string = "run1"
-
-
     '''
     '''
 
