@@ -20,14 +20,6 @@ inputInfo = {
         "units": "mm",
         "submission_form": "userConfig"
     },
-    "dyeSpeed": {
-        "defaultValue": 8, # 0.03, 0.08
-        "type": float,
-        "range": [0, 50],
-        "bits": 16,
-        "units": "mm/s",
-        "submission_form": "userConfig"
-    },
     "enPulse": {
         "defaultValue": False,
         "type": bool,
@@ -45,7 +37,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "lenExperiment": {
-        "defaultValue": 20,
+        "defaultValue": 60, # put this for Opaque test
         "type": float,
         "range": [0, 800],
         "bits": 16,
@@ -117,7 +109,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "trans_time": {
-        "defaultValue": 20,
+        "defaultValue": 20, # trans_time is 30 for Opaque
         "type": float,
         "range": [0, 800],
         "bits": 16,
@@ -125,7 +117,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "stabilising_delay": {
-        "defaultValue": 5,
+        "defaultValue": 120,
         "type": float,
         "range": [0, 2000],
         "bits": 8,
@@ -133,7 +125,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "branch_temp": {
-        "defaultValue": 60,
+        "defaultValue": 30,
         "type": float,
         "range": [30, 100],
         "bits": 16,
@@ -149,7 +141,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "inject_time": {
-        "defaultValue": 120, # 240, 120, 60, 30
+        "defaultValue": 40, # for Opaque
         "type": float,
         "range": [0, 480],
         "bits": 8,

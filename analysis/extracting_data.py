@@ -130,9 +130,8 @@ def extract_GPIO_data(data_class):
         "branch_flow_meter": [Branch_flow_meter_time_seconds, Branch_flow_rate],
         "time": presentable_time,
         "time_0_reference": time_0_reference,
-        "Number_of_PIV_start": len(PIV_pulse_time_seconds[PIV_pulse_time_seconds<=0])
+        "Number_of_PIV_start": len([i for i in PIV_pulse_time_seconds if i <=0] or [])
     }
-    print(extracted_data["Number_of_PIV_start"])
 
     return extracted_data
 
