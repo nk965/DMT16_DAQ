@@ -80,6 +80,7 @@ def extract_GPIO_data(data_class):
         TB_motor_state = TB_motor_data[:, 1].astype(np.float64)
         TB_motor_time_seconds = TB_motor_data[:, 4].astype(np.float64) / (10 ** 6)
         time_0_reference = TB_motor_data[:, 4].astype(np.float64)[0] / (10 ** 6)
+
         TB_motor_time_seconds = TB_motor_time_seconds - time_0_reference
     
     if Main_flow_meter_data.size == 0:
@@ -128,8 +129,10 @@ def extract_GPIO_data(data_class):
         "Dye_Inject_Signal": [Dye_injection_time_seconds, Dye_injection_state],
         "branch_flow_meter": [Branch_flow_meter_time_seconds, Branch_flow_rate],
         "time": presentable_time,
-        "time_0_reference": time_0_reference
+        "time_0_reference": time_0_reference,
+        "Number_of_PIV_start": len(PIV_pulse_time_seconds[PIV_pulse_time_seconds<=0])
     }
+    print(extracted_data["Number_of_PIV_start"])
 
     return extracted_data
 
