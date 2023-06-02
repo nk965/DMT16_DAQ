@@ -8,7 +8,7 @@ import statsmodels.api as sm
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler, scale
 from sklearn.linear_model import LinearRegression
 
-def Statistics(x,y,x_err,y_err):
+def Statistics(x,y,x_err=0,y_err=1):
     # Forming the k-th Order Polynomial Regression Model for the Data
     k = 5 # Maximum order of Polynomial Regression Model
     poly_reg_aic = np.zeros(k) # Initilising the array of Akaike's Information Criterion

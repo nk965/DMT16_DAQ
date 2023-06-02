@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import csv
 
-from scipy.fft import fft, fftfreq
-
 from extracting_data import extract_GPIO_data, create_dataclasses_for_run, sort_test_runs, process_individual_run, extract_pico_data
+
+from Stats import Statistics
 
 sns.set_theme()
 
@@ -197,9 +197,24 @@ def plot_run_pico_data(pico_single_run_data, run_info):
 
         plt.show()
 
+    def plot_Jimmy_Stats(opaque_temps):
+
+        for temp in opaque_temps: 
+
+            # axes1[i][j].set_title(f'{matrix[i][j].depth} mm, {matrix[i][j].channel} at {matrix[i][j].rotation_angle} degrees')
+            # axes1[i][j].set_xlabel('Time (s)')
+            # axes1[i][j].set_ylabel('Temperature (degrees)')
+
+            temp_values, time_values_seconds = extract_pico_data(temp)
+
+            Statistics(time_values_seconds, temp_values)
+
+        return {}
+
     plot_pressures(pressures)
     plot_opaque_temperatures(opaque_temps)
     plot_testbed_temperatures(test_bed_temps)
+    # plot_Jimmy_Stats(opaque_temps)
 
 def analyse_single_run(run_folder_path, angle):
 
@@ -241,7 +256,7 @@ def analyse_single_run(run_folder_path, angle):
 
     plot_run_pico_data(pico_single_run_data, run_info)
 
-    analyse_GPIO_run_data(gpio_single_run_data[0])
+    # analyse_GPIO_run_data(gpio_single_run_data[0])
 
 def analyse_all_runs(folder_path, angles):
 
@@ -326,6 +341,7 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
             axes[0].set_ylabel('Flow Rate (ml/s)')
             axes[0].set_title('Requested and Actual Flow Rates')
             axes[0].legend(loc='best')
+            axes[0].set_ylim(0, 100)
 
             # plotting actual and filtered flow rates
 
@@ -374,7 +390,7 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
             # Interpolate the data to the new time values
             new_data = np.interp(new_time, branch_times_data, branch_flow_rate_data)
 
-            fft_filtered = np.abs(np.fft.fft(exponential_filter(new_data, alpha=0.1))[:len(new_data)//2])
+            fft_filtered = np.abs(np.fft.fft(exponential_filter(new_data, alpha=0.01))[:len(new_data)//2])
             fft_unfiltered = np.abs(np.fft.fft(new_data)[:len(new_data)//2])
 
             PSD_filtered = constant_dt * (fft_filtered ** 2)
@@ -401,7 +417,8 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
             plt.show()
 
             fig, axes = plt.subplots()
-            plt.plot(freq, exponential_filter(20*np.log10(FRF), alpha=0.1), label="FRF (dB)")
+            plt.plot(freq, 20*np.log10(FRF), label="FRF (dB)", color="blue", linewidth=0.1)
+            plt.plot(freq, exponential_filter(20*np.log10(FRF), alpha=0.01), color="red", label="FRF (dB) Averaged")
             axes.set_xscale('log')
             plt.xlabel("Frequency (Hz)")
             plt.ylabel("Gain (dB)")
@@ -427,23 +444,27 @@ if __name__ == "__main__":
 
     # Looking at data for a particular inlet condition 
 
-    orientations = [0, 30, 90, 120, 180, 210, 240, 270]  
+    orientations = [0, 30, 90, 120, 180, 210, 240, 270]  # check powerpoint slide for definition of 0 degrees
     
     # folder_path = 'analysis/data/opaque/inlet1'
 
     # analyse_all_runs(folder_path, angles)
 
-    temperature_condition = "60"
+    temperature_condition = "ambient" # temp60, temp80, ambient
     orientation_number = "1"
-    date = "29May"
-    momentum_ratio = "2"
+    date = "2Jun"
+    momentum_ratio = "2" # 2, 3, 5
     pid_run_number = "6"
 
-    run_folder_path = "analysis/data/opaque/" + date + "/" + "orientation" + orientation_number + "/" + "temp" + temperature_condition + "/" + "momentum" + momentum_ratio
-    
-    # analyse_single_run(run_folder_path, orientations[int(orientation_number)-1]) 
+    run_folder_path = "analysis/data/opaque/" + date + "/" + "orientation" + orientation_number + "/" + temperature_condition + "/" + "momentum" + momentum_ratio
 
-    compare_requested_to_actual_transient_response(pid_run_number, date)
+    # run_folder_path_test = "analysis/data/opaque/test_data/inlet1/run1"
+
+    # analyse_single_run(run_folder_path_test, orientations[int(orientation_number)-1]) 
+    
+    analyse_single_run(run_folder_path, orientations[int(orientation_number)-1]) 
+
+    # compare_requested_to_actual_transient_response(pid_run_number, date)
 
 
 
