@@ -185,7 +185,11 @@ def PID_TESTING(port: str, inputInfo, run_string, date_string):
 
     logs['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
 
-    # time.sleep(1)    
+    time.sleep(10)
+
+    print("Starting in 5 seconds")
+
+    time.sleep(5)    
 
     logs['PIDTuning'] = PIDTuning(TB_UART, inputInfo["start_y"]["defaultValue"],inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["amplitude"]["defaultValue"], inputInfo["frequency"]["defaultValue"], inputInfo["step_time"]["defaultValue"], inputInfo["step_value"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
 
@@ -194,6 +198,49 @@ def PID_TESTING(port: str, inputInfo, run_string, date_string):
     time.sleep(1)
 
     logs['ETB2'] = ETB2Command(TB_UART)
+
+    save_folder_path = f"analysis/data/PIDTuning/requested/" + date_string + "/" + run_string
+
+    plot_transient_request(logs, "PIDTuning", inputInfo, save_folder_path)
+
+    return logs
+
+def PID_TESTING_WITH_TEMPS(port1: str, port2: str, inputInfo, run_string, date_string):
+
+    logs = {}
+
+    TB_UART = UART("TB Microcontroller", port1)
+
+    DAQ_UART = UART("DAQ Microcontroller", port2)
+    
+    time.sleep(5)
+
+    logs['ITB'] = ITBCommand(TB_UART, inputInfo["stabilising_delay"]['defaultValue'], inputInfo['stabilising_delay']) # TODO ask Pike if this is necessary 
+
+    logs['STB'] = STBCommand(TB_UART, inputInfo["start_y"]["defaultValue"], inputInfo["start_y"], inputInfo["trans_time"]["defaultValue"], inputInfo["trans_time"])
+
+    logs['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
+
+    time.sleep(1)    
+    
+    logs['SDAQ'] = SDAQCommand(DAQ_UART, inputInfo["PIVfreq"]['defaultValue'], inputInfo["Datafreq"]['defaultValue'], inputInfo["PIVfreq"], inputInfo["Datafreq"]['defaultValue']) 
+
+    logs['SDAQ2'] = SDAQ2Command(DAQ_UART, inputInfo["lenExperiment"], inputInfo["lenExperiment"]) 
+
+    # time.sleep(1)
+    time.sleep(1)     
+
+    logs['PIDTuning'] = PIDTuning(TB_UART, inputInfo["start_y"]["defaultValue"],inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["amplitude"]["defaultValue"], inputInfo["frequency"]["defaultValue"], inputInfo["step_time"]["defaultValue"], inputInfo["step_value"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
+
+    logs['ETB1'] = ETB1Command(TB_UART) 
+
+    time.sleep(1)
+
+    logs['ETB2'] = ETB2Command(TB_UART)
+
+    time.sleep(1)
+
+    logs['EDAQ'] = EDAQCommand(DAQ_UART)
 
     save_folder_path = f"analysis/data/PIDTuning/requested/" + date_string + "/" + run_string
 
@@ -213,7 +260,7 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
 
     logs['ITB'] = ITBCommand(TB_UART, inputs["stabilising_delay"], info['stabilising_delay']) 
 
-    logs['STB'] = STBCommand(TB_UART, inputs["start_y"], info["start_y"], inputs["trans_time"], info["trans_time"])
+    logs['STB'] = STBCommand(TB_UART, 2, info["start_y"], inputs["trans_time"], info["trans_time"])
 
     logs['STB2'] = STB2Command(TB_UART, inputs['branch_temp'], info['branch_temp'])
 
@@ -225,27 +272,33 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
 
     logs['SDAQ'] = SDAQCommand(DAQ_UART, inputs["PIVfreq"], inputs["Datafreq"], info["PIVfreq"], info["Datafreq"]) 
 
+    time.sleep(5)
+
     logs['SDAQ2'] = SDAQ2Command(DAQ_UART, inputs["lenExperiment"], info["lenExperiment"]) 
 
-    time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
+    time.sleep(0.5*(inputs['lenExperiment'] - inputs['trans_time']))
 
-    logs['IDYE3'] = IDYE3Command(TB_UART, inputs['enPulse'], inputs['syrDia'], inputs['vol_inject'])
+    # time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
 
-    time.sleep(0.5*(inputs['inject_time'] - inputs['trans_time']))
+    # logs['IDYE3'] = IDYE3Command(TB_UART, inputs['enPulse'], inputs['syrDia'], inputs['vol_inject'])
+
+    # time.sleep(0.5*(inputs['inject_time'] - inputs['trans_time']))
     
     logs['RTB'] = RTBProcedure(TB_UART, inputs["start_y"], inputs["end_y"], inputs["nodes"], inputs["trans_time"], inputs["amplitude"], inputs["frequency"], inputs["step_time"], inputs["step_value"], inputs["presetConfig"])
 
     logs['ETB1'] = ETB1Command(TB_UART) 
     
-    time.sleep(0.5*(inputs['inject_time'] - inputs['trans_time']))  
+    # time.sleep(0.5*(inputs['inject_time'] - inputs['trans_time']))  
+
+    time.sleep(0.5*(inputs['lenExperiment'] - inputs['trans_time']))
 
     logs['ETB2'] = ETB2Command(TB_UART)
 
-    time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
+    # time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
 
     logs['EDAQ'] = EDAQCommand(DAQ_UART)
 
-    plot_transient_request(logs, "RTB", inputs)
+    # plot_transient_request(logs, "RTB", inputs)
 
     return logs
 
@@ -263,17 +316,17 @@ def resetDyeInjection(TB_port: str):
 
 def saveLogs(run_info):
 
-    folder_path = '/server/logs'  # Replace with the desired folder path
+    # folder_path = '/server/logs'  # Replace with the desired folder path
 
-    file_name = f'PC-{run_info["date"]}-{run_info["time_string"]}-{run_info["test"]}'
+    # file_name = f'PC-{run_info["date"]}-{run_info["time_string"]}-{run_info["test"]}'
 
-    file_path = f'{folder_path}/{file_name}.txt'  # Replace with the desired file name and extension
+    # file_path = f'{folder_path}/{file_name}.txt'  # Replace with the desired file name and extension
 
-    # Open the file in write mode
-    with open(file_path, 'w') as file:
-        json.dump(run_info, file)
+    # # Open the file in write mode
+    # with open(file_path, 'w') as file:
+    #     json.dump(run_info, file)
 
-    print(f"The logs have been saved to: {file_path}")
+    print(f"The logs have not been saved")
 
 
 def run(DAQ_port: str, TB_port: str, run_info: dict, inputs=None):
@@ -326,7 +379,7 @@ if __name__ == "__main__":
     EDIT THIS BELOW - GENERAL  
     '''
 
-    date_string = "31May"
+    date_string = "2Jun"
     test = "PID"
 
     '''
@@ -334,14 +387,14 @@ if __name__ == "__main__":
     '''
 
     temperature_condition = "60" + "DEGREES"
-    orientation_no = "1"
-    momentum_ratio_string = "2"
+    orientation_no = "2"
+    momentum_ratio_string = "3"
 
     '''
     EDIT THIS BELOW - PID
     '''
 
-    run_string = "run1"
+    run_string = "run6"
     '''
     '''
 
@@ -355,9 +408,11 @@ if __name__ == "__main__":
         "run": run_string,
     }
 
-    logs = PID_TESTING(ports_available[TB_port_index], inputInfo, run_string, date_string)
+    # logs = PID_TESTING(ports_available[TB_port_index], inputInfo, run_string, date_string)
 
-    # logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index], run_info)
+    # logs = PID_TESTING_WITH_TEMPS(ports_available[TB_port_index], ports_available[DAQ_port_index], inputInfo, run_string, date_string)
+
+    logs = run(ports_available[DAQ_port_index], ports_available[TB_port_index], run_info)
 
     print(logs)
 

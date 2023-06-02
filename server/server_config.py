@@ -77,9 +77,9 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "start_y": {
-        "defaultValue": 30, #1: 20, #2: 0, #3: 15
+        "defaultValue": 12, # 12 is momentum ratio 3 for 6L/Min in main 
         "type": float,
-        "range": [0, 100], # remember 65.535
+        "range": [0, 33], # remember 65.535
         "bits": 16, 
         "units": "ml/s", #TODO: use units of momentum ratio?
         "submission_form": "transientInput"
@@ -87,7 +87,7 @@ inputInfo = {
     "end_y": {
         "defaultValue": 30, #1: who cares, #2: 30, #3: who cares 
         "type": float,
-        "range": [0, 100], #remember 65.535
+        "range": [0, 33], #remember 65.535
         "bits": 16,
         "units": "", #TODO: use units of momentum ratio?
         "submission_form": "transientInput"
@@ -109,7 +109,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "trans_time": {
-        "defaultValue": 20, # trans_time is 30 for Opaque
+        "defaultValue": 40, # trans_time is 30 for Opaque
         "type": float,
         "range": [0, 800],
         "bits": 16,
@@ -117,7 +117,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "stabilising_delay": {
-        "defaultValue": 120,
+        "defaultValue": 15,
         "type": float,
         "range": [0, 2000],
         "bits": 8,
@@ -165,7 +165,7 @@ inputInfo = {
         "submission_form": "None"
     },
     "step_time": {
-        "defaultValue": 3, # this was 9 
+        "defaultValue": 7, # this was 9 
         "type": float,
         "range": [0, 800],
         "bits": 8,
@@ -173,7 +173,7 @@ inputInfo = {
         "submission_form": "None"
     },
     "step_value": {
-        "defaultValue": 10, # this was 9 
+        "defaultValue": 5.893, # this was 9 
         "type": float,
         "range": [0, 1000],
         "bits": 8,

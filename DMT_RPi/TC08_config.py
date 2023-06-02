@@ -42,7 +42,7 @@ USBTC08_CONFIG = {
             "ENABLE": True
         },
         "CHANNEL3": {
-            "SENSOR_TYPE": "K",
+            "SENSOR_TYPE": "K", # NOTE: FAULTY
             "CHANNEL_NO": 3,
             "NAME": "Depth 2mm",
             "ENABLE": True
@@ -116,19 +116,19 @@ USBTC08_CONFIG = {
             "ENABLE": True
         }, 
         "CHANNEL6": {
-            "SENSOR_TYPE": "K",
+            "SENSOR_TYPE": "K", # Ambient Test
             "CHANNEL_NO": 6,
             "NAME": "Testbed 1",
             "ENABLE": True
         },
         "CHANNEL7": {
-            "SENSOR_TYPE": "K",
+            "SENSOR_TYPE": "K", # Main Inlet
             "CHANNEL_NO": 7,
             "NAME": "Testbed 2",
             "ENABLE": True
         },
         "CHANNEL8": {
-            "SENSOR_TYPE": "K",
+            "SENSOR_TYPE": "K", # Branch Inlet
             "CHANNEL_NO": 8,
             "NAME": "Testbed 3",
             "ENABLE": True
