@@ -38,7 +38,7 @@ double next_total_steps = 0;
 double error = 0;          // E = U-Y in control system
 long current_distance = 0; // Current position of the motor
 
-double requested_speed = 26.232; // U in the control system (mL/s)
+double requested_speed = 12; // U in the control system (mL/s)
 
 // PID Characteristics
 double PID_input_buffer[3] = {0, 0, 0};  // Buffer for bilinear multistep transfer function

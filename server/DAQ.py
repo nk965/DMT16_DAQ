@@ -260,7 +260,7 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
 
     logs['ITB'] = ITBCommand(TB_UART, inputs["stabilising_delay"], info['stabilising_delay']) 
 
-    logs['STB'] = STBCommand(TB_UART, inputs["start_y"], info["start_y"], inputs["trans_time"], info["trans_time"])
+    logs['STB'] = STBCommand(TB_UART, 2, info["start_y"], inputs["trans_time"], info["trans_time"])
 
     logs['STB2'] = STB2Command(TB_UART, inputs['branch_temp'], info['branch_temp'])
 
@@ -272,27 +272,33 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
 
     logs['SDAQ'] = SDAQCommand(DAQ_UART, inputs["PIVfreq"], inputs["Datafreq"], info["PIVfreq"], info["Datafreq"]) 
 
+    time.sleep(5)
+
     logs['SDAQ2'] = SDAQ2Command(DAQ_UART, inputs["lenExperiment"], info["lenExperiment"]) 
 
-    time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
+    time.sleep(0.5*(inputs['lenExperiment'] - inputs['trans_time']))
 
-    logs['IDYE3'] = IDYE3Command(TB_UART, inputs['enPulse'], inputs['syrDia'], inputs['vol_inject'])
+    # time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
 
-    time.sleep(0.5*(inputs['inject_time'] - inputs['trans_time']))
+    # logs['IDYE3'] = IDYE3Command(TB_UART, inputs['enPulse'], inputs['syrDia'], inputs['vol_inject'])
+
+    # time.sleep(0.5*(inputs['inject_time'] - inputs['trans_time']))
     
     logs['RTB'] = RTBProcedure(TB_UART, inputs["start_y"], inputs["end_y"], inputs["nodes"], inputs["trans_time"], inputs["amplitude"], inputs["frequency"], inputs["step_time"], inputs["step_value"], inputs["presetConfig"])
 
     logs['ETB1'] = ETB1Command(TB_UART) 
     
-    time.sleep(0.5*(inputs['inject_time'] - inputs['trans_time']))  
+    # time.sleep(0.5*(inputs['inject_time'] - inputs['trans_time']))  
+
+    time.sleep(0.5*(inputs['lenExperiment'] - inputs['trans_time']))
 
     logs['ETB2'] = ETB2Command(TB_UART)
 
-    time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
+    # time.sleep(0.5*(inputs['lenExperiment'] - inputs['inject_time']))
 
     logs['EDAQ'] = EDAQCommand(DAQ_UART)
 
-    plot_transient_request(logs, "RTB", inputs)
+    # plot_transient_request(logs, "RTB", inputs)
 
     return logs
 
@@ -310,17 +316,17 @@ def resetDyeInjection(TB_port: str):
 
 def saveLogs(run_info):
 
-    folder_path = '/server/logs'  # Replace with the desired folder path
+    # folder_path = '/server/logs'  # Replace with the desired folder path
 
-    file_name = f'PC-{run_info["date"]}-{run_info["time_string"]}-{run_info["test"]}'
+    # file_name = f'PC-{run_info["date"]}-{run_info["time_string"]}-{run_info["test"]}'
 
-    file_path = f'{folder_path}/{file_name}.txt'  # Replace with the desired file name and extension
+    # file_path = f'{folder_path}/{file_name}.txt'  # Replace with the desired file name and extension
 
-    # Open the file in write mode
-    with open(file_path, 'w') as file:
-        json.dump(run_info, file)
+    # # Open the file in write mode
+    # with open(file_path, 'w') as file:
+    #     json.dump(run_info, file)
 
-    print(f"The logs have been saved to: {file_path}")
+    print(f"The logs have not been saved")
 
 
 def run(DAQ_port: str, TB_port: str, run_info: dict, inputs=None):
@@ -381,8 +387,8 @@ if __name__ == "__main__":
     '''
 
     temperature_condition = "60" + "DEGREES"
-    orientation_no = "1"
-    momentum_ratio_string = "2"
+    orientation_no = "2"
+    momentum_ratio_string = "3"
 
     '''
     EDIT THIS BELOW - PID

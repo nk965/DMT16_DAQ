@@ -150,6 +150,8 @@ def plot_run_pico_data(pico_single_run_data, run_info):
         fig2, axes1 = plt.subplots(nrows=3, ncols=3, figsize=(15, 8))
 
         matrix = [opaque_temps[i:i+3] for i in range(0, 9, 3)]
+        print(len(matrix))
+        print(len(matrix[0]))
 
         for i in range(len(matrix)):
 
@@ -244,13 +246,15 @@ def analyse_single_run(run_folder_path, angle):
 
     date_string = split_array[3]
     orientation_string = split_array[4].upper() + " " + split_array[5].upper()
-    temperature_string = split_array[7] + " DEGREES"
-    momentum_ratio_no_string = "RATIO " + split_array[9]
+    # temperature_string = split_array[7] + " DEGREES"
+    temperature_string = " Ambient "
+    # momentum_ratio_no_string = "RATIO " + split_array[9]
+    momentum_ratio_no_string = " 3 "
 
     run_info = {
         "date": date_string,
         "orientation": orientation_string,
-        "temperature": temperature_string,
+        "temperature_string": temperature_string,
         "momentum_ratio_no": momentum_ratio_no_string,
     }
 
@@ -293,25 +297,25 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
 
     all_requested_runs = []
 
-    for filename in file_list:
+    # for filename in file_list:
 
-        requested_times = []
+    #     requested_times = []
 
-        requested_actuator_position = []
+    #     requested_actuator_position = []
 
-        if filename.endswith('.csv'):  # Filter CSV files
+    #     if filename.endswith('.csv'):  # Filter CSV files
  
-            file_path = os.path.join(requested_folder_path, filename)
+    #         file_path = os.path.join(requested_folder_path, filename)
 
-            # Read CSV file and populate arrays
-            with open(file_path, 'r') as file:
-                reader = csv.reader(file)
-                next(reader)  # Skip header row
-                for row in reader:
-                    requested_times.append(float(row[0]))
-                    requested_actuator_position.append(float(row[1]))
+    #         # Read CSV file and populate arrays
+    #         with open(file_path, 'r') as file:
+    #             reader = csv.reader(file)
+    #             next(reader)  # Skip header row
+    #             for row in reader:
+    #                 requested_times.append(float(row[0]))
+    #                 requested_actuator_position.append(float(row[1]))
 
-            all_requested_runs.append((requested_times, requested_actuator_position))
+    #         all_requested_runs.append((requested_times, requested_actuator_position))
         
     experiments = process_individual_run(actual_folder_path) # experiments is a list of classes
 
@@ -349,11 +353,11 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
 
             sns.lineplot(x=branch_times_data, y=branch_filtered_flow_rate_data, ax=axes[0], label="Branch Flow Rate Filtered", color="blue")
 
-            requested_times, requested_actuator_position = all_requested_runs[index]
+            # requested_times, requested_actuator_position = all_requested_runs[index]
 
-            requested_actuator_position_interpolated = np.interp(branch_times_data, requested_times, requested_actuator_position)
+            # requested_actuator_position_interpolated = np.interp(branch_times_data, requested_times, requested_actuator_position)
 
-            sns.lineplot(x=branch_times_data, y=requested_actuator_position_interpolated, ax=axes[0], label="Requested Actuator Movement", color="green", markers=True)
+            # sns.lineplot(x=branch_times_data, y=requested_actuator_position_interpolated, ax=axes[0], label="Requested Actuator Movement", color="green", markers=True)
 
             axes[1].set_xlim(-1, max(branch_times_data) + 1)
 
@@ -362,9 +366,9 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
             axes[1].set_title('Branch Flow Rates and Signals')    
             axes[1].legend(loc='best')
 
-            error = requested_actuator_position_interpolated - branch_filtered_flow_rate_data
+            # error = requested_actuator_position_interpolated - branch_filtered_flow_rate_data
 
-            sns.lineplot(x=branch_times_data, y=error, ax=axes[1], label="Error", color="black")
+            # sns.lineplot(x=branch_times_data, y=error, ax=axes[1], label="Error", color="black")
 
             fig.canvas.manager.set_window_title('Figure 1') 
             fig.suptitle(f'Branch Flow Rates at Start Time: {time}')  
@@ -450,11 +454,11 @@ if __name__ == "__main__":
 
     # analyse_all_runs(folder_path, angles)
 
-    temperature_condition = "ambient" # temp60, temp80, ambient
-    orientation_number = "1"
+    temperature_condition = "temp60" # temp60, temp80, ambient
+    orientation_number = "2"
     date = "2Jun"
-    momentum_ratio = "2" # 2, 3, 5
-    pid_run_number = "6"
+    momentum_ratio = "2" # 2, 3, 5  #### FOR DUD RUN, MOM 2 is DUD, MOM 3 is GOOD
+    pid_run_number = "9"
 
     run_folder_path = "analysis/data/opaque/" + date + "/" + "orientation" + orientation_number + "/" + temperature_condition + "/" + "momentum" + momentum_ratio
 

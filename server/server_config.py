@@ -77,7 +77,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "start_y": {
-        "defaultValue": 26.232, #1: 32.116, #2: 26.223, #3: 20.312
+        "defaultValue": 12, # 12 is momentum ratio 3 for 6L/Min in main 
         "type": float,
         "range": [0, 33], # remember 65.535
         "bits": 16, 
@@ -101,7 +101,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "presetConfig": {
-        "defaultValue": "Step", #1: Constant, #2: Linear, #3: Sine
+        "defaultValue": "Constant", #1: Constant, #2: Linear, #3: Sine
         "type": str,
         "range": None,
         "bits": None,
@@ -117,7 +117,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "stabilising_delay": {
-        "defaultValue": 2,
+        "defaultValue": 15,
         "type": float,
         "range": [0, 2000],
         "bits": 8,
