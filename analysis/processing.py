@@ -462,9 +462,9 @@ if __name__ == "__main__":
 
     # analyse_single_run(run_folder_path_test, orientations[int(orientation_number)-1]) 
     
-    analyse_single_run(run_folder_path, orientations[int(orientation_number)-1]) 
+    # analyse_single_run(run_folder_path, orientations[int(orientation_number)-1]) 
 
-    # compare_requested_to_actual_transient_response(pid_run_number, date)
+    compare_requested_to_actual_transient_response(pid_run_number, date)
 
 
 

@@ -185,7 +185,11 @@ def PID_TESTING(port: str, inputInfo, run_string, date_string):
 
     logs['STB2'] = STB2Command(TB_UART, inputInfo['branch_temp']['defaultValue'], inputInfo['branch_temp'])
 
-    # time.sleep(1)    
+    time.sleep(10)
+
+    print("Starting in 5 seconds")
+
+    time.sleep(5)    
 
     logs['PIDTuning'] = PIDTuning(TB_UART, inputInfo["start_y"]["defaultValue"],inputInfo["end_y"]["defaultValue"], inputInfo["nodes"]["defaultValue"], inputInfo["trans_time"]["defaultValue"], inputInfo["amplitude"]["defaultValue"], inputInfo["frequency"]["defaultValue"], inputInfo["step_time"]["defaultValue"], inputInfo["step_value"]["defaultValue"], inputInfo["presetConfig"]["defaultValue"])  
 
@@ -369,7 +373,7 @@ if __name__ == "__main__":
     EDIT THIS BELOW - GENERAL  
     '''
 
-    date_string = "1Jun"
+    date_string = "2Jun"
     test = "PID"
 
     '''
@@ -384,7 +388,7 @@ if __name__ == "__main__":
     EDIT THIS BELOW - PID
     '''
 
-    run_string = "run1"
+    run_string = "run6"
     '''
     '''
 

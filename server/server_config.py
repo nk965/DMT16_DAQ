@@ -77,7 +77,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "start_y": {
-        "defaultValue": 32.116, #1: 20, #2: 0, #3: 15
+        "defaultValue": 26.232, #1: 32.116, #2: 26.223, #3: 20.312
         "type": float,
         "range": [0, 33], # remember 65.535
         "bits": 16, 
@@ -101,7 +101,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "presetConfig": {
-        "defaultValue": "Constant", #1: Constant, #2: Linear, #3: Sine
+        "defaultValue": "Step", #1: Constant, #2: Linear, #3: Sine
         "type": str,
         "range": None,
         "bits": None,
@@ -109,7 +109,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "trans_time": {
-        "defaultValue": 20, # trans_time is 30 for Opaque
+        "defaultValue": 40, # trans_time is 30 for Opaque
         "type": float,
         "range": [0, 800],
         "bits": 16,
@@ -117,7 +117,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "stabilising_delay": {
-        "defaultValue": 120,
+        "defaultValue": 2,
         "type": float,
         "range": [0, 2000],
         "bits": 8,
@@ -165,7 +165,7 @@ inputInfo = {
         "submission_form": "None"
     },
     "step_time": {
-        "defaultValue": 3, # this was 9 
+        "defaultValue": 7, # this was 9 
         "type": float,
         "range": [0, 800],
         "bits": 8,
@@ -173,7 +173,7 @@ inputInfo = {
         "submission_form": "None"
     },
     "step_value": {
-        "defaultValue": 10, # this was 9 
+        "defaultValue": 5.893, # this was 9 
         "type": float,
         "range": [0, 1000],
         "bits": 8,
