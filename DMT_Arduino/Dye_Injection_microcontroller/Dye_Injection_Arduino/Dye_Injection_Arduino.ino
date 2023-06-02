@@ -421,7 +421,7 @@ void loop()
 
       // Reset all of the step variables - we go extra far back so that the master stop switch can be hit
 
-      total_steps = backwards_stop_steps - 20000;
+      total_steps = backwards_stop_steps;
       no_steps = 0;
 
       // Store the current direction as backwards
