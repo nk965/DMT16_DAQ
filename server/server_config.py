@@ -45,7 +45,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "PIVfreq": {
-        "defaultValue": 6,
+        "defaultValue": 5,
         "type": float,
         "range": [5, 50000], #TODO check with Pike with this
         "bits": 16,
@@ -61,7 +61,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "cyclePeriod": {
-        "defaultValue": 2, # 2 or 3
+        "defaultValue": 3, # 2 or 3
         "type": float,
         "range": [0, 100],
         "bits": 16,
@@ -69,7 +69,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "dutyCycle": {
-        "defaultValue": 0.8, #0.5 or 0.8
+        "defaultValue": 0.3, #0.5 or 0.8
         "type": float,
         "range": [0, 1],
         "bits": 8,
@@ -109,7 +109,7 @@ inputInfo = {
         "submission_form": "transientInput"
     },
     "trans_time": {
-        "defaultValue": 40, # trans_time is 30 for Opaque
+        "defaultValue": 30, # trans_time is 30 for Opaque
         "type": float,
         "range": [0, 800],
         "bits": 16,
@@ -141,7 +141,7 @@ inputInfo = {
         "submission_form": "userConfig"
     },
     "inject_time": {
-        "defaultValue": 40, # for Opaque
+        "defaultValue": 45, # for Opaque
         "type": float,
         "range": [0, 480],
         "bits": 8,
