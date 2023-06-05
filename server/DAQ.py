@@ -267,7 +267,7 @@ def processTransparent(DAQ_port: str, TB_port: str, inputs, info):
 
     logs['IDYE2'] = IDYE2Command(TB_UART, inputs['dutyCycle'], info['dutyCycle'], inputs['cyclePeriod'], info['cyclePeriod'])
 
-    time.sleep(inputs["stabilising_delay"] - 5)
+    time.sleep(inputs["stabilising_delay"] - 10)
 
     logs['SDAQ'] = SDAQCommand(DAQ_UART, inputs["PIVfreq"], inputs["Datafreq"], info["PIVfreq"], info["Datafreq"]) 
 
@@ -310,7 +310,7 @@ def process(DAQ_port: str, TB_port: str, inputs, info):
 
     logs['ITB'] = ITBCommand(TB_UART, inputs["stabilising_delay"], info['stabilising_delay']) 
 
-    logs['STB'] = STBCommand(TB_UART, 2, info["start_y"], inputs["trans_time"], info["trans_time"])
+    logs['STB'] = STBCommand(TB_UART, 13.8, info["start_y"], inputs["trans_time"], info["trans_time"])
 
     logs['STB2'] = STB2Command(TB_UART, inputs['branch_temp'], info['branch_temp'])
 
@@ -384,7 +384,7 @@ def run(DAQ_port: str, TB_port: str, run_info: dict, inputs=None):
     if inputs is None:
         inputs = {key: inputInfo[key]["defaultValue"] for key in inputInfo}
 
-    system_logs = processTransparent(DAQ_port, TB_port, inputs, inputInfo)
+    system_logs = process(DAQ_port, TB_port, inputs, inputInfo)
 
     system_logs.update(run_info)
 

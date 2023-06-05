@@ -4,6 +4,7 @@ from data_structs import Datalogger_Data, GPIO_Data
 from channel_info import channel_info, null
 from datetime import datetime
 
+
 def process_individual_run(folder_path, angle=null):
     data_dump_experiment_path = folder_path
 
@@ -14,6 +15,9 @@ def process_individual_run(folder_path, angle=null):
         if filename.endswith('.csv'):  # Filter CSV files
  
             file_path = os.path.join(data_dump_experiment_path, filename)
+
+            print(data_dump_experiment_path)
+            print("Hello")
 
             filename_array = filename.split("-")
 
@@ -83,13 +87,13 @@ def extract_GPIO_data(data_class):
 
         TB_motor_time_seconds = TB_motor_time_seconds - time_0_reference
     
-    if Main_flow_meter_data.size == 0:
-        Main_flow_rate = []
-        Main_flow_meter_time_seconds = []
-    else:
-        Main_flow_meter_state = Main_flow_meter_data[:, 1].astype(np.float64)
-        Main_flow_meter_time_seconds = Main_flow_meter_data[:, 4].astype(np.float64) / (10 ** 6) - time_0_reference
-        Main_flow_rate, Main_flow_meter_time_seconds = convert_pulses_to_flow_rate(Main_flow_meter_time_seconds)
+    # if Main_flow_meter_data.size == 0:
+    #     Main_flow_rate = []
+    #     Main_flow_meter_time_seconds = []
+    # else:
+    #     Main_flow_meter_state = Main_flow_meter_data[:, 1].astype(np.float64)
+    #     Main_flow_meter_time_seconds = Main_flow_meter_data[:, 4].astype(np.float64) / (10 ** 6) - time_0_reference
+    #     Main_flow_rate, Main_flow_meter_time_seconds = convert_pulses_to_flow_rate(Main_flow_meter_time_seconds)
 
     if PIV_pulse_data.size == 0:
         PIV_pulse_state = []
@@ -123,7 +127,7 @@ def extract_GPIO_data(data_class):
     presentable_time = time_obj.strftime("%I:%M:%S %p")
 
     extracted_data = {
-        "main_flow_meter": [Main_flow_meter_time_seconds, Main_flow_rate],
+        # "main_flow_meter": [Main_flow_meter_time_seconds, Main_flow_rate],
         "TB_motor": [TB_motor_time_seconds, TB_motor_state],
         "PIV_signal": [PIV_pulse_time_seconds, PIV_pulse_state],
         "Dye_Inject_Signal": [Dye_injection_time_seconds, Dye_injection_state],
@@ -138,8 +142,6 @@ def extract_GPIO_data(data_class):
 def create_dataclasses_for_run(run_folder_path, angles):
 
     test_runs = []
-    
-    # Obtain the CSV Files and create dataclasses for each test run with that inlet condition
 
     for index, test_run in enumerate(os.scandir(run_folder_path)):
         if test_run.name == '.DS_Store' or not test_run.is_dir():

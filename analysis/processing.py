@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import csv
+import statsmodels.api as sm
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler, scale
 
 from extracting_data import extract_GPIO_data, create_dataclasses_for_run, sort_test_runs, process_individual_run, extract_pico_data
 
@@ -10,7 +12,7 @@ from Stats import Statistics
 
 sns.set_theme()
 
-def exponential_filter(x,alpha=0.02):
+def exponential_filter(x,alpha=0.05):
 
     s = np.zeros(len(x))
 
@@ -281,42 +283,44 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
 
     # only have GPIO data in "analysis/data/PIDTuning/actual"
 
-    requested_folder = "analysis/data/PIDTuning/requested/" + date + "/"
+    # requested_folder = "analysis/data/PIDTuning/requested/" + date + "/"
 
     actual_folder = "analysis/data/PIDTuning/actual/" + date + "/"
 
-    requested_folder_path = requested_folder + "run" + run_number
+    # requested_folder_path = requested_folder + "run" + run_number
 
     actual_folder_path = actual_folder + "run" + run_number
 
-    file_list = os.listdir(requested_folder_path)
-    file_list.sort(key=lambda x: os.path.getctime(os.path.join(requested_folder_path, x)))
+    print(actual_folder_path)
 
-    print(f"Analysing: {file_list}")
+    # file_list = os.listdir(requested_folder_path)
+    # file_list.sort(key=lambda x: os.path.getctime(os.path.join(requested_folder_path, x)))
+
+    # print(f"Analysing: {file_list}")
 
     # Initialize empty arrays for 
 
     all_requested_runs = []
 
-    for filename in file_list:
+    # for filename in file_list:
 
-        requested_times = []
+    #     requested_times = []
 
-        requested_actuator_position = []
+    #     requested_actuator_position = []
 
-        if filename.endswith('.csv'):  # Filter CSV files
+    #     if filename.endswith('.csv'):  # Filter CSV files
  
-            file_path = os.path.join(requested_folder_path, filename)
+    #         file_path = os.path.join(requested_folder_path, filename)
 
-            # Read CSV file and populate arrays
-            with open(file_path, 'r') as file:
-                reader = csv.reader(file)
-                next(reader)  # Skip header row
-                for row in reader:
-                    requested_times.append(float(row[0]))
-                    requested_actuator_position.append(float(row[1]))
+    #         # Read CSV file and populate arrays
+    #         with open(file_path, 'r') as file:
+    #             reader = csv.reader(file)
+    #             next(reader)  # Skip header row
+    #             for row in reader:
+    #                 requested_times.append(float(row[0]))
+    #                 requested_actuator_position.append(float(row[1]))
 
-            all_requested_runs.append((requested_times, requested_actuator_position))
+    #         all_requested_runs.append((requested_times, requested_actuator_position))
         
     experiments = process_individual_run(actual_folder_path) # experiments is a list of classes
 
@@ -334,10 +338,6 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
 
             branch_times_data, branch_flow_rate_data, branch_filtered_flow_rate_data = run_data["branch_flow_meter"][0], run_data["branch_flow_meter"][1], exponential_filter(run_data["branch_flow_meter"][1])
 
-            TB_motor_times_data, TB_motor_times_state, time_0_reference = run_data["TB_motor"][0], run_data["TB_motor"][1], run_data["time_0_reference"]
-
-            PIV_signal_times_data, PIV_signal_times_state = run_data["PIV_signal"][0], run_data["PIV_signal"][1]
-
             time = run_data["time"]
 
             fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(15,8))
@@ -345,10 +345,10 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
             axes[0].set_xlabel('Time (s)')
             axes[0].set_ylabel('Flow Rate (ml/s)')
             axes[0].set_title('Requested and Actual Flow Rates')
-            axes[0].set_xlim(5, max(branch_times_data) + 1)
-            axes[0].set_ylim(20, 40)
+            # axes[0].set_xlim(-1, max(branch_times_data) + 1)
+            # axes[0].set_ylim(10, 50)
             axes[0].legend(loc='best')
-            # axes[0].set_ylim(0, 100)
+            # axes[0].set_ylim(20, 35)
 
             # plotting actual and filtered flow rates
 
@@ -356,22 +356,28 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
 
             sns.lineplot(x=branch_times_data, y=branch_filtered_flow_rate_data, ax=axes[0], label="Branch Flow Rate Filtered", color="blue")
 
-            requested_times, requested_actuator_position = all_requested_runs[index]
+            # requested_times, requested_actuator_position = all_requested_runs[index]
 
-            requested_actuator_position_interpolated = np.interp(branch_times_data, requested_times, requested_actuator_position)
+            # requested_actuator_position_interpolated = np.interp(branch_times_data, requested_times, requested_actuator_position)
 
-            sns.lineplot(x=branch_times_data, y=requested_actuator_position_interpolated, ax=axes[0], label="Requested Actuator Movement", color="green", markers=True)
+            # sns.lineplot(x=branch_times_data, y=requested_actuator_position_interpolated, ax=axes[0], label="Requested Actuator Movement", color="green", markers=True)
 
-            axes[1].set_xlim(-1, max(branch_times_data) + 1)
+            # axes[1].set_xlim(-1, max(branch_times_data) + 1)
 
             axes[1].set_xlabel('Time (s)')
             axes[1].set_ylabel('Error (ml/s)')
-            axes[1].set_title('Branch Flow Rates and Signals')    
+            # axes[1].set_ylim(-5, 5)
+            axes[1].set_title('Branch Flow Rate Error')    
             axes[1].legend(loc='best')
 
-            error = requested_actuator_position_interpolated - branch_filtered_flow_rate_data
+            # error = requested_actuator_position_interpolated - branch_filtered_flow_rate_data
 
-            sns.lineplot(x=branch_times_data, y=error, ax=axes[1], label="Error", color="black")
+            # sns.lineplot(x=branch_times_data, y=error, ax=axes[1], label="Error", color="black")
+            # plt.axhline(0, color='black', alpha=0.5, linestyle=':')
+            
+            # pp_plot = sm.ProbPlot(scale(error), fit=True) # Forming the Proability Plot that initialises the Q-Q Plot.
+            # qq_plot = pp_plot.qqplot(marker='.', ax=axes[0]) # Initialising the Q-Q Plot and editing some Graph Parameters.
+            # sm.qqline(qq_plot.axes[0], line='45') # Forming Q-Q plot with 45-degree line added to plot
 
             fig.canvas.manager.set_window_title('Figure 1') 
             fig.suptitle(f'Branch Flow Rates at Start Time: {time}')  
@@ -379,6 +385,15 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
             plt.tight_layout()
 
             plt.show()
+
+            # fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(15,8))
+
+            
+
+            # sns.lineplot(x=branch_times_data, y=error, ax=axes[1], label="Error", color="black")
+            # plt.axhline(0, color='black', alpha=0.5, linestyle=':')
+
+            # plt.show()
 
             # plotting fft for branch data
 
@@ -432,19 +447,158 @@ def compare_requested_to_actual_transient_response(run_number: str, date):
             plt.title("Frequency Response Function")
             plt.show()
 
-        if len(run_data["main_flow_meter"][1]) != 0:
+        # if len(run_data["main_flow_meter"][1]) != 0:
 
-            main_times_data, main_flow_rate_data, main_filtered_flow_rate_data = run_data["main_flow_meter"][0], run_data["main_flow_meter"][1], exponential_filter(run_data["main_flow_meter"][1])
+        #     main_times_data, main_flow_rate_data, main_filtered_flow_rate_data = run_data["main_flow_meter"][0], run_data["main_flow_meter"][1], exponential_filter(run_data["main_flow_meter"][1])
 
-            TB_motor_times_data, TB_motor_times_state = run_data["TB_motor"][0], run_data["TB_motor"][1]
+        #     TB_motor_times_data, TB_motor_times_state = run_data["TB_motor"][0], run_data["TB_motor"][1]
 
-            PIV_signal_times_data, PIV_signal_times_state = run_data["PIV_signal"][0], run_data["PIV_signal"][1]
+        #     PIV_signal_times_data, PIV_signal_times_state = run_data["PIV_signal"][0], run_data["PIV_signal"][1]
 
-            sns.scatterplot(x=main_times_data, y=main_flow_rate_data, label="Branch Flow Rate Raw", s=5, color="red")
+        #     sns.scatterplot(x=main_times_data, y=main_flow_rate_data, label="Branch Flow Rate Raw", s=5, color="red")
 
-            sns.lineplot(x=main_times_data, y=main_filtered_flow_rate_data, label="Branch Flow Rate Filtered", color="blue")
+        #     sns.lineplot(x=main_times_data, y=main_filtered_flow_rate_data, label="Branch Flow Rate Filtered", color="blue")
 
-            plt.plot()
+            # plt.plot()
+
+def actual_transient_response_from_opaque(run_folder_path, angle):
+
+    # run_folder_path = "analysis/data/opaque/" + date + "/" + "orientation" + orientation_number + "/" + temperature_condition + "/" + "momentum" + momentum_ratio
+
+    file_list = os.listdir(run_folder_path)
+
+    print(f"Analysing: {file_list}")
+
+    # Initialize empty arrays for 
+        
+    experiments = process_individual_run(run_folder_path) # experiments is a list of classes
+
+    GPIO_run_data = []
+
+    for experiment in experiments: 
+
+        GPIO_run_data.append(extract_GPIO_data(experiment)) # GPIO_run_data is a list of dictionaries
+
+    for index, run_data in enumerate(GPIO_run_data):
+
+        if len(run_data["branch_flow_meter"][1]) != 0: 
+
+            # then plot things, error next to actual and error 
+
+            branch_times_data, branch_flow_rate_data, branch_filtered_flow_rate_data = run_data["branch_flow_meter"][0], run_data["branch_flow_meter"][1], exponential_filter(run_data["branch_flow_meter"][1])
+
+            time = run_data["time"]
+
+            fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(15,8))
+
+            axes[0].set_xlabel('Time (s)')
+            axes[0].set_ylabel('Flow Rate (ml/s)')
+            axes[0].set_title('Requested and Actual Flow Rates')
+            # axes[0].set_xlim(-1, max(branch_times_data) + 1)
+            # axes[0].set_ylim(10, 50)
+            axes[0].legend(loc='best')
+            axes[0].set_ylim(20, 35)
+
+            # plotting actual and filtered flow rates
+
+            print(branch_filtered_flow_rate_data)
+            print(branch_times_data)
+
+            sns.scatterplot(x=branch_times_data, y=branch_flow_rate_data, ax=axes[0], label="Branch Flow Rate Raw", s=5, color="red")
+
+            # sns.lineplot(x=branch_times_data, y=branch_filtered_flow_rate_data, ax=axes[0], label="Branch Flow Rate Filtered", color="blue")
+
+            # requested_times, requested_actuator_position = all_requested_runs[index]
+
+            # requested_actuator_position_interpolated = np.interp(branch_times_data, requested_times, requested_actuator_position)
+
+            # sns.lineplot(x=branch_times_data, y=requested_actuator_position_interpolated, ax=axes[0], label="Requested Actuator Movement", color="green", markers=True)
+
+            axes[1].set_xlim(-1, max(branch_times_data) + 1)
+
+            axes[1].set_xlabel('Time (s)')
+            axes[1].set_ylabel('Error (ml/s)')
+            axes[1].set_ylim(-5, 5)
+            axes[1].set_title('Branch Flow Rate Error')    
+            axes[1].legend(loc='best')
+
+            # error = requested_actuator_position_interpolated - branch_filtered_flow_rate_data
+
+            # sns.lineplot(x=branch_times_data, y=error, ax=axes[1], label="Error", color="black")
+            # plt.axhline(0, color='black', alpha=0.5, linestyle=':')
+            
+            # pp_plot = sm.ProbPlot(scale(error), fit=True) # Forming the Proability Plot that initialises the Q-Q Plot.
+            # qq_plot = pp_plot.qqplot(marker='.', ax=axes[0]) # Initialising the Q-Q Plot and editing some Graph Parameters.
+            # sm.qqline(qq_plot.axes[0], line='45') # Forming Q-Q plot with 45-degree line added to plot
+
+            fig.canvas.manager.set_window_title('Figure 1') 
+            fig.suptitle(f'Branch Flow Rates at Start Time: {time}')  
+                                    
+            plt.tight_layout()
+
+            plt.show()
+
+            # fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(15,8))
+
+            
+
+            # sns.lineplot(x=branch_times_data, y=error, ax=axes[1], label="Error", color="black")
+            # plt.axhline(0, color='black', alpha=0.5, linestyle=':')
+
+            # plt.show()
+
+            # plotting fft for branch data
+
+            max_dt = float('-inf')
+
+            for i in range(1, len(branch_times_data)):
+                diff = branch_times_data[i] - branch_times_data[i-1]
+                if diff > max_dt:
+                    max_dt = diff
+
+            constant_dt = max_dt / 3 
+
+            # Create a new set of time values with constant interval
+            new_time = np.arange(branch_times_data[0], branch_times_data[-1], constant_dt)
+
+            # Interpolate the data to the new time values
+            new_data = np.interp(new_time, branch_times_data, branch_flow_rate_data)
+
+            fft_filtered = np.abs(np.fft.fft(exponential_filter(new_data, alpha=0.01))[:len(new_data)//2])
+            fft_unfiltered = np.abs(np.fft.fft(new_data)[:len(new_data)//2])
+
+            PSD_filtered = constant_dt * (fft_filtered ** 2)
+            PSD_unfiltered = constant_dt * (fft_unfiltered ** 2)
+
+            freq = np.fft.fftfreq(new_time.shape[-1])[:len(new_data)//2]
+
+            unfiltered_FRF = fft_filtered / fft_unfiltered
+
+            FRF = unfiltered_FRF
+
+            fig, axes = plt.subplots()
+
+            plt.plot(freq, PSD_filtered, label="Filtered", linewidth=0.5)
+            plt.plot(freq, PSD_unfiltered, label="Unfiltered", linewidth=0.5)
+
+            plt.xlabel("Frequency (Hz)")
+            plt.ylabel("Power Spectral Density")
+
+            axes.set_yscale('log')
+            axes.set_xscale('log')
+            plt.title("Power Spectral Density Analysis")
+            plt.legend()
+            plt.show()
+
+            fig, axes = plt.subplots()
+            plt.plot(freq, 20*np.log10(FRF), label="FRF (dB)", color="blue", linewidth=0.1)
+            plt.plot(freq, exponential_filter(20*np.log10(FRF), alpha=0.01), color="red", label="FRF (dB) Averaged")
+            axes.set_xscale('log')
+            plt.xlabel("Frequency (Hz)")
+            plt.ylabel("Gain (dB)")
+            plt.title("Frequency Response Function")
+            plt.show()
+
 
 
 if __name__ == "__main__":
@@ -459,9 +613,9 @@ if __name__ == "__main__":
 
     temperature_condition = "temp60" # temp60, temp80, ambient
     orientation_number = "3"
-    date = "29May"
+    date = "5Jun"
     momentum_ratio = "3" # 2, 3, 5  #### FOR DUD RUN, MOM 2 is DUD, MOM 3 is GOOD
-    pid_run_number = "6"
+    pid_run_number = "6" # 5 is good 
 
     run_folder_path = "analysis/data/opaque/" + date + "/" + "orientation" + orientation_number + "/" + temperature_condition + "/" + "momentum" + momentum_ratio
 
@@ -472,6 +626,10 @@ if __name__ == "__main__":
     # analyse_single_run(run_folder_path, orientations[int(orientation_number)-1]) 
 
     compare_requested_to_actual_transient_response(pid_run_number, date)
+
+    print(run_folder_path)
+
+    # actual_transient_response_from_opaque(run_folder_path, orientations[int(orientation_number)-1])
 
 
 

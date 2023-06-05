@@ -79,6 +79,7 @@ class GPIO_Data:
         self.file_path = file_path
         self.filename = os.path.basename(file_path)
         filename_array = self.filename.split("-")
+
         self.date = filename_array[1][:10]
         self.start_time = filename_array[1][11:]
         filename_array[3] = filename_array[3].split(".")
