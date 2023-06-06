@@ -720,7 +720,7 @@ def analyse_pressures(run_folder_path, momentum_ratio_string, temp_string, angle
 
 if __name__ == "__main__":
 
-    orientation_angles = [0, 30, 90, 120, 180, 210, 240, 270]  # check powerpoint slide for definition of 0 degrees
+    orientation_angles = [0, 30, 90, 120, 180, 210, 240, 270, 300, 330, 360, 390, 420, 450]  # check powerpoint slide for definition of 0 degrees
 
     run_folder_path = "analysis/data/opaque/5Jun"
 
