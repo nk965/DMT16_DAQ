@@ -16,9 +16,6 @@ def process_individual_run(folder_path, angle=null):
  
             file_path = os.path.join(data_dump_experiment_path, filename)
 
-            print(data_dump_experiment_path)
-            print("Hello")
-
             filename_array = filename.split("-")
 
             if filename_array[0] == 'RPI':
@@ -41,6 +38,18 @@ def extract_pico_data(data_class):
     raw_data = data_class.data.astype(np.float64)
     temp_values = raw_data[:, 0]
     time_values_seconds = raw_data[:, 2] / (10 ** 6)
+
+    filtered_temp_values = []
+    filtered_time_values = []
+
+    # Filtering data
+    # for temp, time in zip(temp_values, time_values_seconds):
+    #     if time != 0 or temp != 0:
+    #         filtered_temp_values.append(temp)
+    #         filtered_time_values.append(time)
+
+    # return filtered_temp_values, filtered_time_values
+
     return temp_values, time_values_seconds
 
 

@@ -328,7 +328,7 @@ if __name__ == "__main__":
 
     orientation_angles = [0, 30, 90, 120, 180, 210, 240, 270]  # check powerpoint slide for definition of 0 degrees
 
-    run_folder_path = "analysis/data/opaque/5Jun/orientation2/temp60/momentum3"
+    run_folder_path = "analysis/data/opaque/5Jun/orientation8/temp60/momentum3"
 
     orientation_index = int(run_folder_path.split("/")[4][-1]) - 1
 
