@@ -33,6 +33,8 @@ def find_time_0(dataclass):
 
     parent_directory = "/".join(class_specific_file_path.split("/")[:-1])
 
+    print(dataclass.print_status())
+
     for filename in os.listdir(parent_directory):
 
         if filename.endswith('.csv'):  # Filter CSV files
@@ -48,6 +50,10 @@ def find_time_0(dataclass):
     time_0_reference = extract_GPIO_data(GPIO_data)["time_0_reference"]
 
     return time_0_reference
+
+def pressure_scaling(data):
+    data_new = data*-10
+    return data_new
 
 
 def create_dataclasses_for_all_orientations(run_folder_path, momentum_ratio_string, temp_string, angles):
@@ -465,11 +471,15 @@ def analyse_pressures(run_folder_path, momentum_ratio_string, temp_string, angle
 
                         ext1_time_series["values_left"], ext1_time_series["time_values_left"] = extract_pico_data(data)
 
+                        # ext1_time_series["values_left"] = pressure_scaling(ext1_time_series["values_left"])
+
                         ext1_time_series["time_0_reference_left"] = find_time_0(data)
 
                     if data.channel == "CHANNEL2":
 
                         ext1_time_series["values_right"], ext1_time_series["time_values_right"] = extract_pico_data(data)
+
+                        # ext1_time_series["values_right"] = pressure_scaling(ext1_time_series["values_right"])
 
                         ext1_time_series["time_0_reference_right"] = find_time_0(data)
 
@@ -483,11 +493,15 @@ def analyse_pressures(run_folder_path, momentum_ratio_string, temp_string, angle
 
                         ext2_time_series["values_left"], ext2_time_series["time_values_left"] = extract_pico_data(data)
 
+                        # ext2_time_series["values_left"] = pressure_scaling(ext2_time_series["values_left"])
+
                         ext2_time_series["time_0_reference_left"] = find_time_0(data)
 
                     if data.channel == "CHANNEL2":
 
                         ext2_time_series["values_right"], ext2_time_series["time_values_right"] = extract_pico_data(data)
+
+                        # ext2_time_series["values_right"] = pressure_scaling(ext2_time_series["values_right"])
 
                         ext2_time_series["time_0_reference_right"] = find_time_0(data)
 
@@ -722,6 +736,6 @@ if __name__ == "__main__":
 
     # one_mm_ext_data = show_extremes(run_folder_path, momentum_ratio_string, temp_string, orientation_angles, depth)
 
-    analyse_pressures(run_folder_path, momentum_ratio_string, temp_string, orientation_angles)
+    # analyse_pressures(run_folder_path, momentum_ratio_string, temp_string, orientation_angles)
 
     analyse_temperatures_sym_and_extremes(run_folder_path, momentum_ratio_string, temp_string, orientation_angles, depth)
